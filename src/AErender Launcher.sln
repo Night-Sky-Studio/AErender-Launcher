@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AErenderLauncher", "AErender Launcher\AErenderLauncher\AErenderLauncher.csproj", "{D2D35DAB-0921-4FCA-9A02-1C852354154E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AErenderLauncher.Desktop", "AErender Launcher\AErenderLauncher.Desktop\AErenderLauncher.Desktop.csproj", "{ED98A805-19F1-4637-9C0B-0CAEB49D13B8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D2D35DAB-0921-4FCA-9A02-1C852354154E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2D35DAB-0921-4FCA-9A02-1C852354154E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2D35DAB-0921-4FCA-9A02-1C852354154E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2D35DAB-0921-4FCA-9A02-1C852354154E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED98A805-19F1-4637-9C0B-0CAEB49D13B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED98A805-19F1-4637-9C0B-0CAEB49D13B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED98A805-19F1-4637-9C0B-0CAEB49D13B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED98A805-19F1-4637-9C0B-0CAEB49D13B8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
