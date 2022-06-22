@@ -1,0 +1,60 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <Grid Height="32">
+                <Button Content="Click me" VerticalAlignment="Stretch" Margin="4"/>
+            </Grid>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="Button">
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="Background" Value="#202020"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontSize" Value="12"/>
+    </Style>
+    
+    <Style Selector="Button">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="{TemplateBinding Background}">
+                    <Label Content="{TemplateBinding Content}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="0"/>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+     
+    <Style Selector="Button:pressed">
+        <Setter Property="RenderTransform" Value="none" />
+    </Style>
+ 
+    <Style Selector="Button:focus">
+        <Setter Property="Background" Value="#2A82E2"/>
+    </Style>
+     
+    <Style Selector="Button:focus:pointerover">
+        <Setter Property="Background" Value="#2A82E2"/>
+    </Style>
+          
+    <Style Selector="Button:pointerover:not(:focus)">
+        <Setter Property="Background" Value="#404040"/>
+    </Style>
+     
+    <Style Selector="Button:pressed">
+        <Setter Property="Background" Value="#17579C"/>
+    </Style>
+    
+    <Style Selector="Border.Toolbar">
+        <Setter Property="Background" Value="#252525"/>
+        <Setter Property="BorderBrush" Value="#151515" />
+        <Setter Property="BorderThickness" Value="0 0 0 1" />
+    </Style>
+    
+    <Style Selector="Border.Statusbar">
+        <Setter Property="Background" Value="#252525"/>
+        <Setter Property="BorderBrush" Value="#151515" />
+        <Setter Property="BorderThickness" Value="0 1 0 0" />
+    </Style>
+</Styles>
