@@ -1,0 +1,19 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:AErenderLauncher.Controls"
+             mc:Ignorable="d" d:DesignWidth="256" d:DesignHeight="256"
+             x:Name="ComboEditControl"
+             x:Class="AErenderLauncher.Controls.ComboEdit">
+    <UserControl.Styles>
+        <Style Selector="ComboBox /template/ ContentControl#ContentPresenter">
+            <Setter Property="IsVisible" Value="False"/>
+        </Style>
+    </UserControl.Styles>
+    
+    <Panel Height="24" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <ComboBox x:Name="ComboEditBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SelectionChanged="SelectingItemsControl_OnSelectionChanged" Items="{Binding ElementName=ComboEditControl, Path=Elements}" />
+        <TextBox x:Name="ComboEditText" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0 0 32 0" Text="{Binding ElementName=ComboEditControl, Path=Text}" />
+    </Panel>
+</UserControl>

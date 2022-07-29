@@ -15,6 +15,8 @@ public class ConsoleThread {
     private string _executable { get; }
     private string _command { get; }
     private Process _process { get; set; }
+
+    public string FullCommand => $"\"{_executable}\" {_command}";
     public ThreadState State { get; private set; } = ThreadState.Stopped;
     public ObservableCollection<string> Output { get; } = new ObservableCollection<string>();
     

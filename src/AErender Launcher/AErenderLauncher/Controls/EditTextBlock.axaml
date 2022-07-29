@@ -1,0 +1,36 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             x:Name="EditTextBlockControl"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             LostFocus="InputElement_OnLostFocus"
+             x:Class="AErenderLauncher.Controls.EditTextBlock">
+    
+    <UserControl.Styles>
+        <Style Selector="TextBlock.Link">
+            <Setter Property="Foreground" Value="#1E90FF" />
+            <Setter Property="TextDecorations" Value="Underline" />
+            <Setter Property="IsHitTestVisible" Value="True" />
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+    
+        <Style Selector="TextBlock.Link:pointerover">
+            <Setter Property="Foreground" Value="#00BFFF" />
+        </Style>
+    
+        <Style Selector="TextBlock.Link:pressed">
+            <Setter Property="Foreground" Value="#17579C" />
+        </Style>
+    </UserControl.Styles>
+    
+    <Panel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <TextBlock x:Name="Label" Classes="Link" Tapped="Label_OnTapped" VerticalAlignment="Center" HorizontalAlignment="Stretch"
+                   Text="{Binding ElementName=EditTextBlockControl, Path=Text}" TextAlignment="{Binding ElementName=EditTextBlockControl, Path=TextAlignment}"
+                   IsVisible="{Binding ElementName=EditTextBlockControl, Path=!IsEditing}" />
+        <TextBox x:Name="Field" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                 Text="{Binding ElementName=EditTextBlockControl, Path=Text}" TextAlignment="{Binding ElementName=EditTextBlockControl, Path=TextAlignment}"
+                 IsVisible="{Binding ElementName=EditTextBlockControl, Path=IsEditing}" KeyDown="Field_OnKeyDown"/>
+        
+    </Panel>
+</UserControl>

@@ -1,7 +1,18 @@
 using System.Collections.Generic;
 using AErenderLauncher.Classes.System;
 
-namespace AErenderLauncher.Classes.Rendering; 
+namespace AErenderLauncher.Classes.Rendering;
+
+public static class FrameSpanExtensions {
+    public static string AsString(this FrameSpan[] spans) {
+        string result = "";
+        foreach (FrameSpan span in spans) {
+            result += span + "\n";
+        }
+
+        return result;
+    }
+}
 
 public struct FrameSpan {
     public int StartFrame { get; set; }
@@ -29,5 +40,9 @@ public struct FrameSpan {
         }
         result[Count - 1].EndFrame = EndFrame;
         return result;
+    }
+    
+    public override string ToString() {
+        return $"[{StartFrame}, {EndFrame}]";
     }
 }
