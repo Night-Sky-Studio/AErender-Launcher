@@ -2,12 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using AErenderLauncher.Classes;
 using AErenderLauncher.Classes.Rendering;
 using AErenderLauncher.Controls;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Platform;
 using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
 
@@ -33,6 +36,9 @@ namespace AErenderLauncher.Views {
         
         public MainWindow() {
             InitializeComponent();
+
+            ExtendClientAreaToDecorationsHint = Helpers.Platform != OperatingSystemType.OSX;
+            Root.RowDefinitions = Helpers.Platform == OperatingSystemType.OSX ? new RowDefinitions("0,32,*,48") : new RowDefinitions("32,32,*,48");
         }
 
         private async void Button_OnClick(object sender, RoutedEventArgs e) {

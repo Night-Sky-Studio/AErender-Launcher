@@ -13,7 +13,7 @@
         ExtendClientAreaTitleBarHeightHint="-1"
         ExtendClientAreaToDecorationsHint="True"
         Background="#2D2D2D"
-        Icon="/Assets/avalonia-logo.ico"
+        Icon="/Assets/Icon.ico"
         Title="AErender Launcher">
         
  <Window.Styles>
@@ -22,13 +22,17 @@
  </Window.Styles>
     
     
-    <Grid RowDefinitions="32,32,*,48">
-        <Border Grid.Row="0" Classes="Toolbar" IsHitTestVisible="False">
-            <Panel>
-                <Image Source="../Assets/Icon.ico" HorizontalAlignment="Left" Margin="6"/>
-                <Label Content="AErender Launcher" VerticalAlignment="Center" Margin="32, 0"/>
-            </Panel>
-        </Border>
+    <Grid x:Name="Root" RowDefinitions="32,32,*,48">
+        <controls:IsPlatform Grid.Row="0">
+            <controls:IsPlatform.Windows>
+                <Border Grid.Row="0" Classes="Toolbar" IsHitTestVisible="False">
+                    <Panel>
+                        <Image Source="../Assets/Icon.ico" HorizontalAlignment="Left" Margin="6"/>
+                        <Label Content="AErender Launcher" VerticalAlignment="Center" Margin="32, 0"/>
+                    </Panel>
+                </Border>
+            </controls:IsPlatform.Windows>
+        </controls:IsPlatform>
         
         <Border Grid.Row="1" Classes="Toolbar">
             <Grid>
@@ -39,6 +43,8 @@
                 </StackPanel>
             </Grid>
         </Border>
+        
+        
         
         <!-- <controls:GroupBox Grid.Row="2" Stroke="#202020" Title="Hallo" Foreground="White" Height="256" Width="256"> -->
         <!--     <controls:GroupBox.Items><Grid> -->
