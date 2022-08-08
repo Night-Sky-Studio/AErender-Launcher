@@ -81,9 +81,9 @@ public class RenderTask {
         return ProcessedPath;
     }
     
-    public List<RenderQueueObject> Enqueue() {
+    public List<RenderThread> Enqueue() {
         string exec = "";
-        List<RenderQueueObject> result = new List<RenderQueueObject>();
+        List<RenderThread> result = new List<RenderThread>();
 
         foreach (Composition comp in Compositions) {
             for (int i = 0; i < comp.Split; i++) {
@@ -107,7 +107,7 @@ public class RenderTask {
                 if (comp.SplitFrameSpans[i].StartFrame == 0 && comp.SplitFrameSpans[i].EndFrame == 0)
                     exec = exec.Replace("-s 0 -e 0", "");
                 
-                result.Add(new RenderQueueObject(ApplicationSettings.AErenderPath, exec) {
+                result.Add(new RenderThread(ApplicationSettings.AErenderPath, exec) {
                     ID = _random.Next(0, 999999),
                     CompositionName = comp.CompositionName
                 });
