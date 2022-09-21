@@ -57,7 +57,7 @@ namespace AErenderLauncher.Views {
         }
 
         private void Launch_OnClick(object sender, RoutedEventArgs e) {
-
+            Settings.DetectAerender();
         }
     }
 }

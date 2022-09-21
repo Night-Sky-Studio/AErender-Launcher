@@ -15,7 +15,7 @@ public class Settings {
         : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AErender Launcher", "Settings.json");
     // Language ?
     // Style  ?
-    
+
     public string AErenderPath { get; set; } = "C:\\Program Files\\Adobe\\Adobe After Effects 2022\\Support Files\\aerender.exe";
     public string DefaultProjectsPath { get; set; }
     public string DefaultOutputPath { get; set; }
@@ -39,12 +39,25 @@ public class Settings {
     public float CacheLimit { get; set; }
 
     public int OutputModuleIndex { get; set; }
-    public OutputModule ActiveOutputModule => OutputModules[OutputModuleIndex];
+    public OutputModule? ActiveOutputModule => OutputModules[OutputModuleIndex];
     public List<OutputModule> OutputModules { get; set; } = new List<OutputModule>();
     public string RenderSettings { get; set; }
 
     public List<string> RecentProjects { get; set; } = new List<string>();
 
+    private void InitOutputModules() {
+        OutputModules.Add(new OutputModule { Module = "Lossless", Mask = "[compName].[fileExtension]", IsImported = false });
+        OutputModules.Add(new OutputModule { Module = "AIFF 48kHz", Mask = "[compName].[fileExtension]", IsImported = false });
+        OutputModules.Add(new OutputModule { Module = "Alpha Only", Mask = "[compName].[fileExtension]", IsImported = false });
+        OutputModules.Add(new OutputModule { Module = "AVI DV NTSC 48kHz", Mask = "[compName].[fileExtension]", IsImported = false });
+        OutputModules.Add(new OutputModule { Module = "AVI DV PAL 48kHz", Mask = "[compName].[fileExtension]", IsImported = false });
+        OutputModules.Add(new OutputModule { Module = "Lossless with Alpha", Mask = "[compName].[fileExtension]", IsImported = false });
+        OutputModules.Add(new OutputModule { Module = "Multi-Machine Sequence", Mask = "[compName]_[#####].[fileExtension]", IsImported = false });
+        OutputModules.Add(new OutputModule { Module = "Photoshop", Mask = "[compName]_[#####].[fileExtension]", IsImported = false });
+        OutputModules.Add(new OutputModule { Module = "Save Current Preview", Mask = "[compName].[fileExtension]", IsImported = false });
+        OutputModules.Add(new OutputModule { Module = "TIFF Sequence with Alph", Mask = "[compName]_[#####].[fileExtension]", IsImported = false });
+    }
+    
     public Settings() {
         Debug.WriteLine($"Current settings path: {SettingsPath}");
         
@@ -64,6 +77,8 @@ public class Settings {
         CacheLimit = 100f;
         OutputModuleIndex = 0;
         RenderSettings = "Best Settings";
+        InitOutputModules();
+        
     }
 
     public Settings(string XMLPath) {
@@ -109,5 +124,32 @@ public class Settings {
     public void Save() {
         File.WriteAllText(SettingsPath, JsonConvert.SerializeObject(this));
     }
+
+    public static List<string> DetectAerender() {
+        List<string> result = new List<string>();
+        
+        string adobeFolder = Helpers.Platform == OperatingSystemType.OSX
+            ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)
+            : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Adobe");
+        
+        foreach (string path in Directory.GetDirectories(adobeFolder)) {
+            if (path.Contains("Adobe After Effects")) {
+                string aerender = "";
+
+                if (Helpers.Platform == OperatingSystemType.OSX) {
+                    aerender = Path.Combine(path, "aerender");
+
+                    result.Add($"{Helpers.GetCurrentDirectory(path)}\n{Helpers.GetPackageVersionStringDarwin($"{Path.Combine(path, Helpers.GetCurrentDirectory(path))}.app")}\n{aerender}");
+                } else {    
+                    aerender = Path.Combine(path, "Support Files", "aerender.exe");
+                    result.Add($"{Helpers.GetCurrentDirectory(path)}\n{FileVersionInfo.GetVersionInfo(aerender).FileVersion}\n{aerender}");
+                }
+                //result.Add(FileVersionInfo.GetVersionInfo(aerender).FileVersion);
+            }
+        }
+        Debug.WriteLine(JsonConvert.SerializeObject(result.ToArray()));
+        return result;
+    }
+    
     
 }

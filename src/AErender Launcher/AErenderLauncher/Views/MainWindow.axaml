@@ -44,8 +44,6 @@
             </Grid>
         </Border>
         
-        
-        
         <!-- <controls:GroupBox Grid.Row="2" Stroke="#202020" Title="Hallo" Foreground="White" Height="256" Width="256"> -->
         <!--     <controls:GroupBox.Items><Grid> -->
         <!--         <controls:EditTextBlock Height="24" Width="256" Text="Hui" /> -->
