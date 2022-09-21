@@ -45,4 +45,8 @@ public struct FrameSpan {
     public override string ToString() {
         return $"[{StartFrame}, {EndFrame}]";
     }
+    public string ToString(string Format) {
+        Format = Format != "" ? Format : "[{0}, {1}]";
+        return string.Format(Format, StartFrame, EndFrame);
+    }
 }

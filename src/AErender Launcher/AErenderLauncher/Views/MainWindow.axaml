@@ -5,7 +5,7 @@
         xmlns:controls="clr-namespace:AErenderLauncher.Controls"
         mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="480"
         x:Class="AErenderLauncher.Views.MainWindow"
-        x:Name="MainWindowControl"
+        x:Name="MainWindowControl" 
         Width="960" Height="540"
         WindowStartupLocation="CenterScreen"
         SystemDecorations="Full"
@@ -13,7 +13,7 @@
         ExtendClientAreaTitleBarHeightHint="-1"
         ExtendClientAreaToDecorationsHint="True"
         Background="#2D2D2D"
-        Icon="/Assets/Icon.ico"
+        Icon="/Assets/Launcher2020.ico"
         Title="AErender Launcher">
         
  <Window.Styles>
@@ -28,7 +28,7 @@
                 <Border Grid.Row="0" Classes="Toolbar" IsHitTestVisible="False">
                     <Panel>
                         <Image Source="../Assets/Icon.ico" HorizontalAlignment="Left" Margin="6"/>
-                        <Label Content="AErender Launcher" VerticalAlignment="Center" Margin="32, 0"/>
+                        <Label Content="AErender Launcher" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="32, 0"/>
                     </Panel>
                 </Border>
             </controls:IsPlatform.Windows>
@@ -44,21 +44,9 @@
             </Grid>
         </Border>
         
-        <!-- <controls:GroupBox Grid.Row="2" Stroke="#202020" Title="Hallo" Foreground="White" Height="256" Width="256"> -->
-        <!--     <controls:GroupBox.Items><Grid> -->
-        <!--         <controls:EditTextBlock Height="24" Width="256" Text="Hui" /> -->
-        <!--         </Grid> -->
-        <!--     </controls:GroupBox.Items> -->
-        <!-- </controls:GroupBox> -->
-        <!-- <controls:ComboEdit Grid.Row="2" Height="24" Width="256"> -->
-        <!--     <controls:ComboEdit.Elements> -->
-        <!--         <ComboBoxItem>Hello</ComboBoxItem> -->
-        <!--         <ComboBoxItem>World</ComboBoxItem> -->
-        <!--         <ComboBoxItem>from</ComboBoxItem> -->
-        <!--         <ComboBoxItem>Avalonia</ComboBoxItem> -->
-        <!--     </controls:ComboEdit.Elements> -->
-        <!-- </controls:ComboEdit> -->
-        <!-- <TextBox x:Name="log" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8" FontFamily="Consolas" FontSize="12" /> -->
+        <TreeDataGrid Grid.Row="2">
+            
+        </TreeDataGrid>
         
         <Border Grid.Row="3" Classes="Statusbar">
             <Grid>

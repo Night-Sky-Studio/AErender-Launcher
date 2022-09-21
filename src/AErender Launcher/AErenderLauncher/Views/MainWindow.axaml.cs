@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
@@ -33,12 +34,26 @@ namespace AErenderLauncher.Views {
                 new Composition("Medical Icons", new FrameSpan(0, 599), 1),
             }
         };
-        
+
+        public static ObservableCollection<RenderThread> Threads { get; set; } = new ObservableCollection<RenderThread>();
+
         public MainWindow() {
             InitializeComponent();
 
             ExtendClientAreaToDecorationsHint = Helpers.Platform != OperatingSystemType.OSX;
             Root.RowDefinitions = Helpers.Platform == OperatingSystemType.OSX ? new RowDefinitions("0,32,*,48") : new RowDefinitions("32,32,*,48");
+            Threads.Add(new RenderThread("", "") {
+                CompositionName = "Comp 1",
+                CurrentFrame = 0, EndFrame = 200,
+            });
+            Threads.Add(new RenderThread("", "") {
+                CompositionName = "Comp 1",
+                CurrentFrame = 100, EndFrame = 200,
+            });
+            Threads.Add(new RenderThread("", "") {
+                CompositionName = "Comp 1",
+                CurrentFrame = 50, EndFrame = 200,
+            });
         }
 
         private async void Button_OnClick(object sender, RoutedEventArgs e) {

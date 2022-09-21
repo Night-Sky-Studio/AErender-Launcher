@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
+        <TargetFrameworks>net6.0;netstandard2.0</TargetFrameworks>
     </PropertyGroup>
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
@@ -28,5 +28,13 @@
         <AutoGen>True</AutoGen>
         <DependentUpon>lang.resx</DependentUpon>
       </Compile>
+    </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+      <PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="0.10.10" />
+    </ItemGroup>
+    <ItemGroup>
+      <Reference Include="Avalonia.Controls.TreeDataGrid">
+        <HintPath>..\..\..\..\..\.nuget\packages\avalonia.controls.treedatagrid\0.10.10\lib\net5.0\Avalonia.Controls.TreeDataGrid.dll</HintPath>
+      </Reference>
     </ItemGroup>
 </Project>
