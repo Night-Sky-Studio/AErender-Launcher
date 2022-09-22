@@ -2,8 +2,68 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        xmlns:controls="clr-namespace:AErenderLauncher.Controls"
+        mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="540"
         x:Class="AErenderLauncher.Views.SettingsWindow"
-        Title="SettingsWindow">
-    Welcome to Avalonia!
+        Background="#2D2D2D"
+        Title="AErender Launcher Settings">
+
+    <Window.Styles>
+        <StyleInclude Source="avares://AErenderLauncher/Styles/AErender Launcher Dark.axaml" />
+        <!-- <StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml"/> -->
+    </Window.Styles>
+    
+    <Grid x:Name="Root" RowDefinitions="32,32,*,32">
+        <controls:IsPlatform Grid.Row="0">
+            <controls:IsPlatform.Windows>
+                <Border Grid.Row="0" Classes="Toolbar" IsHitTestVisible="False">
+                    <Panel>
+                        <Label Content="AErender Launcher Settings" VerticalAlignment="Center" HorizontalAlignment="Center"
+                               Margin="32, 0" />
+                    </Panel>
+                </Border>
+            </controls:IsPlatform.Windows>
+        </controls:IsPlatform>
+        
+        <Border Grid.Row="1" Classes="Toolbar">
+            <Grid>
+                <Label Content="Settings" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="16 0 0 0"/>
+            </Grid>
+        </Border>
+        
+        <StackPanel Grid.Row="2" Spacing="8" Margin="8">
+            <Expander Header="Rendering" HorizontalContentAlignment="Stretch">
+                <StackPanel HorizontalAlignment="Stretch" Spacing="4">
+                    <Label Content="After Effects Render Engine" HorizontalAlignment="Center" FontWeight="Bold" />
+                    <Grid ColumnDefinitions="*,28,28">
+                        <TextBox Grid.Column="0" HorizontalAlignment="Stretch" />
+                        <Button Grid.Column="1" Content="..." Width="24" Margin="4,0,0,0" />
+                        <Button Grid.Column="2" Content="R" Width="24" Margin="4,0,0,0" />
+                    </Grid>
+                    <Grid ColumnDefinitions="144,*,28">
+                        <Label Grid.Column="0" Content="Default output directory" VerticalAlignment="Center" Margin="0,0,4,0" />
+                        <TextBox Grid.Column="1" />
+                        <Button Grid.Column="2" Content="..." Width="24" Margin="4,0,0,0" />
+                    </Grid>
+                    <Grid ColumnDefinitions="144,*,28">
+                        <Label Grid.Column="0" Content="Default projects directory" VerticalAlignment="Center" Margin="0,0,4,0" />
+                        <TextBox Grid.Column="1" />
+                        <Button Grid.Column="2" Content="..." Width="24" Margin="4,0,0,0" />
+                    </Grid>
+                </StackPanel> 
+            </Expander>
+            <Expander Header="User Interface" HorizontalContentAlignment="Stretch"> 
+                <Grid ColumnDefinitions="144,*">
+                    <Label Grid.Column="0" Content="Language" VerticalAlignment="Center" Margin="0,0,4,0" />
+                    <ComboBox Grid.Column="1" HorizontalAlignment="Stretch"/>
+                </Grid>
+            </Expander>
+        </StackPanel>
+        
+        <Border Grid.Row="3" Classes="Statusbar">
+            <Grid>
+                <Button x:Name="CloseButton" Content="OK" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Click="CloseButton_OnClick"/>
+            </Grid>
+        </Border>
+    </Grid>
 </Window>

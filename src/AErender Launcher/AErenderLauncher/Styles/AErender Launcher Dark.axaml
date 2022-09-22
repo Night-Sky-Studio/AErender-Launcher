@@ -42,7 +42,11 @@
                     
                     <CheckBox Content="Sample text"/>
                     
-                    <Slider Value="50" Maximum="100"/>
+                    <Expander Header="Sample text">
+                        <Label Content="Sample text" />
+                    </Expander>
+                    
+                        <Slider Value="50" Maximum="100"/>
 
                 </StackPanel>
             </Grid>

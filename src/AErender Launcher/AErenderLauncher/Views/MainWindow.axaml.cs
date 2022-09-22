@@ -74,5 +74,10 @@ namespace AErenderLauncher.Views {
         private void Launch_OnClick(object sender, RoutedEventArgs e) {
             Settings.DetectAerender();
         }
+
+        private async void SettingsButton_OnClick(object sender, RoutedEventArgs e) {
+            SettingsWindow settings = new SettingsWindow();
+            await settings.ShowDialog(this);
+        }
     }
 }

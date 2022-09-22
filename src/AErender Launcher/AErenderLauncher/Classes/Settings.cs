@@ -138,7 +138,6 @@ public class Settings {
 
                 if (Helpers.Platform == OperatingSystemType.OSX) {
                     aerender = Path.Combine(path, "aerender");
-
                     result.Add($"{Helpers.GetCurrentDirectory(path)}\n{Helpers.GetPackageVersionStringDarwin($"{Path.Combine(path, Helpers.GetCurrentDirectory(path))}.app")}\n{aerender}");
                 } else {    
                     aerender = Path.Combine(path, "Support Files", "aerender.exe");
@@ -147,7 +146,6 @@ public class Settings {
                 //result.Add(FileVersionInfo.GetVersionInfo(aerender).FileVersion);
             }
         }
-        Debug.WriteLine(JsonConvert.SerializeObject(result.ToArray()));
         return result;
     }
     
