@@ -1,2 +1,2 @@
-# AErednder-Launcher
+# AErender-Launcher
 An attempt to rewrite AErender Launcher from scratch using C#
