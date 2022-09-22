@@ -44,9 +44,9 @@
             </Grid>
         </Border>
         
-        <TreeDataGrid Grid.Row="2">
-            
-        </TreeDataGrid>
+        <!-- <TreeDataGrid Grid.Row="2"> -->
+        <!--      -->
+        <!-- </TreeDataGrid> -->
         
         <Border Grid.Row="3" Classes="Statusbar">
             <Grid>
