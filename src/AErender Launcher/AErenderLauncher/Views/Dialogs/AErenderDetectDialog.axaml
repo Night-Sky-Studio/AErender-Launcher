@@ -1,0 +1,34 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:AErenderLauncher.Controls"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="AErenderLauncher.Views.Dialogs.AErenderDetectDialog"
+        Closed="Dialog_Closed"
+        Title="Select aerender version">
+    
+    <Window.Styles>
+        <StyleInclude Source="avares://AErenderLauncher/Styles/AErender Launcher Dark.axaml" />
+        <!-- <StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml"/> -->
+    </Window.Styles>
+    
+    <Grid x:Name="Root" RowDefinitions="32,32,*,32">
+        <controls:IsPlatform Grid.Row="0">
+            <controls:IsPlatform.Windows>
+                <Border Grid.Row="0" Classes="Toolbar" IsHitTestVisible="False">
+                    <Panel>
+                        <Label Content="Select aerender version" VerticalAlignment="Center" HorizontalAlignment="Center"
+                               Margin="32, 0" />
+                    </Panel>
+                </Border>
+            </controls:IsPlatform.Windows>
+        </controls:IsPlatform>
+        
+        <Border Grid.Row="1" Classes="Toolbar">
+            <Grid>
+                <Label Content="Select aerender version" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="16 0 0 0"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

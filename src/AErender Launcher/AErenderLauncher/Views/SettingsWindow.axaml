@@ -36,9 +36,9 @@
                 <StackPanel HorizontalAlignment="Stretch" Spacing="4">
                     <Label Content="After Effects Render Engine" HorizontalAlignment="Center" FontWeight="Bold" />
                     <Grid ColumnDefinitions="*,28,28">
-                        <TextBox Grid.Column="0" HorizontalAlignment="Stretch" />
-                        <Button Grid.Column="1" Content="..." Width="24" Margin="4,0,0,0" />
-                        <Button Grid.Column="2" Content="R" Width="24" Margin="4,0,0,0" />
+                        <TextBox Grid.Column="0" x:Name="AerenderPath" HorizontalAlignment="Stretch" />
+                        <Button Grid.Column="1" x:Name="AerenderPathSelectButton" Click="AerenderPathSelectButton_OnClick" Content="..." Width="24" Margin="4,0,0,0" />
+                        <Button Grid.Column="2" x:Name="AerenderDetectButton" Click="AerenderDetectButton_OnClick" Content="R" Width="24" Margin="4,0,0,0" />
                     </Grid>
                     <Grid ColumnDefinitions="144,*,28">
                         <Label Grid.Column="0" Content="Default output directory" VerticalAlignment="Center" Margin="0,0,4,0" />
