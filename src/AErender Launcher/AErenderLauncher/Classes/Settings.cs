@@ -7,7 +7,15 @@ using AErenderLauncher.Classes.Rendering;
 using Avalonia.Platform;
 using Newtonsoft.Json;
 
-namespace AErenderLauncher.Classes; 
+namespace AErenderLauncher.Classes;
+
+public struct AErender {
+    public string Name { get; set; } 
+    public string Path { get; set; } 
+    public string Version { get; set; } 
+    
+    public bool IsEmpty => string.IsNullOrEmpty(Name) || string.IsNullOrEmpty(Path) || string.IsNullOrEmpty(Version);
+}
 
 public class Settings {
     private readonly string SettingsPath = Helpers.Platform == OperatingSystemType.OSX 
@@ -125,8 +133,8 @@ public class Settings {
         File.WriteAllText(SettingsPath, JsonConvert.SerializeObject(this));
     }
 
-    public static List<string> DetectAerender() {
-        List<string> result = new List<string>();
+    public static List<AErender> DetectAerender() {
+        List<AErender> result = new List<AErender>();
         
         string adobeFolder = Helpers.Platform == OperatingSystemType.OSX
             ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)
@@ -138,10 +146,18 @@ public class Settings {
 
                 if (Helpers.Platform == OperatingSystemType.OSX) {
                     aerender = Path.Combine(path, "aerender");
-                    result.Add($"{Helpers.GetCurrentDirectory(path)}\n{Helpers.GetPackageVersionStringDarwin($"{Path.Combine(path, Helpers.GetCurrentDirectory(path))}.app")}\n{aerender}");
+                    result.Add(new() {
+                        Path = aerender,
+                        Version = Helpers.GetPackageVersionStringDarwin($"{Path.Combine(path, Helpers.GetCurrentDirectory(path))}.app") ?? "",
+                        Name = Helpers.GetCurrentDirectory(path)
+                    });
                 } else {    
                     aerender = Path.Combine(path, "Support Files", "aerender.exe");
-                    result.Add($"{Helpers.GetCurrentDirectory(path)}\n{FileVersionInfo.GetVersionInfo(aerender).FileVersion}\n{aerender}");
+                    result.Add(new() {
+                        Path = aerender,
+                        Version = FileVersionInfo.GetVersionInfo(aerender).FileVersion ?? "",
+                        Name = Helpers.GetCurrentDirectory(path)
+                    });
                 }
                 //result.Add(FileVersionInfo.GetVersionInfo(aerender).FileVersion);
             }

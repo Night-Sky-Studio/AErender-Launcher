@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
@@ -44,7 +45,7 @@ public class RenderTask {
     public string CustomProperties { get; set; } = "";
     public double CacheLimit { get; set; }
     public double MemoryLimit { get; set; }
-    
+
     public List<Composition> Compositions { get; set; }
     public RenderState State { get; set; } = RenderState.Waiting;
 

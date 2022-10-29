@@ -1,24 +1,35 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using AErenderLauncher.Classes;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using DynamicData;
+using ReactiveUI;
 
-namespace AErenderLauncher.Views.Dialogs; 
+namespace AErenderLauncher.Views.Dialogs;
 
 public partial class AErenderDetectDialog : Window {
-    private List<string> _paths { get; set; } = new List<string>();
-    public string _output { get; private set; } = "";
+    public ObservableCollection<AErender> _paths { get; set; } = new ObservableCollection<AErender>();
+    public AErender _output { get; private set; }
     
     public AErenderDetectDialog() {
         InitializeComponent();
     }
 
-    public AErenderDetectDialog(List<string> Paths) {
+    public AErenderDetectDialog(List<AErender> Paths) {
         InitializeComponent();
-        _paths = Paths;
+        
+        _paths.AddRange(Paths);
     }
 
-    private void Dialog_Closed(object? sender, EventArgs e) { ;
+    private void SelectingItemsControl_OnSelectionChanged(object? sender, SelectionChangedEventArgs e) {
+        _output = _paths[(e.Source as ListBox)?.SelectedIndex ?? 0];
+    }
+
+    private void CloseButton_OnClick(object? sender, RoutedEventArgs e) {
+        Close();
     }
 }

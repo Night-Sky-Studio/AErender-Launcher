@@ -32,20 +32,20 @@ public partial class SettingsWindow : Window {
             AllowMultiple = false,
             Filters = new() {
                 new() {
-                    Extensions = { Helpers.Platform == OperatingSystemType.WinNT ? "aerender.exe" : "aerender" }, Name = "aerender"
+                    Extensions = { Helpers.Platform == OperatingSystemType.WinNT ? "exe" : "*" }, Name = "aerender"
                 }
             },
             Directory = Environment.GetFolderPath(Environment.SpecialFolder.Programs)
         };
         string[]? result = await dialog.ShowAsync(this);
 
-        ApplicationSettings.AErenderPath = result?.Length == 0 ? "" : result?[0].Split('\n')[2] ?? "";
+        ApplicationSettings.AErenderPath = result?.Length == 0 ? "" : result?[0] ?? "";
         AerenderPath.Text = ApplicationSettings.AErenderPath;
     }
 
     private async void AerenderDetectButton_OnClick(object? sender, RoutedEventArgs e) {
-        List<string> paths = Settings.DetectAerender();
-        string result;
+        List<AErender> paths = Settings.DetectAerender();
+        AErender result;
         if (paths.Count == 1)
             result = paths[0];
         else {
@@ -56,7 +56,7 @@ public partial class SettingsWindow : Window {
             result = dialog._output;
         }
 
-        ApplicationSettings.AErenderPath = result;
-        AerenderPath.Text = result;
+        ApplicationSettings.AErenderPath = result.IsEmpty ? ApplicationSettings.AErenderPath : result.Path;
+        AerenderPath.Text = ApplicationSettings.AErenderPath;
     }
 }
