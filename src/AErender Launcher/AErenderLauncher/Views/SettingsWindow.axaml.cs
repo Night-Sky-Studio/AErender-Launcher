@@ -27,7 +27,7 @@ public partial class SettingsWindow : Window {
     }
 
     private async void AerenderPathSelectButton_OnClick(object? sender, RoutedEventArgs e) {
-        OpenFileDialog dialog = new OpenFileDialog() {
+        OpenFileDialog dialog = new() {
             Title = "Select aerender",
             AllowMultiple = false,
             Filters = new() {
