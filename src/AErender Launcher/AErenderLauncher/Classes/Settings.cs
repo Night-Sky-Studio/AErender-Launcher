@@ -18,9 +18,14 @@ public struct AErender {
 }
 
 public class Settings {
-    private readonly string SettingsPath = Helpers.Platform == OperatingSystemType.OSX 
+    public static readonly string SettingsPath = Helpers.Platform == OperatingSystemType.OSX 
         ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents", "AErender Launcher", "Settings.json") 
         : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AErender Launcher", "Settings.json");
+
+    public static readonly string LegacySettingsPath = Helpers.Platform == OperatingSystemType.OSX 
+        ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents", "AErender", "AErenderConfiguration.xml")
+        : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "AErender", "AErenderConfiguration.xml");
+    
     // Language ?
     // Style  ?
 
@@ -89,28 +94,30 @@ public class Settings {
         
     }
 
-    public Settings(string XMLPath) {
+    public static Settings? LoadLegacy(string XmlPath) {
         XmlDocument document = new XmlDocument();
-        document.Load(XMLPath);
+        document.Load(XmlPath);
         
         XmlNode RootNode = document.DocumentElement!;
-        
-        AErenderPath = RootNode["aerender"]?.InnerText ?? "";
-        DefaultProjectsPath = RootNode["defprgpath"]?.InnerText ?? "";
-        DefaultOutputPath = RootNode["defoutpath"]?.InnerText ?? "";
-        OnRenderStart = int.Parse(RootNode["onRenderStart"]?.InnerText ?? "-1");
-        ThreadsLimit = 4;
-        LastProjectPath = "";
-        LastOutputPath = "";
-        TempSavePath = RootNode["tempSavePath"]?.InnerText ?? "";
-        MissingFiles = bool.Parse(RootNode["missingFiles"]?.InnerText ?? "false");
-        Sound = bool.Parse(RootNode["sound"]?.InnerText ?? "false");
-        Multithreaded = bool.Parse(RootNode["thread"]?.InnerText ?? "false");
-        CustomProperties = RootNode["prop"]?.InnerText ?? "";
-        MemoryLimit = float.Parse(RootNode["memoryLimit"]?.InnerText ?? "100");
-        CacheLimit = float.Parse(RootNode["cacheLimit"]?.InnerText ?? "100");
-        OutputModuleIndex = int.Parse(RootNode["outputModule"]?.Attributes["selected"]?.InnerText ?? "-1");
-        RenderSettings = "Best Settings";
+
+        Settings result = new Settings {
+            AErenderPath = RootNode["aerender"]?.InnerText ?? "",
+            DefaultProjectsPath = RootNode["defprgpath"]?.InnerText ?? "",
+            DefaultOutputPath = RootNode["defoutpath"]?.InnerText ?? "",
+            OnRenderStart = int.Parse(RootNode["onRenderStart"]?.InnerText ?? "-1"),
+            ThreadsLimit = 4,
+            LastProjectPath = "",
+            LastOutputPath = "",
+            TempSavePath = RootNode["tempSavePath"]?.InnerText ?? "",
+            MissingFiles = bool.Parse(RootNode["missingFiles"]?.InnerText ?? "false"),
+            Sound = bool.Parse(RootNode["sound"]?.InnerText ?? "false"),
+            Multithreaded = bool.Parse(RootNode["thread"]?.InnerText ?? "false"),
+            CustomProperties = RootNode["prop"]?.InnerText ?? "",
+            MemoryLimit = float.Parse(RootNode["memoryLimit"]?.InnerText ?? "100"),
+            CacheLimit = float.Parse(RootNode["cacheLimit"]?.InnerText ?? "100"),
+            OutputModuleIndex = int.Parse(RootNode["outputModule"]?.Attributes["selected"]?.InnerText ?? "-1"),
+            RenderSettings = "Best Settings"
+        };
         
         List<OutputModule> ParsedModules = new List<OutputModule>();
 
@@ -126,13 +133,29 @@ public class Settings {
             // yeet
         }
         
-        OutputModules = ParsedModules;
+        result.OutputModules = ParsedModules;
+
+        return result;
+    }
+
+    public static Settings? Load(string JsonPath)  {
+        string file = File.ReadAllText(JsonPath);
+
+        return JsonConvert.DeserializeObject<Settings>(file);
     }
 
     public void Save() {
         File.WriteAllText(SettingsPath, JsonConvert.SerializeObject(this));
     }
 
+    public static bool Exists() {
+        return File.Exists(SettingsPath);
+    }
+
+    public static bool ExistsLegacy() {
+        return File.Exists(LegacySettingsPath);
+    }
+    
     public static List<AErender> DetectAerender() {
         List<AErender> result = new List<AErender>();
         
@@ -164,6 +187,4 @@ public class Settings {
         }
         return result;
     }
-    
-    
 }

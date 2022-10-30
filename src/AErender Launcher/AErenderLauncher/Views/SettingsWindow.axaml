@@ -3,7 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:AErenderLauncher.Controls"
-        mc:Ignorable="d" Width="480" Height="540"
+        mc:Ignorable="d" Width="540" Height="480"
         x:Class="AErenderLauncher.Views.SettingsWindow"
         WindowStartupLocation="CenterOwner"
         Background="#2D2D2D"
