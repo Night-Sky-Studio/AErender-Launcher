@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using Avalonia.Threading;
 
 namespace AErenderLauncher.Classes.System; 
@@ -13,12 +14,31 @@ public class ConsoleThread {
         Stopped
     };
     private string _executable { get; }
-    private string _command { get; }
+    private string _command { get; set; } = "";
     private Process _process { get; set; }
+
+    public string Command {
+        get => _command;
+        set {
+            if (State == ThreadState.Running || State == ThreadState.Suspended) {
+                throw new ThreadStateException("Cannot change command while thread is running");
+            } else {
+                _command = value;
+                _process.Dispose();
+                _process = CreateProcess();
+            }
+            
+        }
+    }
 
     public string FullCommand => $"\"{_executable}\" {_command}";
     public ThreadState State { get; private set; } = ThreadState.Stopped;
     public ObservableCollection<string> Output { get; } = new ObservableCollection<string>();
+
+    public ConsoleThread(string executable) {
+        _executable = executable;
+        _process = CreateProcess();
+    }
     
     public ConsoleThread(string executable, string command) {
         _executable = executable;
@@ -43,9 +63,9 @@ public class ConsoleThread {
         return process;
     }
 
-    private void ProcessOnExited(object sender, EventArgs e) {
+    private void ProcessOnExited(object? sender, EventArgs e) {
         Dispatcher.UIThread.Post(() => {
-            Output.Add($"process exited with code {_process.ExitCode}\n");
+            //Output.Add($"process exited with code {_process.ExitCode}\n");
             Dispose();
         });
     }
@@ -63,6 +83,7 @@ public class ConsoleThread {
         _process.BeginOutputReadLine();
         _process.BeginErrorReadLine();
         State = ThreadState.Running;
+        _process.WaitForExit();
     }
 
     public void Restart() {

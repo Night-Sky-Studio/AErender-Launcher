@@ -2,6 +2,7 @@ using System.IO;
 using System.Xml;
 using Avalonia;
 using Avalonia.Platform;
+using Microsoft.VisualBasic;
 
 namespace AErenderLauncher.Classes; 
 
@@ -29,7 +30,11 @@ public static class Helpers {
     }
 
     public static string GetCurrentDirectory(string path) {
-        return new DirectoryInfo(path).Name;
+        DirectoryInfo dir = new(path);
+        
+        return Path.GetExtension(dir.Name) == "" 
+            ? dir.FullName 
+            : dir.Parent!.FullName;
     }
     
 }

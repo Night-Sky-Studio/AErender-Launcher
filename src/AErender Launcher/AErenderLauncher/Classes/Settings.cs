@@ -22,6 +22,8 @@ public class Settings {
         ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents", "AErender Launcher", "Settings.json") 
         : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AErender Launcher", "Settings.json");
 
+    public string SettingsFolder => Helpers.GetCurrentDirectory(SettingsPath);
+    
     public static readonly string LegacySettingsPath = Helpers.Platform == OperatingSystemType.OSX 
         ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents", "AErender", "AErenderConfiguration.xml")
         : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "AErender", "AErenderConfiguration.xml");

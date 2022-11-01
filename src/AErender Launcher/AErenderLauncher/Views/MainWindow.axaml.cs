@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using AErenderLauncher.Classes;
+using AErenderLauncher.Classes.Project;
 using AErenderLauncher.Classes.Rendering;
 using AErenderLauncher.Controls;
 using Avalonia.Controls;
@@ -14,6 +15,8 @@ using Avalonia.Interactivity;
 using Avalonia.Platform;
 using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
+
+using static AErenderLauncher.App;
 
 namespace AErenderLauncher.Views {
     public partial class MainWindow : Window {
@@ -42,18 +45,18 @@ namespace AErenderLauncher.Views {
 
             ExtendClientAreaToDecorationsHint = Helpers.Platform != OperatingSystemType.OSX;
             Root.RowDefinitions = Helpers.Platform == OperatingSystemType.OSX ? new RowDefinitions("0,32,*,48") : new RowDefinitions("32,32,*,48");
-            Threads.Add(new RenderThread("", "") {
-                CompositionName = "Comp 1",
-                CurrentFrame = 0, EndFrame = 200,
-            });
-            Threads.Add(new RenderThread("", "") {
-                CompositionName = "Comp 1",
-                CurrentFrame = 100, EndFrame = 200,
-            });
-            Threads.Add(new RenderThread("", "") {
-                CompositionName = "Comp 1",
-                CurrentFrame = 50, EndFrame = 200,
-            });
+            // Threads.Add(new RenderThread("", "") {
+            //     CompositionName = "Comp 1",
+            //     CurrentFrame = 0, EndFrame = 200,
+            // });
+            // Threads.Add(new RenderThread("", "") {
+            //     CompositionName = "Comp 1",
+            //     CurrentFrame = 100, EndFrame = 200,
+            // });
+            // Threads.Add(new RenderThread("", "") {
+            //     CompositionName = "Comp 1",
+            //     CurrentFrame = 50, EndFrame = 200,
+            // });
         }
 
         private async void Button_OnClick(object sender, RoutedEventArgs e) {
@@ -71,8 +74,14 @@ namespace AErenderLauncher.Views {
 
         }
 
-        private void Launch_OnClick(object sender, RoutedEventArgs e) {
-            Settings.DetectAerender();
+        private async void Launch_OnClick(object sender, RoutedEventArgs e) {
+            ProjectItem[]? project = await ProjectParser.ParseProject("/Users/lilystilson/Yandex.Disk.localized/Development/Delphi/AErender Launcher/benchmark/Deneb - Mograph Icons/Mograph Icons.aep");
+
+            if (project != null) {
+                foreach (ProjectItem item in project) {
+                    Debug.WriteLine($"Name = {item.Name}");
+                }
+            }
         }
 
         private async void SettingsButton_OnClick(object sender, RoutedEventArgs e) {
