@@ -9,6 +9,7 @@ using AErenderLauncher.Classes;
 using AErenderLauncher.Classes.Project;
 using AErenderLauncher.Classes.Rendering;
 using AErenderLauncher.Controls;
+using AErenderLauncher.Views.Dialogs;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -78,9 +79,8 @@ namespace AErenderLauncher.Views {
             ProjectItem[]? project = await ProjectParser.ParseProject("/Users/lilystilson/Yandex.Disk.localized/Development/Delphi/AErender Launcher/benchmark/Deneb - Mograph Icons/Mograph Icons.aep");
 
             if (project != null) {
-                foreach (ProjectItem item in project) {
-                    Debug.WriteLine($"Name = {item.Name}");
-                }
+                ProjectImportDialog dialog = new(project);
+                await dialog.ShowDialog(this);
             }
         }
 

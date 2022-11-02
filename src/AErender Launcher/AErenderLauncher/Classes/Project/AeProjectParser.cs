@@ -23,20 +23,18 @@ public class AeProjectParser {
         } else throw new FileNotFoundException("aeparser is not found in the application configuration directory");
     }
 
-    // private void OutputOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) {
-    //     
-    // }
-
     public async Task<ProjectItem[]?> ParseProject(string ProjectPath) {
+        // It does require double quotes...
         ParserThread.Command = $"\"{ProjectPath}\"";
         ParserThread.Start();
         
+        // yeet
         await TaskExtensions.WaitUntil(() => ParserThread.Output.Count == 3);
 
-        // if (ParserThread.State != ConsoleThread.ThreadState.Stopped) {
-        //     ParserThread.Abort();
-        // }
-        
+        // double yeet
+        //
+        // will probably break sometime in the future, lol
+        // unless I find a way to grab CDTA from AEP myself
         return JsonConvert.DeserializeObject<ProjectItem[]>(ParserThread.Output[1]) ?? null;
     }
     

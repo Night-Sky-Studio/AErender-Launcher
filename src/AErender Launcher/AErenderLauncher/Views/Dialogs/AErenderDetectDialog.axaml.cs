@@ -2,12 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using AErenderLauncher.Classes;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
+using Avalonia.Platform;
 using DynamicData;
-using ReactiveUI;
 
 namespace AErenderLauncher.Views.Dialogs;
 
@@ -17,10 +15,16 @@ public partial class AErenderDetectDialog : Window {
     
     public AErenderDetectDialog() {
         InitializeComponent();
+        
+        ExtendClientAreaToDecorationsHint = Helpers.Platform != OperatingSystemType.OSX;
+        Root.RowDefinitions = Helpers.Platform == OperatingSystemType.OSX ? new RowDefinitions("0,32,*,32") : new RowDefinitions("32,32,*,32");
     }
 
     public AErenderDetectDialog(List<AErender> Paths) {
         InitializeComponent();
+        
+        ExtendClientAreaToDecorationsHint = Helpers.Platform != OperatingSystemType.OSX;
+        Root.RowDefinitions = Helpers.Platform == OperatingSystemType.OSX ? new RowDefinitions("0,32,*,32") : new RowDefinitions("32,32,*,32");
         
         _paths.AddRange(Paths);
     }

@@ -7,7 +7,6 @@
         xmlns:local="clr-namespace:AErenderLauncher"
         mc:Ignorable="d" Width="800" Height="450"
         x:Class="AErenderLauncher.Views.Dialogs.AErenderDetectDialog"
-        ExtendClientAreaToDecorationsHint="True"
         WindowStartupLocation="CenterOwner"
         Background="#2D2D2D"
         x:Name="_AErenderDetectDialog"

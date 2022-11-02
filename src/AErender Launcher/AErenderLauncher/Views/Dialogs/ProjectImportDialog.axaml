@@ -1,0 +1,80 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:AErenderLauncher.Controls"
+        xmlns:project="clr-namespace:AErenderLauncher.Classes.Project"
+        mc:Ignorable="d" Width="640" Height="480"
+        x:Class="AErenderLauncher.Views.Dialogs.ProjectImportDialog"
+        WindowStartupLocation="CenterOwner"
+        Background="#2D2D2D"
+        x:Name="_ProjectImportDialog"
+        Closed="TopLevel_OnClosed"
+        Title="Import project">
+    
+    <Window.Styles>
+        <StyleInclude Source="avares://AErenderLauncher/Styles/AErender Launcher Dark.axaml" />
+        <!-- <StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml"/> -->
+    </Window.Styles>
+    
+    <Window.Resources>
+        <ResourceDictionary>
+            <DataTemplate x:Key="ListCompositionTemplate" x:DataType="project:ProjectItem">
+                <Label Content="{Binding Name}" />
+            </DataTemplate>
+        </ResourceDictionary> 
+    </Window.Resources>
+    
+    <Grid x:Name="Root" RowDefinitions="32,32,*,32">
+        <controls:IsPlatform Grid.Row="0">
+            <controls:IsPlatform.Windows>
+                <Border Grid.Row="0" Classes="Toolbar" IsHitTestVisible="False">
+                    <Panel>
+                        <Label Content="Import project" VerticalAlignment="Center" HorizontalAlignment="Center"
+                               Margin="32, 0" />
+                    </Panel>
+                </Border>
+            </controls:IsPlatform.Windows>
+        </controls:IsPlatform>
+        
+        <Border Grid.Row="1" Classes="Toolbar">
+            <Grid ColumnDefinitions="*,Auto,384">
+                <Label Content="Import project" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="16 0 0 0" />
+                <Label Grid.Column="1" Content="Project path:" VerticalAlignment="Center" />
+                <TextBox Grid.Column="2" Text="path" Margin="4,0" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+            </Grid>
+        </Border>
+        
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto,*" HorizontalAlignment="Stretch">
+        
+            <Grid RowDefinitions="Auto, *,Auto" Margin="8">
+                <Label Grid.Row="0" Content="Compositions" Margin="0,0,0,4"/>
+                <ListBox Grid.Row="1" x:Name="CompositionsList" ItemTemplate="{StaticResource ListCompositionTemplate}" SelectionMode="Toggle,Multiple" Items="{Binding ElementName=_ProjectImportDialog, Path=Items}" SelectionChanged="CompositionsList_OnSelectionChanged"/>
+                <Grid Grid.Row="2" ColumnDefinitions="*,*" Margin="0,8,0,0">
+                    <Button Grid.Column="0" Content="Select all" HorizontalAlignment="Stretch" Margin="0,0,2,0" />
+                    <Button Grid.Column="1" Content="Deselect all" HorizontalAlignment="Stretch" Margin="2,0,0,0" />
+                </Grid>
+            </Grid>
+            <GridSplitter Grid.Column="1" Cursor="SizeWestEast"/>
+            <Grid Grid.Column="2" RowDefinitions="Auto,*" Margin="8">
+                <Label Grid.Row="0" Content="Composition Properties" Margin="0,0,0,4"/>
+                <Border Grid.Row="1"  BorderBrush="#101010" BorderThickness="1" >
+                    <StackPanel Margin="8">
+                       <Label x:Name="CompLabel" Content="Name: "/> 
+                       <Label x:Name="ResLabel" Content="Resolution: "/> 
+                       <Label x:Name="FramerateLabel" Content="Framerate: "/> 
+                       <Label x:Name="SFrameLabel" Content="Range start: "/> 
+                       <Label x:Name="EFrameLabel" Content="Range end: "/> 
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Grid>
+        
+        <Border Grid.Row="3" Classes="Statusbar">
+            <Grid>
+                <Button x:Name="CloseButton" Content="OK" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Click="CloseButton_OnClick" />
+            </Grid>
+        </Border>
+    </Grid>
+    
+</Window>

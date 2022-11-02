@@ -3,7 +3,7 @@ namespace AErenderLauncher.Classes.Rendering;
 public struct Composition {
     public string CompositionName { get; set; }
     public FrameSpan Frames { get; set; }
-    private int _split;
+    private int _split = 1;
     public int Split { 
         get => _split; 
         set => _split = value < 1 ? 1 : value;

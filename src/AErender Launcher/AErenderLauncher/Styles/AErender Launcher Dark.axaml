@@ -46,8 +46,13 @@
                         <Label Content="Sample text" />
                     </Expander>
                     
-                        <Slider Value="50" Maximum="100"/>
+                    <Slider Value="50" Maximum="100"/>
 
+                    <ListBox>
+                        <ListBoxItem>Sample</ListBoxItem>
+                        <ListBoxItem>Text</ListBoxItem>
+                    </ListBox>
+                    
                 </StackPanel>
             </Grid>
         </Border>
@@ -277,6 +282,10 @@
         <Setter Property="Padding" Value="0"/>
     </Style>
     
+    <Style Selector="ListBox">
+        <Setter Property="BorderBrush" Value="#151515" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
     <!-- <Style Selector="Expander /template/ Border#ToggleButtonBackground"> -->
     <!--      -->
     <!-- </Style> -->
