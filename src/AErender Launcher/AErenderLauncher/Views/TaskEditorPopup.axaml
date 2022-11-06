@@ -53,7 +53,7 @@
                         <!-- Output module -->
                         <Grid ColumnDefinitions="128,*"  Height="32">
                             <Label Grid.Column="0" Content="Output Module Preset:" VerticalAlignment="Center"/>
-                            <ComboBox Grid.Column="1" HorizontalAlignment="Stretch" Margin="16 4 0 4">
+                            <ComboBox Grid.Column="1" x:Name="OutputModuleBox" HorizontalAlignment="Stretch" Margin="16 4 0 4">
                                 <ComboBoxItem Content="Hello" />
                                 <ComboBoxItem Content="World" />
                                 <ComboBoxItem Content="Avalonia" />

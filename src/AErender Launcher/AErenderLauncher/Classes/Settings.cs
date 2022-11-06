@@ -173,15 +173,15 @@ public class Settings {
                     aerender = Path.Combine(path, "aerender");
                     result.Add(new() {
                         Path = aerender,
-                        Version = Helpers.GetPackageVersionStringDarwin($"{Path.Combine(path, Helpers.GetCurrentDirectory(path))}.app") ?? "",
-                        Name = Helpers.GetCurrentDirectory(path)
+                        Version = Helpers.GetPackageVersionStringDarwin($"{Path.Combine(path, Helpers.GetCurrentDirectoryName(path))}.app") ?? "",
+                        Name = Helpers.GetCurrentDirectoryName(path)
                     });
                 } else {    
                     aerender = Path.Combine(path, "Support Files", "aerender.exe");
                     result.Add(new() {
                         Path = aerender,
                         Version = FileVersionInfo.GetVersionInfo(aerender).FileVersion ?? "",
-                        Name = Helpers.GetCurrentDirectory(path)
+                        Name = Helpers.GetCurrentDirectoryName(path)
                     });
                 }
                 //result.Add(FileVersionInfo.GetVersionInfo(aerender).FileVersion);

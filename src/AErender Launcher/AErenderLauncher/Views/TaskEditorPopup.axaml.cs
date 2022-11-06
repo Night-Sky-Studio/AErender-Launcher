@@ -8,16 +8,18 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
+using static AErenderLauncher.App;
 
 namespace AErenderLauncher.Views; 
 
 public partial class TaskEditorPopup : Window {
-    private RenderTask _task { get; set; }
     private bool _IsEditing { get; set; } = false;
 
+    public RenderTask? Result { get; set; }
+    
     public TaskEditorPopup() {
         InitializeComponent();
-        _task = new RenderTask();
+        Result = new RenderTask();
     }
     
     public TaskEditorPopup(RenderTask task, bool IsEditing = false) {
@@ -26,24 +28,24 @@ public partial class TaskEditorPopup : Window {
         ExtendClientAreaToDecorationsHint = Helpers.Platform != OperatingSystemType.OSX;
         Root.RowDefinitions = Helpers.Platform == OperatingSystemType.OSX ? new RowDefinitions("0,*") : new RowDefinitions("32,*");
         
-        _task = task;
+        Result = task;
         _IsEditing = IsEditing;
         
         CreateTaskButton.IsVisible = !_IsEditing;
         SaveTaskButton.IsVisible = _IsEditing;
 
-        ProjectPath.Text = _task.Project;
-        OutputPath.Text = _task.Output;
+        ProjectPath.Text = Result.Project;
+        OutputPath.Text = Result.Output;
         
-        // OutputModule.SelectedIndex = _task.OutputModule;
-        RenderSettings.Text = _task.RenderSettings;
+        OutputModuleBox.SelectedIndex = ApplicationSettings.OutputModules.IndexOf(Result.OutputModule);
+        RenderSettings.Text = Result.RenderSettings;
 
-        MissingCheckBox.IsChecked = _task.MissingFiles;
-        SoundCheckBox.IsChecked = _task.Sound;
-        ThreadedCheckbox.IsChecked = _task.Multiprocessing;
+        MissingCheckBox.IsChecked = Result.MissingFiles;
+        SoundCheckBox.IsChecked = Result.Sound;
+        ThreadedCheckbox.IsChecked = Result.Multiprocessing;
 
-        CustomCheckBox.IsChecked = _task.CustomProperties != "";
-        CustomProperties.Text = _task.CustomProperties;
+        CustomCheckBox.IsChecked = Result.CustomProperties != "";
+        CustomProperties.Text = Result.CustomProperties;
     }
 
     private void CompositionsButton_OnClick(object sender, RoutedEventArgs e) {
@@ -55,18 +57,16 @@ public partial class TaskEditorPopup : Window {
     }
 
     private async void OutputPathButton_OnClick(object sender, RoutedEventArgs e) {
-        SaveFileDialog SaveFileBox = new SaveFileDialog();
-        SaveFileBox.Title = "Save Document As...";
-        //SaveFileBox.InitialFileName = Path.GetFullPath(DocumentFileName);
-        //SaveFileBox.Directory = workdir;
-
-        SaveFileBox.Filters = new List<FileDialogFilter>() {
-            new FileDialogFilter() {
-                Extensions = { "[fileExtension]" }, Name = "Output Module file format"
-            }
+        SaveFileDialog SaveFileBox = new() {
+            Title = "Save Document As...",
+            Filters = new List<FileDialogFilter>() {
+                new() {
+                    Extensions = { "[fileExtension]" }, Name = "Output Module file format"
+                }
+            },
+            InitialFileName = "[compName].[fileExtension]",
+            DefaultExtension = "[fileExtension]"
         };
-        SaveFileBox.InitialFileName = "[compName].[fileExtension]";
-        SaveFileBox.DefaultExtension = "[fileExtension]";
 
         OutputPath.Text = await SaveFileBox.ShowAsync(this);
     }

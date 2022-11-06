@@ -21,9 +21,9 @@
         <ResourceDictionary>
             <DataTemplate x:Key="AerenderListTemplate" x:DataType="classes:AErender">
                 <Grid ColumnDefinitions="192,*,64">
-                    <Label Grid.Column="0" Content="{Binding Name}" />
-                    <Label Grid.Column="1" Content="{Binding Path}" />
-                    <Label Grid.Column="2" Content="{Binding Version}" />
+                    <TextBlock Grid.Column="0" Text="{Binding Name}" />
+                    <TextBlock Grid.Column="1" Text="{Binding Path}" />
+                    <TextBlock Grid.Column="2" Text="{Binding Version}" />
                 </Grid>
             </DataTemplate>
         </ResourceDictionary>

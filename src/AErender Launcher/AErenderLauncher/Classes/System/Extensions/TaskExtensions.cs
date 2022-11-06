@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace AErenderLauncher.Classes.System; 
+namespace AErenderLauncher.Classes.System.Extensions; 
 
 public static class TaskExtensions {
     public static async Task WaitUntil(Func<bool> Condition, int Frequency = 25, int Timeout = -1) {

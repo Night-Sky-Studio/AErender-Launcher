@@ -3,9 +3,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:AErenderLauncher.Controls"
+        xmlns:rendering="clr-namespace:AErenderLauncher.Classes.Rendering"
         mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="480"
         x:Class="AErenderLauncher.Views.MainWindow"
-        x:Name="MainWindowControl" 
+        x:Name="_MainWindow" 
         Width="960" Height="540"
         WindowStartupLocation="CenterScreen"
         SystemDecorations="Full"
@@ -38,12 +39,29 @@
             <Grid>
                 <Label Content="Tasks" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="16 0 0 0"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="4" Margin="4">
-                    <Button Content="New Task" Width="96" Click="Button_OnClick"/>
+                    <Button x:Name="NewTaskButton" Content="New Task" Width="96" Click="NewTaskButton_OnClick">
+                        <Button.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Create from project" Click="NewTaskButton_OnClick" />
+                                <MenuItem Header="Create from scratch" Click="NewTaskEmpty_OnClick" />
+                            </ContextMenu>
+                        </Button.ContextMenu>
+                    </Button>
                     <Button Content="Remove Task" Width="96" />
                 </StackPanel>
             </Grid>
         </Border>
         
+        
+        <ListBox Grid.Row="2" Items="{Binding ElementName=_MainWindow, Path=Tasks}">
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="rendering:RenderTask">
+                    <Grid ColumnDefinitions="*,Auto,Auto,Auto">
+                        <TextBlock Grid.Column="0" Text="{Binding Project}" />
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
         <!-- <TreeDataGrid Grid.Row="2"> -->
         <!--      -->
         <!-- </TreeDataGrid> -->

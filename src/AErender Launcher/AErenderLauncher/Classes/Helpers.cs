@@ -1,7 +1,12 @@
 using System.IO;
 using System.Xml;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Platform;
+using MessageBox.Avalonia;
+using MessageBox.Avalonia.BaseWindows.Base;
+using MessageBox.Avalonia.DTO;
+using MessageBox.Avalonia.Enums;
 using Microsoft.VisualBasic;
 
 namespace AErenderLauncher.Classes; 
@@ -20,7 +25,7 @@ public static class Helpers {
             plist_path = path;
         
 
-        if (plist_path != "") {
+        if (plist_path != "" && File.Exists(plist_path)) {
             XmlDocument plist = new XmlDocument();
             plist.Load(plist_path);
             return plist.SelectSingleNode("/plist/dict/key[text() = 'CFBundleShortVersionString']/following-sibling::string[1]")?.InnerText;
@@ -29,12 +34,19 @@ public static class Helpers {
         return null;
     }
 
+    public static bool IsFolder(string path) => Directory.Exists(path) && !File.Exists(path);
+    public static bool IsFile(string path) => File.Exists(path) && !Directory.Exists(path);
+    
+
     public static string GetCurrentDirectory(string path) {
         DirectoryInfo dir = new(path);
         
-        return Path.GetExtension(dir.Name) == "" 
+        return IsFolder(path)
             ? dir.FullName 
             : dir.Parent!.FullName;
     }
-    
+
+    public static string GetCurrentDirectoryName(string path) {
+        return new DirectoryInfo(GetCurrentDirectory(path)).Name;
+    }
 }

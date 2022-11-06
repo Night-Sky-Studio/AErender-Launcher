@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AErenderLauncher.Classes.System;
 using Avalonia.Platform;
 using Newtonsoft.Json;
-using TaskExtensions = AErenderLauncher.Classes.System.TaskExtensions;
+using TaskExtensions = AErenderLauncher.Classes.System.Extensions.TaskExtensions;
 
 namespace AErenderLauncher.Classes.Project; 
 
@@ -14,7 +14,7 @@ public class AeProjectParser {
         ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents", "AErender Launcher", "aeparser_mac") 
         : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AErender Launcher", "aeparser_win.exe");
 
-    private ConsoleThread ParserThread { get; set; }
+    private ConsoleThread? ParserThread { get; set; }
     
     public AeProjectParser() {
         if (File.Exists(ParserPath)) {
@@ -23,13 +23,18 @@ public class AeProjectParser {
         } else throw new FileNotFoundException("aeparser is not found in the application configuration directory");
     }
 
-    public async Task<ProjectItem[]?> ParseProject(string ProjectPath) {
+    public static bool CheckExists() {
+        return File.Exists(ParserPath);
+    }
+
+    public async Task<ProjectItem[]?> ParseProject(string ProjectPath) {    
+        ParserThread = null;
         // It does require double quotes...
-        ParserThread.Command = $"\"{ProjectPath}\"";
+        ParserThread = new ConsoleThread(ParserPath, $"\"{ProjectPath}\"");
         ParserThread.Start();
         
         // yeet
-        await TaskExtensions.WaitUntil(() => ParserThread.Output.Count == 3);
+        await TaskExtensions.WaitUntil(() => ParserThread.Output.Count > 2);
 
         // double yeet
         //

@@ -45,18 +45,19 @@ public partial class SettingsWindow : Window {
 
     private async void AerenderDetectButton_OnClick(object? sender, RoutedEventArgs e) {
         List<AErender> paths = Settings.DetectAerender();
-        AErender result;
+        AErender? result;
+        
         if (paths.Count == 1)
             result = paths[0];
         else {
-            AErenderDetectDialog dialog = new AErenderDetectDialog(paths);
+            AErenderDetectDialog dialog = new(paths);
 
-            await dialog.ShowDialog(this);
-
-            result = dialog._output;
+            result = await dialog.ShowDialog<AErender?>(this);
         }
 
-        ApplicationSettings.AErenderPath = result.IsEmpty ? ApplicationSettings.AErenderPath : result.Path;
-        AerenderPath.Text = ApplicationSettings.AErenderPath;
+        if (result != null) {
+            ApplicationSettings.AErenderPath = result.Value.Path;
+            AerenderPath.Text = ApplicationSettings.AErenderPath;
+        }
     }
 }

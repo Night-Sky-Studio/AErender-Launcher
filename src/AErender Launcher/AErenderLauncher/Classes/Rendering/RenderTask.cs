@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using AErenderLauncher.Classes.System.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using static AErenderLauncher.App;
@@ -72,23 +73,23 @@ public class RenderTask {
             return path.Replace(Path.GetExtension(path), "");
         }
         
-        /// Strip full path of the file extension
+        // Strip full path of the file extension
         string ProcessedPath = GetFilePathWithoutExtension(path);
-        /// Append an index to the file name
+        // Append an index to the file name
         ProcessedPath += $"_{index}";
-        /// Finally, append extension back to path
+        // Finally, append extension back to path
         ProcessedPath += Path.GetExtension(path);
 
         return ProcessedPath;
     }
-    
+
     public List<RenderThread> Enqueue() {
         string exec = "";
         List<RenderThread> result = new List<RenderThread>();
 
         foreach (Composition comp in Compositions) {
             for (int i = 0; i < comp.Split; i++) {
-                /// Create directory for project if there isn't one
+                // Create directory for project if there isn't one
                 string AdjustedOutput = ProcessFolder();
 
                 if (comp.Split > 1) 
@@ -116,5 +117,9 @@ public class RenderTask {
         }
 
         return result;
+    }
+
+    public override string ToString() {
+        return $"({Project}, {Output}, {OutputModule}, {RenderSettings}, {MissingFiles}, {Sound}, {Multiprocessing}, {CustomProperties}, {CacheLimit}, {MemoryLimit}, {ListExtensions.ToString(Compositions)})";
     }
 }

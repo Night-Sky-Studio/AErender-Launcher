@@ -13,7 +13,7 @@ using Avalonia.Platform;
 namespace AErenderLauncher {
     public partial class App : Application {
         public static Settings ApplicationSettings { get; private set; } = new Settings();
-        public static AeProjectParser ProjectParser { get; private set; }
+        public static AeProjectParser? ProjectParser { get; private set; }
 
         public override void Initialize() {
             AvaloniaXamlLoader.Load(this);

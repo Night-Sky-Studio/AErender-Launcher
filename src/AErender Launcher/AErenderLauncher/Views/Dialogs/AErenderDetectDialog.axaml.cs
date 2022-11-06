@@ -11,7 +11,7 @@ namespace AErenderLauncher.Views.Dialogs;
 
 public partial class AErenderDetectDialog : Window {
     public ObservableCollection<AErender> _paths { get; set; } = new ObservableCollection<AErender>();
-    public AErender _output { get; private set; }
+    public AErender? _output { get; private set; }
     
     public AErenderDetectDialog() {
         InitializeComponent();
@@ -34,6 +34,6 @@ public partial class AErenderDetectDialog : Window {
     }
 
     private void CloseButton_OnClick(object? sender, RoutedEventArgs e) {
-        Close();
+        Close(_output);
     }
 }

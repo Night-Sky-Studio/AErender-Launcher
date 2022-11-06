@@ -17,8 +17,6 @@ namespace AErenderLauncher.Views.Dialogs;
 public partial class ProjectImportDialog : Window {
     public ObservableCollection<ProjectItem> Items { get; set; } = new ObservableCollection<ProjectItem>();
 
-    public RenderTask? Result { get; set; } = null;
-
     public ProjectImportDialog() {
         InitializeComponent();
         
@@ -36,10 +34,6 @@ public partial class ProjectImportDialog : Window {
     }
     
     private void CloseButton_OnClick(object sender, RoutedEventArgs e) {
-        Close();
-    }
-
-    private void TopLevel_OnClosed(object sender, EventArgs e) {
         List<Composition> compositions = new();
         foreach (ProjectItem? item in CompositionsList.SelectedItems) {
             if (item != null) {
@@ -53,19 +47,26 @@ public partial class ProjectImportDialog : Window {
             }
         }
         
-        Result = new() {
-            Project = ApplicationSettings.LastProjectPath,
-            Output = ApplicationSettings.LastOutputPath,
-            Multiprocessing = ApplicationSettings.Multithreaded,
-            MissingFiles = ApplicationSettings.MissingFiles,
-            Sound = ApplicationSettings.Sound,
-            CacheLimit = ApplicationSettings.CacheLimit,
-            MemoryLimit = ApplicationSettings.MemoryLimit,
-            CustomProperties = ApplicationSettings.CustomProperties,
-            OutputModule = ApplicationSettings.ActiveOutputModule?.Module ?? "Lossless",
-            RenderSettings = ApplicationSettings.RenderSettings,
-            Compositions = compositions
-        };
+        if (compositions.Count == 0) 
+            Close(null);
+        else
+            Close(new RenderTask {
+                Project = ApplicationSettings.LastProjectPath,
+                Output = ApplicationSettings.LastOutputPath,
+                Multiprocessing = ApplicationSettings.Multithreaded,
+                MissingFiles = ApplicationSettings.MissingFiles,
+                Sound = ApplicationSettings.Sound,
+                CacheLimit = ApplicationSettings.CacheLimit,
+                MemoryLimit = ApplicationSettings.MemoryLimit,
+                CustomProperties = ApplicationSettings.CustomProperties,
+                OutputModule = ApplicationSettings.ActiveOutputModule?.Module ?? "Lossless",
+                RenderSettings = ApplicationSettings.RenderSettings,
+                Compositions = compositions
+            });
+    }
+
+    private void TopLevel_OnClosed(object sender, EventArgs e) {
+        
     }
 
     private void CompositionsList_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {

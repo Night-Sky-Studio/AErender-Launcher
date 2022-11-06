@@ -5,18 +5,22 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using AErenderLauncher.Classes;
 using AErenderLauncher.Classes.Project;
 using AErenderLauncher.Classes.Rendering;
+using AErenderLauncher.Classes.System;
 using AErenderLauncher.Controls;
 using AErenderLauncher.Views.Dialogs;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
-
+using Microsoft.CodeAnalysis.Diagnostics;
 using static AErenderLauncher.App;
 
 namespace AErenderLauncher.Views {
@@ -39,6 +43,8 @@ namespace AErenderLauncher.Views {
             }
         };
 
+        public static ObservableCollection<RenderTask> Tasks { get; set; } = new ObservableCollection<RenderTask>();
+
         public static ObservableCollection<RenderThread> Threads { get; set; } = new ObservableCollection<RenderThread>();
 
         public MainWindow() {
@@ -46,47 +52,67 @@ namespace AErenderLauncher.Views {
 
             ExtendClientAreaToDecorationsHint = Helpers.Platform != OperatingSystemType.OSX;
             Root.RowDefinitions = Helpers.Platform == OperatingSystemType.OSX ? new RowDefinitions("0,32,*,48") : new RowDefinitions("32,32,*,48");
-            // Threads.Add(new RenderThread("", "") {
-            //     CompositionName = "Comp 1",
-            //     CurrentFrame = 0, EndFrame = 200,
-            // });
-            // Threads.Add(new RenderThread("", "") {
-            //     CompositionName = "Comp 1",
-            //     CurrentFrame = 100, EndFrame = 200,
-            // });
-            // Threads.Add(new RenderThread("", "") {
-            //     CompositionName = "Comp 1",
-            //     CurrentFrame = 50, EndFrame = 200,
-            // });
         }
 
-        private async void Button_OnClick(object sender, RoutedEventArgs e) {
-            // await MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow(new MessageBoxStandardParams() {
-            //     SystemDecorations = SystemDecorations.BorderOnly,
-            //     
-            //     ContentTitle = "Header",
-            //     ContentMessage = "Message",
-            //     ShowInCenter = true,
-            //     ButtonDefinitions = ButtonEnum.Ok,
-            //     CanResize = true
-            // }).ShowDialog(this);
-            TaskEditorPopup editor = new TaskEditorPopup(_task);
-            await editor.ShowDialog(this);
+        private async void NewTaskButton_OnClick(object sender, RoutedEventArgs e) {
+            // open an aep
+            OpenFileDialog dialog = new() {
+                AllowMultiple = false,
+                Directory = ApplicationSettings.DefaultProjectsPath,
+                Filters = new() {
+                    new() { Name = "After Effects project", Extensions = { "aep" } }
+                },
+                Title = "Open After Effects project"
+            };
+            
+            string[]? result = await dialog.ShowAsync(this);
 
-        }
-
-        private async void Launch_OnClick(object sender, RoutedEventArgs e) {
-            ProjectItem[]? project = await ProjectParser.ParseProject("/Users/lilystilson/Yandex.Disk.localized/Development/Delphi/AErender Launcher/benchmark/Deneb - Mograph Icons/Mograph Icons.aep");
-
-            if (project != null) {
-                ProjectImportDialog dialog = new(project);
-                await dialog.ShowDialog(this);
+            if (result != null && result.Length > 0) {
+                // parse dat
+                
+                if (await ParseProject(result[0]) is { } task) {
+                    // add to tasks
+                    Tasks.Add(task);
+                }
             }
         }
 
+        private async Task<RenderTask?> ParseProject(string ProjectPath) {
+            if (AeProjectParser.CheckExists()) {
+                ProjectItem[]? project = await ProjectParser!.ParseProject(ProjectPath);
+
+                if (project != null) {
+                    ApplicationSettings.LastProjectPath = ProjectPath;
+                
+                    ProjectImportDialog dialog = new(project);
+                    RenderTask? task = await dialog.ShowDialog<RenderTask?>(this);
+
+                    return task;
+                }
+            } else {
+                await this.ShowGenericDialogAsync(new() {
+                    Title = "Error",
+                    Body = "Project parser somehow disappeared from AErender Launcher's folder.\nPlease, visit link bellow to fix this issue.",
+                    Link = "https://aerenderlauncher.com/docs/Parser#ParserDisappeared",
+                    CancelText = "Close"
+                });
+            }
+
+            return null;
+        }
+
+        private async void Launch_OnClick(object sender, RoutedEventArgs e) {
+            //
+        }
+
         private async void SettingsButton_OnClick(object sender, RoutedEventArgs e) {
-            SettingsWindow settings = new SettingsWindow();
+            SettingsWindow settings = new();
             await settings.ShowDialog(this);
+        }
+
+        private async void NewTaskEmpty_OnClick(object? sender, RoutedEventArgs e) {
+            TaskEditorPopup editor = new();
+            await editor.ShowDialog(this);
         }
     }
 }

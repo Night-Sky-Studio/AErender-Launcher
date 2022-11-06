@@ -1,6 +1,18 @@
 using System.Collections.Generic;
 
-namespace AErenderLauncher.Classes.Rendering; 
+namespace AErenderLauncher.Classes.Rendering;
+
+public static class OMListExtensions {
+    public static int IndexOf(this List<OutputModule> list, string Module) {
+        for (int i = 0; i < list.Count; i++) {
+            if (list[i].Module == Module) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+}
 
 public struct OutputModule {
     public string Module;
@@ -8,7 +20,7 @@ public struct OutputModule {
     public bool IsImported;
 
     public static implicit operator OutputModule(Dictionary<string, object> module) {
-        return new OutputModule() { Mask = module["Mask"] as string ?? "", Module = module["Module"] as string ?? "", IsImported = module["IsImported"] as bool? ?? false };
+        return new OutputModule { Mask = module["Mask"] as string ?? "", Module = module["Module"] as string ?? "", IsImported = module["IsImported"] as bool? ?? false };
     }
     
     public static bool operator==(OutputModule a, OutputModule b) {
