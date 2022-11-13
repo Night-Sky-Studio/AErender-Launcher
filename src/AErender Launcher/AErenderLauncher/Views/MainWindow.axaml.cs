@@ -67,10 +67,12 @@ namespace AErenderLauncher.Views {
             
             string[]? result = await dialog.ShowAsync(this);
 
-            if (result != null && result.Length > 0) {
+            if (result is { Length: > 0 }) {
                 // parse dat
+                Overlay.IsVisible = true;
                 
                 if (await ParseProject(result[0]) is { } task) {
+                    Overlay.IsVisible = false;
                     // add to tasks
                     Tasks.Add(task);
                 }
@@ -78,25 +80,23 @@ namespace AErenderLauncher.Views {
         }
 
         private async Task<RenderTask?> ParseProject(string ProjectPath) {
-            if (AeProjectParser.CheckExists()) {
-                ProjectItem[]? project = await ProjectParser!.ParseProject(ProjectPath);
+            List<ProjectItem>? project = await Aeparser.ParseProjectAsync(ProjectPath);
 
-                if (project != null) {
-                    ApplicationSettings.LastProjectPath = ProjectPath;
-                
-                    ProjectImportDialog dialog = new(project);
-                    RenderTask? task = await dialog.ShowDialog<RenderTask?>(this);
+            if (project != null) {
+                ApplicationSettings.LastProjectPath = ProjectPath;
+            
+                ProjectImportDialog dialog = new(project.ToArray());
+                RenderTask? task = await dialog.ShowDialog<RenderTask?>(this);
 
-                    return task;
-                }
-            } else {
-                await this.ShowGenericDialogAsync(new() {
-                    Title = "Error",
-                    Body = "Project parser somehow disappeared from AErender Launcher's folder.\nPlease, visit link bellow to fix this issue.",
-                    Link = "https://aerenderlauncher.com/docs/Parser#ParserDisappeared",
-                    CancelText = "Close"
-                });
+                return task;
             }
+            // await this.ShowGenericDialogAsync(new() {
+            //     Title = "Error",
+            //     Body = "Project parser somehow disappeared from AErender Launcher's folder.\nPlease, visit link bellow to fix this issue.",
+            //     Link = "https://aerenderlauncher.com/docs/Parser#ParserDisappeared",
+            //     CancelText = "Close"
+            // });
+            
 
             return null;
         }
@@ -111,8 +111,36 @@ namespace AErenderLauncher.Views {
         }
 
         private async void NewTaskEmpty_OnClick(object? sender, RoutedEventArgs e) {
-            TaskEditorPopup editor = new();
-            await editor.ShowDialog(this);
+            OpenFileDialog dialog = new() {
+                AllowMultiple = false,
+                Directory = ApplicationSettings.DefaultProjectsPath,
+                Filters = new() {
+                    new() { Name = "After Effects project", Extensions = { "aep" } }
+                },
+                Title = "Open After Effects project"
+            };
+            
+            string[]? aep = await dialog.ShowAsync(this);
+
+            if (aep is { Length: > 0 }) {
+
+                TaskEditorPopup editor = new(new RenderTask {
+                    Project = aep[0]
+                });
+                
+                RenderTask? result = await editor.ShowDialog<RenderTask?>(this);
+                if (result != null) {
+                    Tasks.Add(result);
+                }
+            }
+        }
+
+        private void InputElement_OnPointerPressed(object? sender, PointerPressedEventArgs e) {
+            Debug.WriteLine(sender);
+        }
+
+        private void SelectingItemsControl_OnSelectionChanged(object? sender, SelectionChangedEventArgs e) {
+            Debug.WriteLine(sender);
         }
     }
 }

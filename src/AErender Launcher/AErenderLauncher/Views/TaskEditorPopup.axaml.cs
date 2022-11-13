@@ -48,18 +48,14 @@ public partial class TaskEditorPopup : Window {
         CustomProperties.Text = Result.CustomProperties;
     }
 
-    private void CompositionsButton_OnClick(object sender, RoutedEventArgs e) {
-        EditorCarousel.Next();
-    }
+    private void CompositionsButton_OnClick(object sender, RoutedEventArgs e) => EditorCarousel.Next();
 
-    private void ProjectSetupButton_OnClick(object sender, RoutedEventArgs e) {
-        EditorCarousel.Previous();
-    }
+    private void ProjectSetupButton_OnClick(object sender, RoutedEventArgs e) => EditorCarousel.Previous();
 
     private async void OutputPathButton_OnClick(object sender, RoutedEventArgs e) {
         SaveFileDialog SaveFileBox = new() {
-            Title = "Save Document As...",
-            Filters = new List<FileDialogFilter>() {
+            Title = "Save render...",
+            Filters = new List<FileDialogFilter> {
                 new() {
                     Extensions = { "[fileExtension]" }, Name = "Output Module file format"
                 }
@@ -69,5 +65,13 @@ public partial class TaskEditorPopup : Window {
         };
 
         OutputPath.Text = await SaveFileBox.ShowAsync(this);
+    }
+
+    private void CancelButton_OnClick(object? sender, RoutedEventArgs e) {
+        Close(null);
+    }
+
+    private void SaveTaskButton_OnClick(object? sender, RoutedEventArgs e) {
+        Close(Result);
     }
 }

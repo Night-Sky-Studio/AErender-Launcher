@@ -7,7 +7,6 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="AErenderLauncher.Views.TaskEditorPopup"
         WindowStartupLocation="CenterOwner"
-        ExtendClientAreaToDecorationsHint="True"
         Width="640" Height="450"
         Title="Task Editor">
     
@@ -16,7 +15,7 @@
         <!-- <StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml"/> -->
     </Window.Styles>
     
-    <Grid x:Name="Root" RowDefinitions="32,*">
+    <Grid x:Name="Root" RowDefinitions="0,*">
         <controls:IsPlatform Grid.Row="0">
             <controls:IsPlatform.Windows>
                 <Border Classes="Toolbar" IsHitTestVisible="False">
@@ -108,10 +107,10 @@
                     </StackPanel>
                     <Grid Grid.Row="2">
                         <StackPanel Orientation="Horizontal" Spacing="4" Margin="4 0 0 0" HorizontalAlignment="Left">
-                            <Button Name="Cancel1Button" Content="Cancel" Margin="0 4" Width="64" />
+                            <Button x:Name="Cancel1Button" Content="Cancel" Margin="0 4" Width="64" Click="CancelButton_OnClick" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Spacing="4" Margin="0 0 4 0" HorizontalAlignment="Right">
-                            <Button Name="CompositionsButton" Content="Compositions &gt;&gt;" Margin="0 4" Click="CompositionsButton_OnClick" />
+                            <Button x:Name="CompositionsButton" Content="Compositions &gt;&gt;" Margin="0 4" Click="CompositionsButton_OnClick" />
                         </StackPanel>
                     </Grid>
                 </Grid>
@@ -128,12 +127,12 @@
                     </Grid>
                     <Grid Grid.Row="2">
                         <StackPanel Orientation="Horizontal" Spacing="4" Margin="4 0 0 0" HorizontalAlignment="Left">
-                            <Button Name="Cancel2Button" Content="Cancel" Margin="0 4" Width="64" />
-                            <Button Name="ProjectSetupButton" Content="&lt;&lt; Project setup" Margin="0 4" Click="ProjectSetupButton_OnClick" />
+                            <Button x:Name="Cancel2Button" Content="Cancel" Margin="0 4" Width="64" Click="CancelButton_OnClick" />
+                            <Button x:Name="ProjectSetupButton" Content="&lt;&lt; Project setup" Margin="0 4" Click="ProjectSetupButton_OnClick" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Spacing="4" Margin="0 0 4 0" HorizontalAlignment="Right">
-                            <Button Name="SaveTaskButton" Content="Save Task" Margin="0 4" Width="96" />
-                            <Button Name="CreateTaskButton" Content="Create Task" Margin="0 4" Width="96" />
+                            <Button x:Name="SaveTaskButton" Content="Save Task" Margin="0 4" Width="96" Click="SaveTaskButton_OnClick" />
+                            <Button x:Name="CreateTaskButton" Content="Create Task" Margin="0 4" Width="96" Click="SaveTaskButton_OnClick" />
                         </StackPanel>
                     </Grid>
                 </Grid>

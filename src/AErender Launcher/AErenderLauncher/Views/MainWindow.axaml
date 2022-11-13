@@ -22,8 +22,21 @@
     <!-- <StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml"/> -->
  </Window.Styles>
     
-    
-    <Grid x:Name="Root" RowDefinitions="32,32,*,48">
+    <Panel>
+        <Border x:Name="Overlay" ZIndex="999" Background="#60000000" IsVisible="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Border.Transitions>
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.25"/>
+                </Transitions>
+            </Border.Transitions>
+            <Border Background="#202020" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="16" BoxShadow="0 8 32 0 #60000000">
+                <StackPanel Spacing="16">
+                    <TextBlock Width="192" Text="Parsing project..." />
+                    <ProgressBar IsIndeterminate="True" />
+                </StackPanel>
+            </Border>
+        </Border>
+        <Grid x:Name="Root" RowDefinitions="32,32,*,48">
         <controls:IsPlatform Grid.Row="0">
             <controls:IsPlatform.Windows>
                 <Border Grid.Row="0" Classes="Toolbar" IsHitTestVisible="False">
@@ -53,10 +66,10 @@
         </Border>
         
         
-        <ListBox Grid.Row="2" Items="{Binding ElementName=_MainWindow, Path=Tasks}">
+        <ListBox Grid.Row="2" Items="{Binding ElementName=_MainWindow, Path=Tasks}" SelectionChanged="SelectingItemsControl_OnSelectionChanged" >
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="rendering:RenderTask">
-                    <Grid ColumnDefinitions="*,Auto,Auto,Auto">
+                    <Grid ColumnDefinitions="*,Auto,Auto,Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" PointerPressed="InputElement_OnPointerPressed">
                         <TextBlock Grid.Column="0" Text="{Binding Project}" />
                     </Grid>
                 </DataTemplate>
@@ -83,5 +96,6 @@
             </Grid>
         </Border>
     </Grid>
+    </Panel>
     
 </Window>
