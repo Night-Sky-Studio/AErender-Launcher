@@ -1,70 +1,15 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AErenderLauncher.Classes.Extensions;
 
-namespace AErenderLauncher.Classes.Project {
-    public class ProjectItem {
-        public string Name { get; set; } = "";
-        public int[] FootageDimensions { get; set; } = new int[2];
-        public double FootageFramerate { get; set; }
-        public uint[] Frames { get; set; } = new uint[2];
-        public byte[] BackgroundColor { get; set; } = new byte[3];
+namespace AErenderLauncher.Classes.Project;
 
-        public override string ToString() {
-            return $"{Name, -36} | [{FootageDimensions[0], 6},{FootageDimensions[1], 6}] | {FootageFramerate, -8} | [{Frames[0], 8},{Frames[1], 8}] | [{BackgroundColor[0], 3},{BackgroundColor[1], 3},{BackgroundColor[2], 3}]";
-        }
-    }
-    
-    public struct UInt24 {
-        public readonly byte _b0, _b1, _b2;
-        public UInt24(UInt32 val) {
-            _b0 = (byte)((val >> 16) & 0xFF);
-            _b1 = (byte)((val >> 8) & 0xFF);
-            _b2 = (byte)(val & 0xFF);
-        }
-
-        public UInt24(byte[] val) {
-            _b0 = val[0];
-            _b1 = val[1];
-            _b2 = val[2];
-        }
-        
-        public UInt32 ToUInt32() {
-            return (uint)_b0 << 16 | (uint)_b1 << 8 | _b2;
-        }
-
-        public byte[] ToByteArray() {
-            return new[] { _b0, _b1, _b2 };
-        }
-
-        public override string ToString() {
-            return ToUInt32().ToString();
-        }
-
-        public static implicit operator UInt32(UInt24 u) {
-            return u.ToUInt32();
-        }
-
-        public static implicit operator byte[](UInt24 u) {
-            return u.ToByteArray();
-        }
-
-        public static implicit operator UInt24(byte[] u) {
-            return new UInt24(u);
-        }
-        
-        public static implicit operator UInt24(UInt32 u) {
-            return new UInt24(u);
-        }
-
-        public UInt32 Value => ToUInt32();
-    }
-    
-    public static class Aeparser {
-        // Search for a string s in binary stream and return it's position
+public static class AeProjectParser {
+    // Search for a string s in binary stream and return it's position
         public static long PositionOf(this Stream stream, string s, Encoding encoding, long offset = 0) {
             byte[] bytes = encoding.GetBytes(s);
             byte[] buffer = new byte[bytes.Length];
@@ -240,5 +185,4 @@ namespace AErenderLauncher.Classes.Project {
         public static async Task<List<ProjectItem>?> ParseProjectAsync(string ProjectPath) {
             return await Task.Run(() => ParseProject(ProjectPath));
         }
-    }
 }

@@ -1,14 +1,10 @@
-using AErenderLauncher.Classes.System;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
-using Avalonia.Media.Imaging;
-using Avalonia.Platform;
-using static AErenderLauncher.Classes.Helpers;
 
-namespace AErenderLauncher.Views.Dialogs;
+namespace AErenderLauncher.Classes.System.Dialogs.Views;
 
 public partial class GenericDialogWindow : Window {
     private string? Header {
@@ -44,7 +40,7 @@ public partial class GenericDialogWindow : Window {
     }
 
     private string? PrimaryText {
-        get => Primary.Content.ToString();
+        get => Primary.Content?.ToString();
         set {
             Primary.Content = value;
             Primary.IsVisible = !string.IsNullOrEmpty(value);
@@ -52,7 +48,7 @@ public partial class GenericDialogWindow : Window {
     }
 
     private string? SecondaryText {
-        get => Secondary.Content.ToString();
+        get => Secondary.Content?.ToString();
         set {
             Secondary.Content = value;
             Secondary.IsVisible = !string.IsNullOrEmpty(value);
@@ -60,17 +56,15 @@ public partial class GenericDialogWindow : Window {
     }
 
     private string? CancelText {
-        get => Cancel.Content.ToString();
+        get => Cancel.Content?.ToString();
         set {
             Cancel.Content = value;
             Cancel.IsVisible = !string.IsNullOrEmpty(value);
         }
     }
-
     public GenericDialogWindow() {
         InitializeComponent();
     }
-
     public GenericDialogWindow(GenericDialogParams @params) {
         InitializeComponent();
 
