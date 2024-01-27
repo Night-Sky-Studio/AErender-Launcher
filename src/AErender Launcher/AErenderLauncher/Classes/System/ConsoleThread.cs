@@ -1,11 +1,13 @@
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Threading;
+using Microsoft.VisualBasic;
 
-namespace AErenderLauncher.Classes.System; 
+namespace AErenderLauncher.Classes.System;
 
 public class ConsoleThread {
     public enum ThreadState {
@@ -14,30 +16,36 @@ public class ConsoleThread {
         Stopped
     };
     private string _executable { get; }
-    private string _command { get; set; } = "";
+    private string _command { get; set; }
     private Process _process { get; set; }
 
-    // public string Command {
-    //     get => _command;
-    //     set {
-    //         if (State == ThreadState.Running || State == ThreadState.Suspended) {
-    //             throw new ThreadStateException("Cannot change command while thread is running");
-    //         }
-    //
-    //         Dispose();
-    //         _command = value;
-    //         _process = CreateProcess();
-    //     }
-    // }
+    // private Action<string>? _outputReceived;
+    // private Action<string>? _errorReceived;
 
     public string FullCommand => $"\"{_executable}\" {_command}";
     public ThreadState State { get; private set; } = ThreadState.Stopped;
-    public ObservableCollection<string> Output { get; } = new ObservableCollection<string>();
-
+    
+    public ObservableCollection<string> Stdout { get; } = new ();
+    public ObservableCollection<string> Stderr { get; } = new ();
+    
+    // public event Action<string>? OutputReceived {
+    //     add => _outputReceived += value;
+    //     remove => _outputReceived -= value; 
+    // }
+    // public event Action<string>? ErrorReceived {
+    //     add => _errorReceived += value;
+    //     remove => _errorReceived -= value;
+    // }
+    
     public ConsoleThread(string executable, string command = "") {
         _executable = executable;
         _command = command;
         _process = CreateProcess();
+        Stdout.CollectionChanged += StdoutOnCollectionChanged;
+    }
+
+    protected virtual void StdoutOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) {
+        throw new NotImplementedException();
     }
 
     private Process CreateProcess() {
@@ -58,19 +66,25 @@ public class ConsoleThread {
     }
 
     private void ProcessOnExited(object? sender, EventArgs e) {
+        Dispatcher.UIThread.Post(Dispose);
+    }
+
+    private void ProcessOnOutputDataReceived(object sender, DataReceivedEventArgs e) {
+        Dispatcher.UIThread.Post(() => { Stdout.Add($"{e.Data}"); });
+        // _outputReceived?.Invoke($"{e.Data}");
+    }
+
+    private void ProcessOnErrorDataReceived(object sender, DataReceivedEventArgs e) {
         Dispatcher.UIThread.Post(() => {
-            //Output.Add($"process exited with code {_process.ExitCode}\n");
-            Dispose();
+            Stderr.Add($"{e.Data}"); 
+            // OnErrorReceived($"{e.Data}");
         });
+        // _errorReceived?.Invoke($"{e.Data}");
+        // Dispatcher.UIThread.Invoke(() => _errorReceived?.Invoke($"{e.Data}"));
     }
-
-    protected void ProcessOnOutputDataReceived(object sender, DataReceivedEventArgs e) {
-        Dispatcher.UIThread.Post(() => { Output.Add(e.Data + '\n'); });
-    }
-
-    protected void ProcessOnErrorDataReceived(object sender, DataReceivedEventArgs e) {
-        Dispatcher.UIThread.Post(() => { Output.Add(e.Data + '\n'); });
-    }
+    
+    // protected virtual void OnOutputReceived(string data) { }
+    // protected virtual void OnErrorReceived(string data) { }
 
     public void Start() {
         _process.Start();
@@ -79,6 +93,15 @@ public class ConsoleThread {
         State = ThreadState.Running;
         _process.WaitForExit();
     }
+
+    public async Task StartAsync() {
+        _process.Start();
+        _process.BeginOutputReadLine();
+        _process.BeginErrorReadLine();
+        State = ThreadState.Running;
+        await _process.WaitForExitAsync();
+    }
+    
 
     public void Restart() {
         Abort();
@@ -91,12 +114,14 @@ public class ConsoleThread {
         if (State == ThreadState.Stopped) throw new ThreadStateException("Can't kill a stopped thread");
         _process.Close();
         State = ThreadState.Stopped;
+        Dispose();
     }
 
     public void Dispose() {
         if (State != ThreadState.Stopped) Abort();
         _process.Dispose();
-        Output.Clear();
+        Stdout.Clear();
+        Stderr.Clear();
     }
 
     ~ConsoleThread() => Dispose();

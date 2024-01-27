@@ -1,10 +1,9 @@
-using System;
+﻿using AErenderLauncher.Classes;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using Avalonia.Platform;
 
-namespace AErenderLauncher.Controls; 
+namespace AErenderLauncher.Controls;
 
 public partial class IsPlatform : UserControl {
     public static readonly StyledProperty<object> DarwinProperty = 
@@ -28,6 +27,6 @@ public partial class IsPlatform : UserControl {
     }
 
     private void AvaloniaObject_OnPropertyChanged(object sender, AvaloniaPropertyChangedEventArgs e) { 
-        Content = AvaloniaLocator.Current.GetService<IRuntimePlatform>()!.GetRuntimeInfo().OperatingSystem == OperatingSystemType.OSX ? Darwin : Windows;
+        Content = Helpers.Platform == OS.macOS ? Darwin : Windows;
     }
 }

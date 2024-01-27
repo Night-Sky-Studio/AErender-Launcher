@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Xml;
 using AErenderLauncher.Classes.Rendering;
-using Avalonia.Platform;
 using Newtonsoft.Json;
 
 namespace AErenderLauncher.Classes;
@@ -18,29 +18,29 @@ public struct AErender {
 }
 
 public class Settings {
-    public static readonly string SettingsPath = Helpers.Platform == OperatingSystemType.OSX 
-        ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents", "AErender Launcher", "Settings.json") 
+    public static readonly string SettingsPath = Helpers.Platform == OS.macOS
+        ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents", "AErender Launcher", "Settings.json")
         : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AErender Launcher", "Settings.json");
 
     public string SettingsFolder => Helpers.GetCurrentDirectory(SettingsPath);
-    
-    public static readonly string LegacySettingsPath = Helpers.Platform == OperatingSystemType.OSX 
+
+    public static readonly string LegacySettingsPath = Helpers.Platform == OS.macOS
         ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents", "AErender", "AErenderConfiguration.xml")
         : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "AErender", "AErenderConfiguration.xml");
-    
+
     // Language ?
     // Style  ?
 
-    public string AErenderPath { get; set; } = "C:\\Program Files\\Adobe\\Adobe After Effects 2022\\Support Files\\aerender.exe";
+    public string AErenderPath { get; set; }
     public string DefaultProjectsPath { get; set; }
     public string DefaultOutputPath { get; set; }
 
     public int OnRenderStart { get; set; }
-    
+
     public int ThreadsLimit { get; set; }
 
     public List<RenderTask> RenderTasks { get; set; } = new List<RenderTask>();
-    
+
     public string LastProjectPath { get; set; }
     public string LastOutputPath { get; set; }
     public string TempSavePath { get; set; }
@@ -49,7 +49,7 @@ public class Settings {
     public bool Sound { get; set; }
     public bool Multithreaded { get; set; }
     public string CustomProperties { get; set; }
-    
+
     public float MemoryLimit { get; set; }
     public float CacheLimit { get; set; }
 
@@ -72,13 +72,13 @@ public class Settings {
         OutputModules.Add(new OutputModule { Module = "Save Current Preview", Mask = "[compName].[fileExtension]", IsImported = false });
         OutputModules.Add(new OutputModule { Module = "TIFF Sequence with Alph", Mask = "[compName]_[#####].[fileExtension]", IsImported = false });
     }
-    
+
     public Settings() {
         Debug.WriteLine($"Current settings path: {SettingsPath}");
-        
-        AErenderPath = "";
-        DefaultProjectsPath = "";
-        DefaultOutputPath = "";
+
+        AErenderPath = "C:\\Program Files\\Adobe\\Adobe After Effects 2023\\Support Files\\aerender.exe";
+        DefaultProjectsPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        DefaultOutputPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         OnRenderStart = -1;
         ThreadsLimit = 4;
         LastProjectPath = "";
@@ -93,19 +93,19 @@ public class Settings {
         OutputModuleIndex = 0;
         RenderSettings = "Best Settings";
         InitOutputModules();
-        
+
     }
 
     public static Settings? LoadLegacy(string XmlPath) {
         XmlDocument document = new XmlDocument();
         document.Load(XmlPath);
-        
+
         XmlNode RootNode = document.DocumentElement!;
 
         Settings result = new Settings {
             AErenderPath = RootNode["aerender"]?.InnerText ?? "",
-            DefaultProjectsPath = RootNode["defprgpath"]?.InnerText ?? "",
-            DefaultOutputPath = RootNode["defoutpath"]?.InnerText ?? "",
+            DefaultProjectsPath = RootNode["defprgpath"]?.InnerText ?? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            DefaultOutputPath = RootNode["defoutpath"]?.InnerText ?? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
             OnRenderStart = int.Parse(RootNode["onRenderStart"]?.InnerText ?? "-1"),
             ThreadsLimit = 4,
             LastProjectPath = "",
@@ -115,12 +115,20 @@ public class Settings {
             Sound = bool.Parse(RootNode["sound"]?.InnerText ?? "false"),
             Multithreaded = bool.Parse(RootNode["thread"]?.InnerText ?? "false"),
             CustomProperties = RootNode["prop"]?.InnerText ?? "",
-            MemoryLimit = float.Parse(RootNode["memoryLimit"]?.InnerText ?? "100"),
-            CacheLimit = float.Parse(RootNode["cacheLimit"]?.InnerText ?? "100"),
+            MemoryLimit = float.Parse(RootNode["memoryLimit"]?.InnerText ?? "100", CultureInfo.InvariantCulture),
+            CacheLimit = float.Parse(RootNode["cacheLimit"]?.InnerText ?? "100", CultureInfo.InvariantCulture),
             OutputModuleIndex = int.Parse(RootNode["outputModule"]?.Attributes["selected"]?.InnerText ?? "-1"),
             RenderSettings = "Best Settings"
         };
         
+        result.DefaultProjectsPath = result.DefaultProjectsPath == "" 
+            ? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) 
+            : result.DefaultProjectsPath;
+        
+        result.DefaultOutputPath = result.DefaultOutputPath == ""
+            ? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
+            : result.DefaultOutputPath;
+
         List<OutputModule> ParsedModules = new List<OutputModule>();
 
         try {
@@ -134,13 +142,13 @@ public class Settings {
         } catch {
             // yeet
         }
-        
+
         result.OutputModules = ParsedModules;
 
         return result;
     }
 
-    public static Settings? Load(string JsonPath)  {
+    public static Settings? Load(string JsonPath) {
         string file = File.ReadAllText(JsonPath);
 
         return JsonConvert.DeserializeObject<Settings>(file);
@@ -150,33 +158,29 @@ public class Settings {
         File.WriteAllText(SettingsPath, JsonConvert.SerializeObject(this));
     }
 
-    public static bool Exists() {
-        return File.Exists(SettingsPath);
-    }
+    public static bool Exists() => File.Exists(SettingsPath);
 
-    public static bool ExistsLegacy() {
-        return File.Exists(LegacySettingsPath);
-    }
-    
+    public static bool ExistsLegacy() => File.Exists(LegacySettingsPath);
+
     public static List<AErender> DetectAerender() {
         List<AErender> result = new List<AErender>();
-        
-        string adobeFolder = Helpers.Platform == OperatingSystemType.OSX
+
+        string adobeFolder = Helpers.Platform == OS.macOS
             ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)
             : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Adobe");
-        
+
         foreach (string path in Directory.GetDirectories(adobeFolder)) {
             if (path.Contains("Adobe After Effects")) {
                 string aerender = "";
 
-                if (Helpers.Platform == OperatingSystemType.OSX) {
+                if (Helpers.Platform == OS.macOS) {
                     aerender = Path.Combine(path, "aerender");
                     result.Add(new() {
                         Path = aerender,
                         Version = Helpers.GetPackageVersionStringDarwin($"{Path.Combine(path, Helpers.GetCurrentDirectoryName(path))}.app") ?? "",
                         Name = Helpers.GetCurrentDirectoryName(path)
                     });
-                } else {    
+                } else {
                     aerender = Path.Combine(path, "Support Files", "aerender.exe");
                     result.Add(new() {
                         Path = aerender,
@@ -187,6 +191,7 @@ public class Settings {
                 //result.Add(FileVersionInfo.GetVersionInfo(aerender).FileVersion);
             }
         }
+
         return result;
     }
 }

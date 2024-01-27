@@ -1,0 +1,61 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:AErenderLauncher.Controls"
+        xmlns:rendering="clr-namespace:AErenderLauncher.Classes.Rendering"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="AErenderLauncher.Views.TaskEditor"
+        x:Name="TaskEditorView"
+        WindowStartupLocation="CenterOwner"
+        Title="Task Editor">
+    <Grid x:Name="Root" RowDefinitions="0,*">
+        <controls:IsPlatform Grid.Row="0">
+            <controls:IsPlatform.Windows>
+                <controls:TitleBar Title="Edit task" />
+            </controls:IsPlatform.Windows>
+        </controls:IsPlatform>
+        
+        <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto">
+            <Carousel Grid.Column="1" x:Name="EditorCarousel" SelectedIndex="0">
+                <Carousel.PageTransition>
+                    <PageSlide Duration="0.5" Orientation="Horizontal" SlideInEasing="CircularEaseInOut" SlideOutEasing="CircularEaseInOut" />
+                </Carousel.PageTransition>
+                
+                <Grid RowDefinitions="32,*,32">
+                    <Grid Grid.Row="0" ColumnDefinitions="Auto,Auto,*">
+                        <Label Grid.Column="0" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Project setup" Margin="16 0 0 0" />
+                        <Label Grid.Column="1" Content="Project file path" VerticalAlignment="Center" Margin="64 0 0 0" />
+                        <TextBox Grid.Column="2" x:Name="ProjectPath" HorizontalAlignment="Stretch" Margin="4 4 8 4" IsReadOnly="True" />
+                    </Grid>
+                    <StackPanel Grid.Row="1" Margin="8 0">
+                        <Grid ColumnDefinitions="128,*,96" Height="32">
+                            <Label Grid.Column="0" Content="Output file path:" VerticalAlignment="Center" />
+                            <TextBox Grid.Column="1" x:Name="OutputPath" HorizontalAlignment="Stretch" Margin="16 4 0 4" />
+                            <Button Grid.Column="2" x:Name="OutputPathButton" Content="Select file..." Margin="4 4 0 4" HorizontalAlignment="Stretch"/>
+                        </Grid>
+                        
+                        <Grid ColumnDefinitions="128,*" Height="32">
+                             <Label Grid.Column="0" Content="Output Module Preset:" VerticalAlignment="Center" />
+                             <ComboBox Grid.Column="1" x:Name="OutputModuleBox"  HorizontalAlignment="Stretch" Margin="16 4 0 4" 
+                                       ItemsSource="{Binding ElementName=TaskEditorView, Path=outputModules}">
+                                 <ComboBox.ItemTemplate>
+                                     <DataTemplate x:DataType="rendering:OutputModule">
+                                         <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"/>
+                                     </DataTemplate>
+                                 </ComboBox.ItemTemplate>
+                             </ComboBox>
+                        </Grid>
+                        
+                        <Grid ColumnDefinitions="128,*" Height="32">
+                            <Label Grid.Column="0" Content="Render Settings:" VerticalAlignment="Center" />
+                            <controls:ComboEdit Grid.Column="1" x:Name="RenderSettings"  HorizontalAlignment="Stretch" Margin="16 4 0 4" 
+                                      ItemsSource="{Binding ElementName=TaskEditorView, Path=renderSettings}" />
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+            </Carousel>    
+        </Grid>
+        
+    </Grid>
+</Window>

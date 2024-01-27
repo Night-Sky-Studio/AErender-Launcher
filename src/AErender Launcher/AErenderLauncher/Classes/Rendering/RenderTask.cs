@@ -1,12 +1,15 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using AErenderLauncher.Classes.System.Extensions;
+using System.Reactive;
+using System.Reactive.Linq;
+using AErenderLauncher.Classes.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using static AErenderLauncher.App;
+using CollectionExtensions = AErenderLauncher.Classes.Extensions.CollectionExtensions;
 
 namespace AErenderLauncher.Classes.Rendering;
 
@@ -18,36 +21,38 @@ public static class RenderTaskExtensions {
         for (int i = 0; i < parsed.Count(); i++) {
             compositions.Add(new Composition {
                 CompositionName = parsed[i]!["Name"]!.Value<string>()!,
-                Frames = new FrameSpan(parsed[i]!["Frames"]![0]!.Value<int>()!, parsed[i]!["Frames"]![1]!.Value<int>()!),
+                Frames = new FrameSpan(parsed[i]!["Frames"]![0]!.Value<int>(), parsed[i]!["Frames"]![1]!.Value<int>()),
                 Split = 1
             });
         }
 
 
-        task.Compositions = compositions;
+        task.Compositions = new (compositions);
     }
 }
 
 public class RenderTask {
-    private Random _random { get; set; } = new Random();
+    // private int _id;
+    private static Random _random { get; set; } = new Random();
     
     public enum RenderState {
         Waiting, Rendering, Finished, Stopped, Error, Suspended
     }
-    
+    public int ID { get; init; } = _random.Next(0, 999999);
     public string Project { get; set; }
+    public string ProjectName => Path.GetFileNameWithoutExtension(Project);
     public string Output { get; set; }
-    public string OutputModule { get; set; }
-    public string RenderSettings { get; set; }
+    public string OutputModule { get; set; } = "Lossless";
+    public string RenderSettings { get; set; } = "Best Settings";
 
     public bool MissingFiles { get; set; } = false;
     public bool Sound { get; set; } = true;
     public bool Multiprocessing { get; set; } = false;
     public string CustomProperties { get; set; } = "";
-    public double CacheLimit { get; set; }
-    public double MemoryLimit { get; set; }
+    public double CacheLimit { get; set; } = 100.0;
+    public double MemoryLimit { get; set; } = 100.0;
 
-    public List<Composition> Compositions { get; set; }
+    public ObservableCollection<Composition> Compositions { get; set; }
     public RenderState State { get; set; } = RenderState.Waiting;
 
     /// <summary>
@@ -69,9 +74,9 @@ public class RenderTask {
     }
 
     private static string ProcessSplit(string path, int index) {
-        string GetFilePathWithoutExtension(string path) {
-            return path.Replace(Path.GetExtension(path), "");
-        }
+        string GetFilePathWithoutExtension(string _path) => 
+            _path.Replace(Path.GetExtension(_path), "");
+
         
         // Strip full path of the file extension
         string ProcessedPath = GetFilePathWithoutExtension(path);
@@ -111,15 +116,21 @@ public class RenderTask {
                 
                 result.Add(new RenderThread(ApplicationSettings.AErenderPath, exec) {
                     ID = _random.Next(0, 999999),
-                    CompositionName = comp.CompositionName
+                    Name = comp.CompositionName
                 });
             }
         }
 
         return result;
     }
-
+    
     public override string ToString() {
-        return $"({Project}, {Output}, {OutputModule}, {RenderSettings}, {MissingFiles}, {Sound}, {Multiprocessing}, {CustomProperties}, {CacheLimit}, {MemoryLimit}, {ListExtensions.ToString(Compositions)})";
+        return $"({Project}, {Output}, {OutputModule}, {RenderSettings}, {MissingFiles}, {Sound}, {Multiprocessing}, {CustomProperties}, {CacheLimit}, {MemoryLimit}, {CollectionExtensions.ToString(Compositions)})";
+    }
+}
+
+public static class RenderTaskListExtensions {
+    public static RenderTask GetTaskById(this IEnumerable<RenderTask> tasks, int id) {
+        return tasks.First(x => x.ID == id);
     }
 }

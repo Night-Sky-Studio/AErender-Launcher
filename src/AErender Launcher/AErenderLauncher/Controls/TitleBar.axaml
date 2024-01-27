@@ -1,0 +1,68 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="720" d:DesignHeight="32"
+             x:Name="TitleBarControl"
+             x:Class="AErenderLauncher.Controls.TitleBar">
+    
+    <UserControl.Styles>
+        <Style Selector="Menu /template/ ContentPresenter#PART_HeaderPresenter">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style Selector="MenuItem /template/ ContentPresenter#PART_HeaderPresenter">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <!-- First menu item - app item -->
+        <Style Selector="MenuItem:not(MenuItem > MenuItem):nth-child(1) /template/ ContentPresenter#PART_HeaderPresenter">
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+        
+        <Style Selector="Button.CloseBtn, Button.MinMaxBtn">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+        <Style Selector="Button.CloseBtn:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#FF6157"/>
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+        <Style Selector="Button.CloseBtn:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#E24F45"/>
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+        
+        <Style Selector="Button.MinMaxBtn:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#2A82E2"/>
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+        <Style Selector="Button.MinMaxBtn:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#17579C"/>
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+        
+    </UserControl.Styles>
+    
+    <Grid x:Name="root" ColumnDefinitions="Auto,Auto,*,Auto">
+        <Image Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Height="24" Width="24" Margin="4" Source="{Binding ElementName=TitleBarControl, Path=Icon}"/>
+        <NativeMenuBar Grid.Column="1" VerticalAlignment="Stretch" FontSize="12" />
+        <Border Grid.Column="2" IsHitTestVisible="True" Background="Transparent" PointerPressed="InputElement_OnPointerPressed" PointerMoved="InputElement_OnPointerMoved" PointerReleased="InputElement_OnPointerReleased">
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding ElementName=TitleBarControl, Path=Title}" />
+        </Border>
+        <StackPanel Grid.Column="3" Orientation="Horizontal"> 
+            <Button Classes="MinMaxBtn" Width="32" Click="Minimize_OnClick">
+                <PathIcon Width="12" Data="m600 225 0 150-600 0 0-150z"/> 
+            </Button>
+            <Button Classes="MinMaxBtn" Width="32" Click="MaximizeBtn_OnClick">
+                <PathIcon x:Name="MaximizeIcon" Height="12" Data="m0 0 600 0 0 600-150-150 0-300-300 0z"/>
+            </Button>
+            <Button Classes="CloseBtn" Width="48" Click="CloseBtn_OnClick">
+                <PathIcon Height="12" Data="m9 26.5 20-20 35 35 35-35 20 20-35 35 35 40-20 20c-39.782-39.782-21.667-21.667-35-35l-35 35-20-20 35-35-35-40z"/>
+            </Button>
+        </StackPanel>
+    </Grid>
+</UserControl>

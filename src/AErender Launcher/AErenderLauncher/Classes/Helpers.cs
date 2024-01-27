@@ -1,18 +1,16 @@
+﻿using System;
 using System.IO;
 using System.Xml;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Platform;
-using MessageBox.Avalonia;
-using MessageBox.Avalonia.BaseWindows.Base;
-using MessageBox.Avalonia.DTO;
-using MessageBox.Avalonia.Enums;
-using Microsoft.VisualBasic;
 
-namespace AErenderLauncher.Classes; 
+namespace AErenderLauncher.Classes;
+
+public enum OS {
+    Windows,
+    macOS
+}
 
 public static class Helpers {
-    public static OperatingSystemType Platform = AvaloniaLocator.Current.GetService<IRuntimePlatform>()!.GetRuntimeInfo().OperatingSystem;
+    public static OS Platform = OperatingSystem.IsWindows() ? OS.Windows : OS.macOS;//AvaloniaLocator.Current.GetService<IRuntimePlatform>()?.GetRuntimeInfo();
 
     public static string? GetPackageVersionStringDarwin(string path) {
         string plist_path = "";

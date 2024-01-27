@@ -355,3 +355,9 @@ MigrationBackup/
 
 #locals
 git_*.command
+
+bin/
+obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/

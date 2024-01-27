@@ -1,6 +1,6 @@
-using System;
+﻿using System;
 
-namespace AErenderLauncher.Classes.Rendering; 
+namespace AErenderLauncher.Classes.Rendering;
 
 public class AErenderParamException : Exception { }
 public class AErenderFrameSpanException : Exception { }

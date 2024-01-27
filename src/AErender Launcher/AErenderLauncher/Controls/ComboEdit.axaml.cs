@@ -1,30 +1,46 @@
-﻿using System;
-using System.Collections;
-using System.ComponentModel.DataAnnotations;
+﻿using System.Collections;
 using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Templates;
 using Avalonia.Markup.Xaml;
 using Avalonia.Metadata;
 
 namespace AErenderLauncher.Controls;
 
 public partial class ComboEdit : UserControl {
-    /// Items
-    public static readonly DirectProperty<ItemsControl, IEnumerable?> ElementsProperty =
-        AvaloniaProperty.RegisterDirect<ItemsControl, IEnumerable?>(nameof(Elements), o => o.Items, (o, v) => o.Items = v);
-
-    public IEnumerable? Elements {
-        get => _elements; 
-        set => SetAndRaise(ElementsProperty, ref _elements, value); 
+    // public static readonly DirectProperty<ItemsControl, IEnumerable?> ItemsSourceProperty =
+    //     AvaloniaProperty.RegisterDirect<ItemsControl, IEnumerable?>(nameof(ItemsSource), 
+    //         o => o.ItemsSource, 
+    //         (o, v) => o.ItemsSource = v
+    //     );
+    //
+    // public IEnumerable? ItemsSource {
+    //     get => _itemsSource; 
+    //     set => SetAndRaise(ItemsSourceProperty, ref _itemsSource, value); 
+    // }
+    // private IEnumerable? _itemsSource = new AvaloniaList<object>();
+    
+    public static readonly StyledProperty<IEnumerable?> ItemsSourceProperty =
+        AvaloniaProperty.Register<ItemsControl, IEnumerable?>(nameof(ItemsSource));
+    
+    public IEnumerable? ItemsSource {
+        get => GetValue(ItemsSourceProperty);
+        set => SetValue(ItemsSourceProperty, value);
     }
-    private IEnumerable? _elements = new AvaloniaList<object>();
 
     /// Text
     public static readonly DirectProperty<ComboEdit, string> TextProperty =
         AvaloniaProperty.RegisterDirect<ComboEdit, string>(nameof(Text), o => o.Text, (o, v) => o.Text = v);
-
+    
+    // [InheritDataTypeFromItems(nameof(Elements))]
+    // public IDataTemplate? ItemTemplate {
+    //     get => GetValue(ItemTemplateProperty);
+    //     set => SetValue(ItemTemplateProperty, value);
+    // }
+    // public static readonly StyledProperty<IDataTemplate?> ItemTemplateProperty =
+    //     AvaloniaProperty.Register<ItemsControl, IDataTemplate?>(nameof(ItemTemplate));
+    
     public string Text {
         get => _text;
         set => SetAndRaise(TextProperty, ref _text, value);
@@ -36,6 +52,7 @@ public partial class ComboEdit : UserControl {
     }
 
     private void SelectingItemsControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
-        Text = (ComboEditBox.SelectedItem as ComboBoxItem)?.Content as string ?? "";
+        if (sender is not ComboBox box) return;
+        Text = box.SelectedItem as string ?? "";
     }
 }

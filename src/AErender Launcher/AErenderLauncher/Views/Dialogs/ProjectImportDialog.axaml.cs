@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using AErenderLauncher.Classes;
@@ -8,11 +8,10 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using Avalonia.Platform;
 using DynamicData;
 using static AErenderLauncher.App;
 
-namespace AErenderLauncher.Views.Dialogs; 
+namespace AErenderLauncher.Views.Dialogs;
 
 public partial class ProjectImportDialog : Window {
     public ObservableCollection<ProjectItem> Items { get; set; } = new ObservableCollection<ProjectItem>();
@@ -20,17 +19,18 @@ public partial class ProjectImportDialog : Window {
     public ProjectImportDialog() {
         InitializeComponent();
         
-        ExtendClientAreaToDecorationsHint = Helpers.Platform != OperatingSystemType.OSX;
-        Root.RowDefinitions = Helpers.Platform == OperatingSystemType.OSX ? new RowDefinitions("0,32,*,32") : new RowDefinitions("32,32,*,32");
+        ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
+        Root.RowDefinitions = Helpers.Platform == OS.macOS ? new RowDefinitions("0,32,*,32") : new RowDefinitions("32,32,*,32");
     }
 
-    public ProjectImportDialog(ProjectItem[] items) {
+    public ProjectImportDialog(ProjectItem[] items, string projectPath) {
         InitializeComponent();
 
-        ExtendClientAreaToDecorationsHint = Helpers.Platform != OperatingSystemType.OSX;
-        Root.RowDefinitions = Helpers.Platform == OperatingSystemType.OSX ? new RowDefinitions("0,32,*,32") : new RowDefinitions("32,32,*,32");
+        ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
+        Root.RowDefinitions = Helpers.Platform == OS.macOS ? new RowDefinitions("0,32,*,32") : new RowDefinitions("32,32,*,32");
         
         Items.AddRange(items);
+        ProjectPath.Text = projectPath;
     }
     
     private void CloseButton_OnClick(object sender, RoutedEventArgs e) {
@@ -61,7 +61,7 @@ public partial class ProjectImportDialog : Window {
                 CustomProperties = ApplicationSettings.CustomProperties,
                 OutputModule = ApplicationSettings.ActiveOutputModule?.Module ?? "Lossless",
                 RenderSettings = ApplicationSettings.RenderSettings,
-                Compositions = compositions
+                Compositions = new (compositions)
             });
     }
 
@@ -70,8 +70,8 @@ public partial class ProjectImportDialog : Window {
     }
 
     private void CompositionsList_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
-        ProjectItem? added   = e.AddedItems.Count > 0 ? e.AddedItems[e.AddedItems.Count - 1] as ProjectItem ?? null : null;
-        ProjectItem? removed = e.RemovedItems.Count > 0 ? e.RemovedItems[e.RemovedItems.Count - 1] as ProjectItem ?? null : null;
+        ProjectItem? added   = e.AddedItems.Count > 0 ? e.AddedItems[^1] as ProjectItem ?? null : null;
+        ProjectItem? removed = e.RemovedItems.Count > 0 ? e.RemovedItems[^1] as ProjectItem ?? null : null;
 
         ProjectItem? item = added ?? removed ?? null;
 

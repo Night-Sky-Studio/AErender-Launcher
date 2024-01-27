@@ -1,4 +1,4 @@
-namespace AErenderLauncher.Classes.Rendering; 
+﻿namespace AErenderLauncher.Classes.Rendering;
 
 public struct Composition {
     public string CompositionName { get; set; }

@@ -1,9 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace AErenderLauncher.Classes.Rendering;
 
 public static class OMListExtensions {
-    public static int IndexOf(this List<OutputModule> list, string Module) {
+    public static int IndexOf(this IList<OutputModule> list, string Module) {
         for (int i = 0; i < list.Count; i++) {
             if (list[i].Module == Module) {
                 return i;

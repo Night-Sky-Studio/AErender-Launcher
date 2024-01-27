@@ -5,12 +5,14 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 
-namespace AErenderLauncher.Controls; 
+namespace AErenderLauncher.Controls;
 
 public partial class EditTextBlock : UserControl {
-    /// Text
     public static readonly DirectProperty<EditTextBlock, string> TextProperty =
-        AvaloniaProperty.RegisterDirect<EditTextBlock, string>(nameof(Text), o => o.Text, (o, v) => o.Text = v);
+        AvaloniaProperty.RegisterDirect<EditTextBlock, string>(nameof(Text), 
+            o => o.Text, 
+            (o, v) => o.Text = v
+        );
 
     public string Text {
         get => _text;
@@ -19,7 +21,10 @@ public partial class EditTextBlock : UserControl {
     private string _text = "";
 
     public static readonly DirectProperty<EditTextBlock, bool> IsEditingProperty =
-        AvaloniaProperty.RegisterDirect<EditTextBlock, bool>(nameof(IsEditing), o => o.IsEditing, (o, v) => o.IsEditing = v);
+        AvaloniaProperty.RegisterDirect<EditTextBlock, bool>(nameof(IsEditing), 
+            o => o.IsEditing, 
+            (o, v) => o.IsEditing = v
+        );
 
     public bool IsEditing {
         get => _isEditing;
@@ -47,7 +52,7 @@ public partial class EditTextBlock : UserControl {
         }
     }
 
-    private void Label_OnTapped(object sender, RoutedEventArgs e) {
+    private void Label_OnTapped(object sender, TappedEventArgs e) {
         IsEditing = true;
     }
 

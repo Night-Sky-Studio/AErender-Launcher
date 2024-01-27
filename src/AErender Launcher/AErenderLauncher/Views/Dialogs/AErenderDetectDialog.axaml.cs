@@ -1,39 +1,39 @@
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using AErenderLauncher.Classes;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Platform;
+using Avalonia.Markup.Xaml;
 using DynamicData;
 
 namespace AErenderLauncher.Views.Dialogs;
 
 public partial class AErenderDetectDialog : Window {
-    public ObservableCollection<AErender> _paths { get; set; } = new ObservableCollection<AErender>();
-    public AErender? _output { get; private set; }
+    public ObservableCollection<AErender> Paths { get; set; } = new();
+    public AErender? Result { get; private set; }
+
+    private void Init() {
+        InitializeComponent();
+        
+        ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
+        Root.RowDefinitions = Helpers.Platform == OS.macOS ? new RowDefinitions("0,32,*,32") : new RowDefinitions("32,32,*,32");
+    }
     
     public AErenderDetectDialog() {
-        InitializeComponent();
-        
-        ExtendClientAreaToDecorationsHint = Helpers.Platform != OperatingSystemType.OSX;
-        Root.RowDefinitions = Helpers.Platform == OperatingSystemType.OSX ? new RowDefinitions("0,32,*,32") : new RowDefinitions("32,32,*,32");
+        Init();
     }
 
-    public AErenderDetectDialog(List<AErender> Paths) {
-        InitializeComponent();
-        
-        ExtendClientAreaToDecorationsHint = Helpers.Platform != OperatingSystemType.OSX;
-        Root.RowDefinitions = Helpers.Platform == OperatingSystemType.OSX ? new RowDefinitions("0,32,*,32") : new RowDefinitions("32,32,*,32");
-        
-        _paths.AddRange(Paths);
+    public AErenderDetectDialog(List<AErender> paths) {
+        Init();
+        Paths.AddRange(paths);
     }
-
-    private void SelectingItemsControl_OnSelectionChanged(object? sender, SelectionChangedEventArgs e) {
-        _output = _paths[(e.Source as ListBox)?.SelectedIndex ?? 0];
+    
+    private void AerenderListBox_OnSelectionChanged(object? sender, SelectionChangedEventArgs e) {
+        Result = Paths[(e.Source as ListBox)?.SelectedIndex ?? 0];
     }
 
     private void CloseButton_OnClick(object? sender, RoutedEventArgs e) {
-        Close(_output);
+        Close(Result);
     }
 }

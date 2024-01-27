@@ -1,25 +1,23 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using AErenderLauncher.Classes;
 using AErenderLauncher.Views.Dialogs;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using Avalonia.Platform;
-
 using static AErenderLauncher.App;
 
-namespace AErenderLauncher.Views; 
+namespace AErenderLauncher.Views;
 
 public partial class SettingsWindow : Window {
     public SettingsWindow() {
         InitializeComponent();
         
-        ExtendClientAreaToDecorationsHint = Helpers.Platform != OperatingSystemType.OSX;
-        Root.RowDefinitions = Helpers.Platform == OperatingSystemType.OSX ? new RowDefinitions("0,32,*,32") : new RowDefinitions("32,32,*,32");
+        ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
+        Root.RowDefinitions = Helpers.Platform == OS.macOS ? new RowDefinitions("0,32,*,32") : new RowDefinitions("32,32,*,32");
         
+        AerenderPath.Text = ApplicationSettings.AErenderPath;
     }
 
     private void CloseButton_OnClick(object sender, RoutedEventArgs e) {
@@ -32,7 +30,7 @@ public partial class SettingsWindow : Window {
             AllowMultiple = false,
             Filters = new() {
                 new() {
-                    Extensions = { Helpers.Platform == OperatingSystemType.WinNT ? "exe" : "*" }, Name = "aerender"
+                    Extensions = { Helpers.Platform == OS.Windows ? "exe" : "*" }, Name = "aerender"
                 }
             },
             Directory = Environment.GetFolderPath(Environment.SpecialFolder.Programs)
@@ -51,7 +49,6 @@ public partial class SettingsWindow : Window {
             result = paths[0];
         else {
             AErenderDetectDialog dialog = new(paths);
-
             result = await dialog.ShowDialog<AErender?>(this);
         }
 

@@ -1,22 +1,18 @@
-<Window xmlns="https://github.com/avaloniaui"
+﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:AErenderLauncher.Controls"
         xmlns:project="clr-namespace:AErenderLauncher.Classes.Project"
-        mc:Ignorable="d" Width="640" Height="480"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="AErenderLauncher.Views.Dialogs.ProjectImportDialog"
         WindowStartupLocation="CenterOwner"
-        Background="#2D2D2D"
-        x:Name="_ProjectImportDialog"
+        SystemDecorations="Full"
+        ExtendClientAreaChromeHints="NoChrome"
+        Width="640" Height="480"
+        x:Name="ProjectImportView"
         Closed="TopLevel_OnClosed"
         Title="Import project">
-    
-    <Window.Styles>
-        <StyleInclude Source="avares://AErenderLauncher/Styles/AErender Launcher Dark.axaml" />
-        <!-- <StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml"/> -->
-    </Window.Styles>
-    
     <Window.Resources>
         <ResourceDictionary>
             <DataTemplate x:Key="ListCompositionTemplate" x:DataType="project:ProjectItem">
@@ -28,12 +24,7 @@
     <Grid x:Name="Root" RowDefinitions="32,32,*,32">
         <controls:IsPlatform Grid.Row="0">
             <controls:IsPlatform.Windows>
-                <Border Grid.Row="0" Classes="Toolbar" IsHitTestVisible="False">
-                    <Panel>
-                        <Label Content="Import project" VerticalAlignment="Center" HorizontalAlignment="Center"
-                               Margin="32, 0" />
-                    </Panel>
-                </Border>
+                <controls:TitleBar VerticalAlignment="Top" Title="Import project" />
             </controls:IsPlatform.Windows>
         </controls:IsPlatform>
         
@@ -41,7 +32,7 @@
             <Grid ColumnDefinitions="*,Auto,384">
                 <Label Content="Import project" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="16 0 0 0" />
                 <Label Grid.Column="1" Content="Project path:" VerticalAlignment="Center" />
-                <TextBox Grid.Column="2" Text="path" Margin="4,0" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+                <TextBox Grid.Column="2" x:Name="ProjectPath" Margin="4,0" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
             </Grid>
         </Border>
         
@@ -49,7 +40,11 @@
         
             <Grid RowDefinitions="Auto, *,Auto" Margin="8">
                 <Label Grid.Row="0" Content="Compositions" Margin="0,0,0,4"/>
-                <ListBox Grid.Row="1" x:Name="CompositionsList" ItemTemplate="{StaticResource ListCompositionTemplate}" SelectionMode="Toggle,Multiple" Items="{Binding ElementName=_ProjectImportDialog, Path=Items}" VirtualizationMode="None" SelectionChanged="CompositionsList_OnSelectionChanged"/>
+                <ListBox Grid.Row="1" x:Name="CompositionsList" 
+                         ItemTemplate="{StaticResource ListCompositionTemplate}" 
+                         SelectionMode="Toggle,Multiple" 
+                         ItemsSource="{Binding ElementName=ProjectImportView, Path=Items}" 
+                         SelectionChanged="CompositionsList_OnSelectionChanged"/>
                 <Grid Grid.Row="2" ColumnDefinitions="*,*" Margin="0,8,0,0">
                     <Button Grid.Column="0" Content="Select all" HorizontalAlignment="Stretch" Margin="0,0,2,0" />
                     <Button Grid.Column="1" Content="Deselect all" HorizontalAlignment="Stretch" Margin="2,0,0,0" />
@@ -76,5 +71,4 @@
             </Grid>
         </Border>
     </Grid>
-    
 </Window>

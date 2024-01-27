@@ -1,29 +1,23 @@
-<Window xmlns="https://github.com/avaloniaui"
+﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:controls="clr-namespace:AErenderLauncher.Controls"
         xmlns:classes="clr-namespace:AErenderLauncher.Classes"
-        xmlns:local="clr-namespace:AErenderLauncher"
+        xmlns:controls="clr-namespace:AErenderLauncher.Controls"
         mc:Ignorable="d" Width="800" Height="450"
-        x:Class="AErenderLauncher.Views.Dialogs.AErenderDetectDialog"
+        x:Name="AerenderDetectView"
         WindowStartupLocation="CenterOwner"
-        Background="#2D2D2D"
-        x:Name="_AErenderDetectDialog"
+        SystemDecorations="Full"
+        ExtendClientAreaChromeHints="NoChrome"
+        x:Class="AErenderLauncher.Views.Dialogs.AErenderDetectDialog"
         Title="Select aerender version">
-    
-    <Window.Styles>
-        <StyleInclude Source="avares://AErenderLauncher/Styles/AErender Launcher Dark.axaml" />
-        <!-- <StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml"/> -->
-    </Window.Styles>
-    
     <Window.Resources>
         <ResourceDictionary>
             <DataTemplate x:Key="AerenderListTemplate" x:DataType="classes:AErender">
                 <Grid ColumnDefinitions="192,*,64">
-                    <TextBlock Grid.Column="0" Text="{Binding Name}" />
-                    <TextBlock Grid.Column="1" Text="{Binding Path}" />
-                    <TextBlock Grid.Column="2" Text="{Binding Version}" />
+                    <TextBlock Grid.Column="0" Text="{Binding Name}"/>
+                    <TextBlock Grid.Column="1" Text="{Binding Path}"/>
+                    <TextBlock Grid.Column="2" Text="{Binding Version}"/>
                 </Grid>
             </DataTemplate>
         </ResourceDictionary>
@@ -32,27 +26,19 @@
     <Grid x:Name="Root" RowDefinitions="32,32,*,32">
         <controls:IsPlatform Grid.Row="0">
             <controls:IsPlatform.Windows>
-                <Border Grid.Row="0" Classes="Toolbar" IsHitTestVisible="False">
-                    <Panel>
-                        <Label Content="Select aerender version" VerticalAlignment="Center" HorizontalAlignment="Center"
-                               Margin="32, 0" />
-                    </Panel>
-                </Border>
+                <controls:TitleBar VerticalAlignment="Top" Title="Select aerender version" />
             </controls:IsPlatform.Windows>
         </controls:IsPlatform>
         
         <Border Grid.Row="1" Classes="Toolbar">
-            <Grid>
-                <Label Content="Select aerender version" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="16 0 0 0"/>
-            </Grid>
+            <Label Content="Select aerender version" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="16 0 0 0"/>
         </Border>
         
-        <ListBox Grid.Row="2" SelectionMode="Single" SelectionChanged="SelectingItemsControl_OnSelectionChanged" Items="{Binding ElementName=_AErenderDetectDialog, Path=_paths}" ItemTemplate="{StaticResource AerenderListTemplate}" />
+        <ListBox Grid.Row="2" ItemsSource="{Binding ElementName=AerenderDetectView, Path=Paths}" 
+                 ItemTemplate="{StaticResource AerenderListTemplate}" SelectionMode="Single" SelectionChanged="AerenderListBox_OnSelectionChanged"/>
         
-        <Border Grid.Row="3" Classes="Statusbar">
-            <Grid>
-                <Button x:Name="CloseButton" Content="OK" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Click="CloseButton_OnClick" />
-            </Grid>
+        <Border Grid.Row="3">
+            <Button x:Name="CloseButton" Content="OK" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Click="CloseButton_OnClick"/>
         </Border>
     </Grid>
 </Window>
