@@ -1,0 +1,53 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:AErenderLauncher.Controls"
+        xmlns:rendering="clr-namespace:AErenderLauncher.Classes.Rendering"
+        xmlns:views="clr-namespace:AErenderLauncher.Views"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Name="RenderingWindowView"
+        x:Class="AErenderLauncher.Views.RenderingWindow"
+        WindowStartupLocation="CenterOwner"
+        SystemDecorations="Full"
+        ExtendClientAreaChromeHints="NoChrome"
+        Title="Rendering Progress">
+    <Grid x:Name="Root" RowDefinitions="32,32,*,144">
+        <controls:IsPlatform Grid.Row="0">
+            <controls:IsPlatform.Windows>
+                <controls:TitleBar VerticalAlignment="Top" Title="Rendering Progress" />
+            </controls:IsPlatform.Windows>
+        </controls:IsPlatform>
+        
+        <Border Grid.Row="1" Classes="Toolbar">
+            <Label Content="Rendering Progress" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="16 0 0 0"/>
+        </Border>
+        
+        <ScrollViewer Grid.Row="2">
+            <ItemsRepeater ItemsSource="{Binding ElementName=RenderingWindowView, Path=Threads}">
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate x:DataType="views:RenderThreadWrapper">
+                        <controls:RenderThreadProgress RenderThread="{Binding Thread}"/>
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
+        </ScrollViewer>
+        
+        <Border Grid.Row="3" Classes="Statusbar" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Grid RowDefinitions="*,40" ColumnDefinitions="*,192">
+                <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="16, 16, 16, 0">
+                    <Grid ColumnDefinitions="*,*">
+                        <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="Total progress" FontWeight="Bold" FontSize="16" />
+                        <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Text="0%" FontWeight="Bold" FontSize="16" />
+                    </Grid>
+                    <ProgressBar Height="24" />
+                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Right" Text="XXXX / XXXX" FontWeight="Bold" FontSize="16" />
+                </StackPanel>
+                
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Time Elapsed: 00:00:00" VerticalAlignment="Center" Margin="16,0,0,0" />
+                
+                <Button Grid.Row="1" Grid.Column="1" Content="Abort Rendering" Margin="16, 4" VerticalAlignment="Center" />
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

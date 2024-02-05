@@ -1,0 +1,22 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Name="RenderThreadProgressControl"
+             x:Class="AErenderLauncher.Controls.RenderThreadProgress">
+    
+    <Grid x:Name="Root" RowDefinitions="48,*" ColumnDefinitions="*,48" Height="240" HorizontalAlignment="Stretch">
+        <StackPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="16,0">
+            <Grid ColumnDefinitions="*,*">
+                <TextBlock Grid.Column="0" x:Name="CompName" VerticalAlignment="Center" Text="Comp" />
+                <TextBlock Grid.Column="1" x:Name="StatusText"  Text="Status/Frames" HorizontalAlignment="Right" />
+            </Grid>
+            
+            <ProgressBar x:Name="Progress" IsIndeterminate="True" Height="4" />
+        </StackPanel>
+        <ToggleButton Grid.Row="0" Grid.Column="1" x:Name="LogBtn" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Content="Log" IsCheckedChanged="LogBtn_IsCheckedChanged"/>
+        
+        <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="LogBox" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
+    </Grid>
+</UserControl>
