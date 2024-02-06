@@ -5,6 +5,17 @@
              RequestedThemeVariant="Default">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
+    <NativeMenu.Menu>
+        <NativeMenu>
+            <NativeMenuItem Header="About" />
+            <NativeMenuItem Header="Check for updates" />
+            <NativeMenuItemSeparator />
+            <NativeMenuItem Header="Settings" />
+            <NativeMenuItemSeparator />
+            <NativeMenuItem Header="Quit AErender Launcher" />
+        </NativeMenu>
+    </NativeMenu.Menu>
+             
     <Application.Styles>
         <SimpleTheme />
         <StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml"/>
