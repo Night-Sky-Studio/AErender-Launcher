@@ -16,6 +16,9 @@ sealed class Program {
     public static AppBuilder BuildAvaloniaApp()
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
+            .With(new MacOSPlatformOptions {
+                DisableDefaultApplicationMenuItems = true
+            })
             // .WithInterFont() // because fuck you, I guess...
             .LogToTrace()
             .UseReactiveUI();
