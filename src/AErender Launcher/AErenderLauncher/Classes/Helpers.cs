@@ -47,4 +47,9 @@ public static class Helpers {
     public static string GetCurrentDirectoryName(string path) {
         return new DirectoryInfo(GetCurrentDirectory(path)).Name;
     }
+
+    public static long GetPlatformMemory() {
+        var gcMemoryInfo = GC.GetGCMemoryInfo();
+        return gcMemoryInfo.TotalAvailableMemoryBytes / 1024 / 1024;
+    }
 }

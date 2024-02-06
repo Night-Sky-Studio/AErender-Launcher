@@ -1,8 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Metadata;
 
@@ -46,6 +48,20 @@ public partial class ComboEdit : UserControl {
         set => SetAndRaise(TextProperty, ref _text, value);
     }
     private string _text = "";
+    
+    public static readonly RoutedEvent<TextChangedEventArgs> TextChangedEvent =
+        RoutedEvent.Register<EditTextBlock, TextChangedEventArgs>(
+            nameof(TextChanged),
+            RoutingStrategies.Bubble
+        );
+    public event EventHandler<TextChangedEventArgs>? TextChanged {
+        add => AddHandler(TextChangedEvent, value);
+        remove => RemoveHandler(TextChangedEvent, value);
+    }
+    protected virtual void OnTextChanged() {
+        var e = new TextChangedEventArgs(TextChangedEvent);
+        RaiseEvent(e);
+    }
 
     public ComboEdit() {
         InitializeComponent();
@@ -54,5 +70,8 @@ public partial class ComboEdit : UserControl {
     private void SelectingItemsControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
         if (sender is not ComboBox box) return;
         Text = box.SelectedItem as string ?? "";
+    }
+    private void ComboEditText_OnTextChanged(object? sender, TextChangedEventArgs e) {
+        OnTextChanged();
     }
 }

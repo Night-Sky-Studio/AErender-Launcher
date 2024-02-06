@@ -1,4 +1,5 @@
-﻿using Avalonia;
+﻿using System;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -36,10 +37,22 @@ public partial class EditTextBlock : UserControl {
     public static readonly StyledProperty<TextAlignment> TextAlignmentProperty =
         AvaloniaProperty.Register<TextBlock, TextAlignment>(nameof(TextAlignment));
     
-    public TextAlignment TextAlignment
-    {
+    public TextAlignment TextAlignment {
         get => GetValue(TextAlignmentProperty);
         set => SetValue(TextAlignmentProperty, value);
+    }
+
+    public static readonly RoutedEvent<RoutedEventArgs> SubmitEvent =
+        RoutedEvent.Register<EditTextBlock, RoutedEventArgs>(nameof(Submit), RoutingStrategies.Bubble);
+    
+    public event EventHandler<RoutedEventArgs>? Submit {
+        add => AddHandler(SubmitEvent, value);
+        remove => RemoveHandler(SubmitEvent, value);
+    }
+    
+    protected virtual void OnSubmit() {
+        var e = new RoutedEventArgs(SubmitEvent);
+        RaiseEvent(e);
     }
     
     public EditTextBlock() {
@@ -49,6 +62,7 @@ public partial class EditTextBlock : UserControl {
     private void Field_OnKeyDown(object sender, KeyEventArgs e) {
         if (e.Key == Key.Enter) {
             IsEditing = false;
+            OnSubmit();
         }
     }
 

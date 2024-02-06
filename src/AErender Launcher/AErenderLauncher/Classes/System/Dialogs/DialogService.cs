@@ -48,9 +48,27 @@ public static class DialogsService {
         }
         
         return (await provider.OpenFilePickerAsync(new FilePickerOpenOptions {
-            AllowMultiple = false,
+            AllowMultiple = AllowMultiple,
             SuggestedStartLocation = await provider.TryGetFolderFromPathAsync(StartingPath),
             FileTypeFilter = Filters.Count > 0 ? filter : null
         })).AsList();
+    }
+    
+    public static async Task<IStorageFile?> ShowSaveFileDialogAsync(this Window OwnerWindow, List<Tuple<string, string>> Filters, string StartingPath = "", string SuggestedFileName = "Untitled") {
+        var provider = TopLevel.GetTopLevel(OwnerWindow)?.StorageProvider;
+        if (provider == null) return null;
+        
+        List<FilePickerFileType> filter = new();
+        foreach (Tuple<string, string> tuple in Filters) {
+            filter.Add(new(tuple.Item1) {
+                Patterns = new List<string> { tuple.Item2 }
+            });
+        }
+        
+        return await provider.SaveFilePickerAsync(new FilePickerSaveOptions {
+            SuggestedFileName = SuggestedFileName,
+            SuggestedStartLocation = await provider.TryGetFolderFromPathAsync(StartingPath),
+            FileTypeChoices = Filters.Count > 0 ? filter : null
+        });
     }
 }

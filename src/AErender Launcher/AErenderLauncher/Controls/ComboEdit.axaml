@@ -13,6 +13,6 @@
     
     <Panel Height="24" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <ComboBox x:Name="ComboEditBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SelectionChanged="SelectingItemsControl_OnSelectionChanged" ItemsSource="{Binding ElementName=ComboEditControl, Path=ItemsSource}" />
-        <TextBox x:Name="ComboEditText" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0 0 32 0" Text="{Binding ElementName=ComboEditControl, Path=Text}" />
+        <TextBox x:Name="ComboEditText" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0 0 32 0" Text="{Binding ElementName=ComboEditControl, Path=Text}" TextChanged="ComboEditText_OnTextChanged" />
     </Panel>
 </UserControl>

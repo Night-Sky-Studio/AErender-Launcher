@@ -133,15 +133,16 @@ public partial class MainWindow : Window {
         
         if (!aep.Any()) return;
         
-        System.Diagnostics.Debug.WriteLine(aep.First());
-        // TaskEditorPopup editor = new(new RenderTask {
-        //     Project = aep[0]
-        // });
-        //     
-        // RenderTask? result = await editor.ShowDialog<RenderTask?>(this);
-        // if (result != null) {
-        //     Tasks.Add(result);
-        // }
+        // System.Diagnostics.Debug.WriteLine(aep.First());
+        
+        TaskEditor editor = new(new RenderTask {
+            Project = aep.First().Path.AbsolutePath
+        });
+            
+        RenderTask? result = await editor.ShowDialog<RenderTask?>(this);
+        if (result != null) {
+            Tasks.Add(result);
+        }
     }
 
     //private List<RenderThread> queue;
@@ -202,7 +203,7 @@ public partial class MainWindow : Window {
 
     private void EditTask_OnClick(object? sender, RoutedEventArgs e) {
         if (sender is not Button btn) return;
-        TaskEditor editor = new(Tasks.GetTaskById(int.Parse($"{btn.Tag}")));
+        TaskEditor editor = new(Tasks.GetTaskById(int.Parse($"{btn.Tag}")), true);
         editor.ShowDialog(this);
     }
 }
