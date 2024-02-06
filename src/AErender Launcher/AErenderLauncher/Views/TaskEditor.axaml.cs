@@ -50,10 +50,10 @@ public partial class TaskEditor : Window {
     }
 
     public TaskEditor(RenderTask task, bool isEditing = false) {
-        InitializeComponent();
         IsEditing = isEditing;
-
         Task = task;
+        
+        InitializeComponent();
 
         // TODO:    Make bindings work
         // Remarks: If somebody will be able to make two-way
@@ -156,17 +156,21 @@ public partial class TaskEditor : Window {
         if (TryParseMemory(MemoryTextBlock.Text, out var r))
             MemorySlider.Value = r;
     }
-    private void PropsCheckbox_OnIsCheckedChanged(object? sender, RoutedEventArgs e) {
-        // update all checkboxes at the same time
-        Task.MissingFiles = MissingCheckbox.IsChecked ?? false;
-        Task.Sound = SoundCheckbox.IsChecked ?? false;
-        Task.Multiprocessing = ThreadedCheckbox.IsChecked ?? false;
-    }
+    private void MissingCheckbox_OnIsCheckedChanged(object? sender, RoutedEventArgs e) => Task.MissingFiles = MissingCheckbox.IsChecked ?? false;
+
+    private void SoundCheckbox_OnIsCheckedChanged(object? sender, RoutedEventArgs e) => Task.Sound = SoundCheckbox.IsChecked ?? false;
+
+    private void ThreadedCheckbox_OnIsCheckedChanged(object? sender, RoutedEventArgs e) => Task.Multiprocessing = ThreadedCheckbox.IsChecked ?? false;
+
     private void CustomProperties_OnTextChanged(object? sender, TextChangedEventArgs e) =>
         Task.CustomProperties = CustomProperties.Text ?? "";
-    
-    private void OutputModuleBox_OnSelectionChanged(object? sender, SelectionChangedEventArgs e) =>
+
+    private void OutputModuleBox_OnSelectionChanged(object? sender, SelectionChangedEventArgs e) {
+        // if (e.AddedItems[0] is OutputModule module && module.Module != Task.OutputModule)
+            // Task.OutputModule = module.Module;
         Task.OutputModule = outputModules[OutputModuleBox.SelectedIndex].Module;
+    }
+    
 
     private void RenderSettings_OnTextChanged(object? sender, TextChangedEventArgs e) {
         Task.RenderSettings = RenderSettings.Text;
