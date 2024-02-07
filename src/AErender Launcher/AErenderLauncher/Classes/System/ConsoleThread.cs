@@ -9,7 +9,7 @@ using Microsoft.VisualBasic;
 
 namespace AErenderLauncher.Classes.System;
 
-public class ConsoleThread {
+public class ConsoleThread : ReactiveObject {
     public enum ThreadState {
         Running,
         Suspended,
@@ -111,7 +111,7 @@ public class ConsoleThread {
     }
 
     public void Abort() {
-        if (State == ThreadState.Stopped) throw new ThreadStateException("Can't kill a stopped thread");
+        if (State == ThreadState.Stopped) return; //throw new ThreadStateException("Can't kill a stopped thread");
         _process.Close();
         State = ThreadState.Stopped;
         Dispose();

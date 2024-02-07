@@ -19,6 +19,7 @@ using static AErenderLauncher.App;
 namespace AErenderLauncher.Views;
 
 public partial class MainWindow : Window {
+    private RenderingWindow? _renderingWindow;
     public static ObservableCollection<RenderTask> Tasks { get; set; } = new ();
 
     public static ObservableCollection<RenderThread> Threads { get; set; } = new ();
@@ -27,23 +28,23 @@ public partial class MainWindow : Window {
         InitializeComponent();
 #if DEBUG
         DebugLabel.IsVisible = true;
-        Tasks.Add(new RenderTask {
-            Project = "C:\\YandexDisk\\Acer\\Footages (AE)\\AErender Launcher Benchmark Projects\\Deneb - Mograph Icons\\Mograph Icons.aep",
-            Output = "C:\\Users\\lunam\\Desktop\\[projectName]\\[compName].[fileExtension]",
-            OutputModule = "Lossless",
-            RenderSettings = "Best Settings",
-            MissingFiles = true,
-            Sound = true,
-            Multiprocessing = false,
-            CacheLimit = 100,
-            MemoryLimit = 5,
-            Compositions = [
-                new("Game Icons", new FrameSpan(0, 120), 1),
-                new("Web Icons", new FrameSpan(0, 120), 1),
-                new("Ecology Icons", new FrameSpan(0, 120), 1),
-                new("Medical Icons", new FrameSpan(0, 120), 1)
-            ]
-        });
+        // Tasks.Add(new RenderTask {
+        //     Project = "C:\\YandexDisk\\Acer\\Footages (AE)\\AErender Launcher Benchmark Projects\\Deneb - Mograph Icons\\Mograph Icons.aep",
+        //     Output = "C:\\Users\\lunam\\Desktop\\[projectName]\\[compName].[fileExtension]",
+        //     OutputModule = "Lossless",
+        //     RenderSettings = "Best Settings",
+        //     MissingFiles = true,
+        //     Sound = true,
+        //     Multiprocessing = false,
+        //     CacheLimit = 100,
+        //     MemoryLimit = 5,
+        //     Compositions = [
+        //         new("Game Icons", new FrameSpan(0, 120), 1),
+        //         new("Web Icons", new FrameSpan(0, 120), 1),
+        //         new("Ecology Icons", new FrameSpan(0, 120), 1),
+        //         new("Medical Icons", new FrameSpan(0, 120), 1)
+        //     ]
+        // });
         Tasks.Add(new RenderTask {
             Project = "C:\\YandexDisk\\Acer\\Footages (AE)\\AErender Launcher Benchmark Projects\\SuperEffectiveBros - Mograph Practice\\AEPRTC_Eclipse_rev57(ForDist)_2022.aep",
             Output = "C:\\Users\\lunam\\Desktop\\[projectName]\\[compName].[fileExtension]",
@@ -89,19 +90,22 @@ public partial class MainWindow : Window {
         
             return task;
         }
-        // await this.ShowGenericDialogAsync(new() {
-        //     Title = "Error",
-        //     Body = "Project parser somehow disappeared from AErender Launcher's folder.\nPlease, visit link bellow to fix this issue.",
-        //     Link = "https://aerenderlauncher.com/docs/Parser#ParserDisappeared",
-        //     CancelText = "Close"
-        // });
-        
         
         return null;
     }
 
     private async void Launch_OnClick(object sender, RoutedEventArgs e) {
-        //
+        var aggregatedTasks = Tasks.Aggregate(new List<RenderThread>(), (threads, task) => {
+            threads.AddRange(task.Enqueue());
+            return threads;
+        });
+        
+        _renderingWindow = new(aggregatedTasks);
+
+        await Task.WhenAll([
+            _renderingWindow.Start(),
+            _renderingWindow.ShowDialog(this)
+        ]);
     }
 
     private async void SettingsButton_OnClick(object sender, RoutedEventArgs e) {
@@ -205,5 +209,9 @@ public partial class MainWindow : Window {
         if (sender is not Button btn) return;
         TaskEditor editor = new(Tasks.GetTaskById(int.Parse($"{btn.Tag}")), true);
         editor.ShowDialog(this);
+    }
+
+    private async void QueueButton_OnClick(object? sender, RoutedEventArgs e) {
+        if (_renderingWindow != null) await _renderingWindow.ShowDialog(this);
     }
 }

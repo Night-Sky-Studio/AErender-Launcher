@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using AErenderLauncher.Classes;
 using AErenderLauncher.Classes.Rendering;
 using AErenderLauncher.Controls;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using DynamicData;
 
 namespace AErenderLauncher.Views;
 
-public class RenderThreadWrapper {
-    public RenderThread Thread { get; set; }
-    // public RenderProgress Progress { get; set; }
-}
-
 public partial class RenderingWindow : Window {
-    ObservableCollection<RenderThreadWrapper> Threads { get; set; } = new ();
+    public ObservableCollection<RenderThread> Threads { get; set; } = new ();
 
     private void Init() {
         InitializeComponent();
@@ -31,8 +30,18 @@ public partial class RenderingWindow : Window {
     }
 
     public RenderingWindow(IList<RenderThread> threads) {
-        foreach (var thread in threads)
-            Threads.Add(new RenderThreadWrapper { Thread = thread });
+        Init();
+        Threads.AddRange(threads);
     }
-    
+
+    public async Task Start() {
+        foreach (var thread in Threads) await thread.StartAsync();
+    }
+
+    private void AbortRendering_OnClick(object? sender, RoutedEventArgs e) {
+        // Kill threads
+        foreach (var thread in Threads) thread.Abort();
+        // additionally, kill AfterFX.com
+        Process.GetProcessesByName(Helpers.Platform == OS.Windows ? "AfterFX.com" : "aerendercore").ToList().ForEach(p => p.Kill());
+    }
 }
