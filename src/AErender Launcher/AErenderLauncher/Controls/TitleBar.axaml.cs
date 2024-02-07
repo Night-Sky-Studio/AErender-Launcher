@@ -29,6 +29,17 @@ public partial class TitleBar : UserControl {
             o => o.Title, 
             (o, v) => o.Title = v
         );
+
+    private bool _closeBtnHidesWindow = false;
+    public bool CloseBtnHidesWindow {
+        get => _closeBtnHidesWindow;
+        set => SetAndRaise(CloseBtnHidesWindowProperty, ref _closeBtnHidesWindow, value);
+    }
+    public static readonly DirectProperty<TitleBar, bool> CloseBtnHidesWindowProperty = 
+        AvaloniaProperty.RegisterDirect<TitleBar, bool>(nameof(CloseBtnHidesWindow), 
+            o => o.CloseBtnHidesWindow, 
+            (o, v) => o.CloseBtnHidesWindow = v
+        );
     
     
     private Window? _parentWindow;
@@ -72,7 +83,10 @@ public partial class TitleBar : UserControl {
 
     private void CloseBtn_OnClick(object? sender, RoutedEventArgs e) {
         _parentWindow ??= TopLevel.GetTopLevel(this) as Window;
-        _parentWindow?.Close();
+        if (_closeBtnHidesWindow)
+            _parentWindow?.Hide();
+        else
+            _parentWindow?.Close();
     }
 
     private void MaximizeBtn_OnClick(object? sender, RoutedEventArgs e) {
