@@ -184,16 +184,17 @@ public partial class MainWindow : Window {
             }
         };
         var newTask = await editor.ShowDialog<RenderTask?>(this);
-        if (newTask != null) Tasks[Tasks.IndexOf(editor.Task)] = newTask;
+        if (newTask != null) Tasks[Tasks.IndexOf(task)] = newTask;
 #pragma warning restore 0162
     }
 
     
     private async void EditTask_OnClick(object? sender, RoutedEventArgs e) {
         if (sender is not Button btn) return;
+        var task = Tasks.GetTaskById(int.Parse($"{btn.Tag}"));
         TaskEditor editor = new(Tasks.GetTaskById(int.Parse($"{btn.Tag}")), true);
         var newTask = await editor.ShowDialog<RenderTask?>(this);
-        if (newTask != null) Tasks[Tasks.IndexOf(editor.Task)] = newTask;
+        if (newTask != null) Tasks[Tasks.IndexOf(task)] = newTask;
     }
 
     private async void QueueButton_OnClick(object? sender, RoutedEventArgs e) {
