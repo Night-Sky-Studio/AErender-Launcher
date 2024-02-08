@@ -102,19 +102,19 @@ public class RenderTask : ICloneable<RenderTask> {
                 if (comp.Split > 1)
                     AdjustedOutput = ProcessSplit(Output, i);
 
-                exec += $"-project \"{Project}\" " +
-                        $"-output \"{AdjustedOutput}\" " +
-                        (Sound ? "-sound ON " : "") +
-                        (Multiprocessing ? "-mp " : "") +
-                        (MissingFiles ? "-continueOnMissingFootage " : "") +
-                        $"-comp \"{comp.CompositionName}\" " +
-                        $"-OMtemplate \"{OutputModule}\" " +
-                        $"-RStemplate \"{RenderSettings}\" " +
-                        $"-mem_usage \"{Math.Truncate(MemoryLimit)}\" \"{Math.Truncate(CacheLimit)}\" " +
-                        (CustomProperties != "" ? CustomProperties.Trim() + " " : "") +
-                        $"-s {comp.SplitFrameSpans[i].StartFrame} -e {comp.SplitFrameSpans[i].EndFrame}";
+                exec = $"-project \"{Project}\" " +
+                       $"-output \"{AdjustedOutput}\" " +
+                       (Sound ? "-sound ON " : "") +
+                       (Multiprocessing ? "-mp " : "") +
+                       (MissingFiles ? "-continueOnMissingFootage " : "") +
+                       $"-comp \"{comp.CompositionName}\" " +
+                       $"-OMtemplate \"{OutputModule}\" " +
+                       $"-RStemplate \"{RenderSettings}\" " +
+                       $"-mem_usage \"{Math.Truncate(MemoryLimit)}\" \"{Math.Truncate(CacheLimit)}\" " +
+                       (CustomProperties != "" ? CustomProperties.Trim() + " " : "") +
+                       $"-s {comp.SplitFrameSpans[i].StartFrame} -e {comp.SplitFrameSpans[i].EndFrame}";
                 if (comp.SplitFrameSpans[i].StartFrame == 0 && comp.SplitFrameSpans[i].EndFrame == 0)
-                    exec = exec.Replace("-s 0 -e 0", "");
+                    exec = exec.Delete("-s 0 -e 0");
 
                 result.Add(new RenderThread(ApplicationSettings.AErenderPath, exec) {
                     ID = _random.Next(0, 999999),

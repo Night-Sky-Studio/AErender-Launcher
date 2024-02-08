@@ -35,7 +35,11 @@ public partial class RenderingWindow : Window {
     }
 
     public async Task Start() {
-        foreach (var thread in Threads) await thread.StartAsync();
+        // Starting one by one
+        // foreach (var thread in Threads) await thread.StartAsync();
+        
+        // Starting all at once
+        await Task.WhenAll(Threads.Select(thread => thread.StartAsync()));
     }
 
     private void AbortRendering_OnClick(object? sender, RoutedEventArgs e) {
