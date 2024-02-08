@@ -18,7 +18,8 @@ using static AErenderLauncher.App;
 namespace AErenderLauncher.Views;
 
 public partial class TaskEditor : Window {
-    public RenderTask Task { get; set; }
+    // private RenderTask _initialTask;
+    public RenderTask Task { get; init; }
     public ObservableCollection<OutputModule> outputModules { get; set; } = new(ApplicationSettings.OutputModules);
     public ObservableCollection<string> renderSettings { get; set; } = new() {
         "Best Settings",
@@ -46,12 +47,13 @@ public partial class TaskEditor : Window {
     
     public TaskEditor() {
         InitializeComponent();
+        // _initialTask = new RenderTask();
         Task = new RenderTask();
     }
 
     public TaskEditor(RenderTask task, bool isEditing = false) {
         IsEditing = isEditing;
-        Task = task;
+        Task = task.Clone();
         
         InitializeComponent();
 
@@ -157,22 +159,58 @@ public partial class TaskEditor : Window {
             MemorySlider.Value = r;
     }
     private void MissingCheckbox_OnIsCheckedChanged(object? sender, RoutedEventArgs e) => Task.MissingFiles = MissingCheckbox.IsChecked ?? false;
-
     private void SoundCheckbox_OnIsCheckedChanged(object? sender, RoutedEventArgs e) => Task.Sound = SoundCheckbox.IsChecked ?? false;
-
     private void ThreadedCheckbox_OnIsCheckedChanged(object? sender, RoutedEventArgs e) => Task.Multiprocessing = ThreadedCheckbox.IsChecked ?? false;
-
-    private void CustomProperties_OnTextChanged(object? sender, TextChangedEventArgs e) =>
-        Task.CustomProperties = CustomProperties.Text ?? "";
+    private void CustomProperties_OnTextChanged(object? sender, TextChangedEventArgs e) => Task.CustomProperties = CustomProperties.Text ?? "";
 
     private void OutputModuleBox_OnSelectionChanged(object? sender, SelectionChangedEventArgs e) {
         // if (e.AddedItems[0] is OutputModule module && module.Module != Task.OutputModule)
-            // Task.OutputModule = module.Module;
+        // Task.OutputModule = module.Module;
         Task.OutputModule = outputModules[OutputModuleBox.SelectedIndex].Module;
     }
-    
 
     private void RenderSettings_OnTextChanged(object? sender, TextChangedEventArgs e) {
         Task.RenderSettings = RenderSettings.Text;
+    }
+    private void RemoveComp_OnClick(object? sender, RoutedEventArgs e) {
+        if (CompList.SelectedItem is Composition comp) {
+            CompList.SelectedIndex -= 1;
+            Task.Compositions.Remove(comp);
+        }
+    }
+    private void AddComp_OnClick(object? sender, RoutedEventArgs e) {
+        Task.Compositions.Add(new Composition("", new FrameSpan(0, 1), 1));
+        CompList.SelectedIndex = CompList.Items.Count - 1;
+    }
+    private void CompList_SelectionChanged(object? sender, SelectionChangedEventArgs e) {
+        if (e.AddedItems.Count > 0 && e.AddedItems[0] is Composition comp) {
+            CompName.Text = comp.CompositionName;
+            StartFrame.Text = comp.Frames.StartFrame.ToString();
+            EndFrame.Text = comp.Frames.EndFrame.ToString();
+            Split.Text = comp.Split.ToString();
+        }
+    }
+    private void CompName_OnTextChanged(object? sender, TextChangedEventArgs e) {
+        if (CompList.SelectedItem is not Composition comp) return;
+        comp.CompositionName = CompName.Text!;
+    }
+    private void StartFrame_OnTextChanged(object? sender, TextChangedEventArgs e) {
+        if (CompList.SelectedItem is not Composition comp) return;
+        if (!int.TryParse(StartFrame.Text, out int result)) return;
+        comp.Frames = comp.Frames with {
+            StartFrame = result
+        };
+    }
+    private void EndFrame_OnTextChanged(object? sender, TextChangedEventArgs e) {
+        if (CompList.SelectedItem is not Composition comp) return;
+        if (!int.TryParse(EndFrame.Text, out int result)) return;
+        comp.Frames = comp.Frames with {
+            EndFrame = result
+        };
+    }
+    private void Split_OnTextChanged(object? sender, TextChangedEventArgs e) {
+        if (CompList.SelectedItem is not Composition comp) return;
+        if (!int.TryParse(Split.Text, out int result)) return;
+        comp.Split = result;
     }
 }

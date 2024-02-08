@@ -15,35 +15,35 @@ public struct FrameSpan {
     public int StartFrame { get; set; }
     public int EndFrame { get; set; }
 
-    public FrameSpan(int StartFrame, int EndFrame) {
-        this.StartFrame = StartFrame;
-        this.EndFrame = EndFrame;
+    public FrameSpan(int startFrame, int endFrame) {
+        StartFrame = startFrame;
+        EndFrame = endFrame;
     }
 
-    public FrameSpan(string StartFrame, string EndFrame) {
-        this.StartFrame = int.Parse(StartFrame);
-        this.EndFrame = int.Parse(EndFrame);
+    public FrameSpan(string startFrame, string endFrame) {
+        StartFrame = int.Parse(startFrame);
+        EndFrame = int.Parse(endFrame);
     }
 
-    public FrameSpan[] Split(int Count) {
-        FrameSpan[] result = new FrameSpan[Count];
+    public FrameSpan[] Split(int count) {
+        FrameSpan[] result = new FrameSpan[count];
         result[0].StartFrame = StartFrame;
         int j = EndFrame - StartFrame;
-        int k = j / Count;
+        int k = j / count;
         result[0].EndFrame = StartFrame + k;
-        for (int i = 1; i < Count; i++) {
+        for (int i = 1; i < count; i++) {
             result[i].StartFrame = StartFrame + k * i + 1;
             result[i].EndFrame = StartFrame + k * (i + 1);
         }
-        result[Count - 1].EndFrame = EndFrame;
+        result[count - 1].EndFrame = EndFrame;
         return result;
     }
     
     public override string ToString() {
         return $"[{StartFrame}, {EndFrame}]";
     }
-    public string ToString(string Format) {
-        Format = Format != "" ? Format : "[{0}, {1}]";
-        return string.Format(Format, StartFrame, EndFrame);
+    public string ToString(string format) {
+        format = format != "" ? format : "[{0}, {1}]";
+        return string.Format(format, StartFrame, EndFrame);
     }
 }

@@ -111,10 +111,10 @@
                                         </StackPanel>
                                     </Grid>
                                 </Expander.Header>
-                                <ListBox ItemsSource="{Binding Compositions}" Margin="0" Padding="0">
+                                <ListBox ItemsSource="{Binding Compositions}" Margin="0" Padding="0" Tag="{Binding ID}">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate x:DataType="rendering:Composition">
-                                            <ListBoxItem DoubleTapped="Composition_OnDoubleTapped">
+                                            <ListBoxItem DoubleTapped="Composition_OnDoubleTapped" Focusable="False">
                                                 <Grid ColumnDefinitions="*,64,64,64">
                                                     <Label Grid.Column="0" Content="{Binding CompositionName}" />
                                                     <Label Grid.Column="1" Content="{Binding Frames.StartFrame}" />

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using AErenderLauncher.Classes.Extensions;
+using AErenderLauncher.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using static AErenderLauncher.App;
@@ -31,13 +32,14 @@ public static class RenderTaskExtensions {
     }
 }
 
-public class RenderTask {
+public class RenderTask : ICloneable<RenderTask> {
     // private int _id;
     private static Random _random { get; set; } = new Random();
-    
+
     public enum RenderState {
         Waiting, Rendering, Finished, Stopped, Error, Suspended
     }
+
     public int ID { get; init; } = _random.Next(0, 999999);
     public string Project { get; set; }
     public string ProjectName => Path.GetFileNameWithoutExtension(Project);
@@ -52,7 +54,7 @@ public class RenderTask {
     public double CacheLimit { get; set; } = 100.0;
     public double MemoryLimit { get; set; } = 100.0;
 
-    public ObservableCollection<Composition> Compositions { get; set; }
+    public ObservableCollection<Composition> Compositions { get; set; } = new();
     public RenderState State { get; set; } = RenderState.Waiting;
 
     /// <summary>
@@ -63,10 +65,10 @@ public class RenderTask {
     private string ProcessFolder() {
         if (Output.Contains("[projectName]" + Path.DirectorySeparatorChar)) {
             string result = Output.Replace("[projectName]", Path.GetFileNameWithoutExtension(Project));
-            
-            if (!Directory.Exists(Path.GetDirectoryName(result))) 
+
+            if (!Directory.Exists(Path.GetDirectoryName(result)))
                 Directory.CreateDirectory(Path.GetDirectoryName(result)!);
-            
+
             return result;
         }
 
@@ -74,10 +76,10 @@ public class RenderTask {
     }
 
     private static string ProcessSplit(string path, int index) {
-        string GetFilePathWithoutExtension(string _path) => 
+        string GetFilePathWithoutExtension(string _path) =>
             _path.Replace(Path.GetExtension(_path), "");
 
-        
+
         // Strip full path of the file extension
         string ProcessedPath = GetFilePathWithoutExtension(path);
         // Append an index to the file name
@@ -97,7 +99,7 @@ public class RenderTask {
                 // Create directory for project if there isn't one
                 string AdjustedOutput = ProcessFolder();
 
-                if (comp.Split > 1) 
+                if (comp.Split > 1)
                     AdjustedOutput = ProcessSplit(Output, i);
 
                 exec += $"-project \"{Project}\" " +
@@ -113,7 +115,7 @@ public class RenderTask {
                         $"-s {comp.SplitFrameSpans[i].StartFrame} -e {comp.SplitFrameSpans[i].EndFrame}";
                 if (comp.SplitFrameSpans[i].StartFrame == 0 && comp.SplitFrameSpans[i].EndFrame == 0)
                     exec = exec.Replace("-s 0 -e 0", "");
-                
+
                 result.Add(new RenderThread(ApplicationSettings.AErenderPath, exec) {
                     ID = _random.Next(0, 999999),
                     Name = comp.CompositionName
@@ -123,14 +125,24 @@ public class RenderTask {
 
         return result;
     }
-    
+
     public override string ToString() {
         return $"({Project}, {Output}, {OutputModule}, {RenderSettings}, {MissingFiles}, {Sound}, {Multiprocessing}, {CustomProperties}, {CacheLimit}, {MemoryLimit}, {CollectionExtensions.ToString(Compositions)})";
     }
-}
-
-public static class RenderTaskListExtensions {
-    public static RenderTask GetTaskById(this IEnumerable<RenderTask> tasks, int id) {
-        return tasks.First(x => x.ID == id);
+    public RenderTask Clone() {
+        return new RenderTask {
+            Project = Project,
+            Output = Output,
+            OutputModule = OutputModule,
+            RenderSettings = RenderSettings,
+            MissingFiles = MissingFiles,
+            Sound = Sound,
+            Multiprocessing = Multiprocessing,
+            CustomProperties = CustomProperties,
+            CacheLimit = CacheLimit,
+            MemoryLimit = MemoryLimit,
+            Compositions = new(Compositions.Select(x => (Composition)x.Clone())),
+            State = State
+        };
     }
 }

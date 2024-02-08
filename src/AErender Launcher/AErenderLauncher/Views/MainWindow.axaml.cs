@@ -64,7 +64,7 @@ public partial class MainWindow : Window {
             [ new("After Effects project", "*.aep") ]
         );
         
-        if (aep == null || !aep.Any()) return;
+        if (aep == null || aep.Count == 0) return;
         
         // parse dat
         Overlay.IsVisible = true;
@@ -79,13 +79,13 @@ public partial class MainWindow : Window {
         Overlay.IsVisible = false;
     }
 
-    private async Task<RenderTask?> ParseProject(string ProjectPath) {
-        List<ProjectItem>? project = await AeProjectParser.ParseProjectAsync(ProjectPath);
+    private async Task<RenderTask?> ParseProject(string projectPath) {
+        List<ProjectItem>? project = await AeProjectParser.ParseProjectAsync(projectPath);
         
         if (project != null) {
-            ApplicationSettings.LastProjectPath = ProjectPath;
+            ApplicationSettings.LastProjectPath = projectPath;
         
-            ProjectImportDialog dialog = new(project.ToArray(), ProjectPath);
+            ProjectImportDialog dialog = new(project.ToArray(), projectPath);
             RenderTask? task = await dialog.ShowDialog<RenderTask?>(this);
         
             return task;
@@ -114,59 +114,22 @@ public partial class MainWindow : Window {
     }
 
     private async void NewTaskEmpty_OnClick(object? sender, RoutedEventArgs e) {
-        // OpenFileDialog dialog = new() {
-        //     AllowMultiple = false,
-        //     Directory = ApplicationSettings.DefaultProjectsPath,
-        //     Filters = new() {
-        //         new() { Name = "After Effects project", Extensions = { "aep" } }
-        //     },
-        //     Title = "Open After Effects project"
-        // };
-
         var provider = GetTopLevel(this)?.StorageProvider;
         
-        IEnumerable<IStorageFile> aep = await provider?.OpenFilePickerAsync(new FilePickerOpenOptions {
-            AllowMultiple = false,
-            SuggestedStartLocation = await provider.TryGetFolderFromPathAsync(new Uri(ApplicationSettings.DefaultProjectsPath)),
-            FileTypeFilter = new List<FilePickerFileType> {
-                new ("After effects project") {
-                    Patterns = new List<string> { "*.aep" }
-                }
-            }
-        })!;
-        
-        if (!aep.Any()) return;
-        
-        // System.Diagnostics.Debug.WriteLine(aep.First());
-        
-        TaskEditor editor = new(new RenderTask {
-            Project = aep.First().Path.AbsolutePath
-        });
+        List<IStorageFile>? aep = await this.ShowOpenFileDialogAsync(
+            [ new("After Effects project", "*.aep") ]
+        );
+
+        if (aep != null && aep.Count != 0 && aep.First().TryGetLocalPath() is { } prgPath) {
+            TaskEditor editor = new(new RenderTask {
+                Project = prgPath
+            });
             
-        RenderTask? result = await editor.ShowDialog<RenderTask?>(this);
-        if (result != null) {
-            Tasks.Add(result);
+            RenderTask? result = await editor.ShowDialog<RenderTask?>(this);
+            if (result != null) {
+                Tasks.Add(result);
+            }
         }
-    }
-
-    //private List<RenderThread> queue;
-    
-    private async void StartBtnClick(object? sender, RoutedEventArgs e) {
-        // queue = _task.Enqueue();
-        // TestLog.Text = "";
-        // queue[0].OnProgressChanged += (progress, data) => {
-        //     TestLog.Text += $"{data}\n";
-        //     TestLog.CaretIndex = int.MaxValue;
-        //     TestProgressBar.IsIndeterminate = progress == null;
-        //     TestProgressBar.Minimum = 0;
-        //     TestProgressBar.Maximum = progress?.EndFrame ?? 1;
-        //     TestProgressBar.Value = progress?.CurrentFrame ?? 0;
-        // };
-        // await queue[0].StartAsync();
-    }
-
-    private void StopBtnClick(object? sender, RoutedEventArgs e) {
-        //queue[0].Abort();
     }
 
     private void MoveTaskUp_OnClick(object? sender, RoutedEventArgs e) {
@@ -199,16 +162,38 @@ public partial class MainWindow : Window {
         RenderTask task = Tasks.GetTaskById(int.Parse($"{btn.Tag}"));
         Tasks.Insert(Tasks.IndexOf(task) + 1, task);
     }
+    
 
-    private void Composition_OnDoubleTapped(object? sender, TappedEventArgs e) {
-        // TODO: Open task editor on composition screen
-        System.Diagnostics.Debug.WriteLine("Double tapped");
+    private async void Composition_OnDoubleTapped(object? sender, TappedEventArgs e) {
+#pragma warning disable 0162
+        // BUG: This works, but there are two problems
+        //      1. Somehow changing CompList selection before the dialog is shown
+        //         messes up the layout of the ListBoxItem's Content
+        //      2. Transition of EditorCarousel is being triggered regardless
+        //         of the method it's index is being changed (Next() or SelectedIndex)
+        return; // Disabled, unless the problem above is fixed
+        if (sender is not ListBoxItem { DataContext: Composition comp } lb) return;
+        if (lb.Parent?.Parent is not ListBox bx || int.TryParse($"{bx.Tag}", out var id) == false) return;
+        var task = Tasks.GetTaskById(id);
+        TaskEditor editor = new(task) {
+            EditorCarousel = {
+                SelectedIndex = 1
+            },
+            CompList = {
+                SelectedIndex = task.Compositions.IndexOf(comp)
+            }
+        };
+        var newTask = await editor.ShowDialog<RenderTask?>(this);
+        if (newTask != null) Tasks[Tasks.IndexOf(editor.Task)] = newTask;
+#pragma warning restore 0162
     }
 
-    private void EditTask_OnClick(object? sender, RoutedEventArgs e) {
+    
+    private async void EditTask_OnClick(object? sender, RoutedEventArgs e) {
         if (sender is not Button btn) return;
         TaskEditor editor = new(Tasks.GetTaskById(int.Parse($"{btn.Tag}")), true);
-        editor.ShowDialog(this);
+        var newTask = await editor.ShowDialog<RenderTask?>(this);
+        if (newTask != null) Tasks[Tasks.IndexOf(editor.Task)] = newTask;
     }
 
     private async void QueueButton_OnClick(object? sender, RoutedEventArgs e) {
