@@ -21,6 +21,7 @@ public partial class SettingsWindow : Window {
     }
 
     private void CloseButton_OnClick(object sender, RoutedEventArgs e) {
+        ApplicationSettings.Save();
         Close();
     }
 
