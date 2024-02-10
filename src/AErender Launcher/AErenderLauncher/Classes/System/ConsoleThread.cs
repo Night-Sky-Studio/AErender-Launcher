@@ -13,7 +13,9 @@ public class ConsoleThread : ReactiveObject {
     public enum ThreadState {
         Running,
         Suspended,
-        Stopped
+        Stopped,
+        Finished,
+        Error
     };
     private string _executable { get; }
     private string _command { get; set; }
@@ -100,6 +102,7 @@ public class ConsoleThread : ReactiveObject {
         _process.BeginErrorReadLine();
         State = ThreadState.Running;
         await _process.WaitForExitAsync();
+        State = _process.ExitCode == 0 ? ThreadState.Finished : ThreadState.Error;
     }
     
 
