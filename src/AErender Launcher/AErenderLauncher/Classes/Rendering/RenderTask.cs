@@ -100,7 +100,7 @@ public class RenderTask : ICloneable<RenderTask> {
                 string AdjustedOutput = ProcessFolder();
 
                 if (comp.Split > 1)
-                    AdjustedOutput = ProcessSplit(Output, i);
+                    AdjustedOutput = ProcessSplit(AdjustedOutput, i);
 
                 exec = $"-project \"{Project}\" " +
                        $"-output \"{AdjustedOutput}\" " +

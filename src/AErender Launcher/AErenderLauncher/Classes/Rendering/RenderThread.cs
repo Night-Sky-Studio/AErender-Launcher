@@ -38,6 +38,7 @@ public class RenderThread(string executable, string command) : ConsoleThread(exe
     }
     public bool GotError => CurrentFrame == uint.MaxValue && EndFrame == uint.MaxValue;
     public bool WaitingForAerender => CurrentFrame == 0 && EndFrame == 0;
+    public bool Finished => CurrentFrame == EndFrame;
     // public event Action<RenderProgress?, string>? OnProgressChanged;
 
     private AerenderFrameData? _frameData = null;
@@ -59,9 +60,15 @@ public class RenderThread(string executable, string command) : ConsoleThread(exe
             }
         }
 
-        if (data.Contains("error", StringComparison.CurrentCultureIgnoreCase)) {
+        if (data.Contains("Finished composition") || State == ThreadState.Finished) {
+            CurrentFrame = EndFrame;
+            Abort();
+        }
+
+        if (data.Contains("error", StringComparison.CurrentCultureIgnoreCase) || State == ThreadState.Error) {
             CurrentFrame = uint.MaxValue;
             EndFrame = uint.MaxValue;
+            Abort();
         }
         
         // OnProgressChanged?.Invoke(null, $"{e.NewItems?[0]}");
