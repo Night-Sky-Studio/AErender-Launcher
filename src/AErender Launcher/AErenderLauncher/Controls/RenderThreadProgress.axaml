@@ -6,7 +6,7 @@
              x:Name="RenderThreadProgressControl"
              x:Class="AErenderLauncher.Controls.RenderThreadProgress">
     
-    <Grid x:Name="Root" RowDefinitions="48,*" ColumnDefinitions="*,48" Height="240" HorizontalAlignment="Stretch">
+    <Grid x:Name="Root" RowDefinitions="48,*" ColumnDefinitions="*,48" Height="48" HorizontalAlignment="Stretch">
         <StackPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="16,0">
             <Grid ColumnDefinitions="*,*">
                 <TextBlock Grid.Column="0" x:Name="CompName" VerticalAlignment="Center" Text="{Binding ElementName=RenderThreadProgressControl, Path=Composition}" />

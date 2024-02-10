@@ -47,7 +47,8 @@
                     <TextBlock VerticalAlignment="Center" HorizontalAlignment="Right" Text="XXXX / XXXX" FontWeight="Bold" FontSize="16" />
                 </StackPanel>
                 
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="Time Elapsed: 00:00:00" VerticalAlignment="Center" Margin="16,0,0,0" />
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Time Elapsed: 00:00:00        Remaining threads:" VerticalAlignment="Center" Margin="16,0,0,0" />
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding ElementName=RenderingWindowView, Path=Queue.Count}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,16,0" />
                 
                 <Button Grid.Row="1" Grid.Column="1" Content="Abort Rendering" Margin="16, 4" VerticalAlignment="Center" Click="AbortRendering_OnClick" />
             </Grid>
