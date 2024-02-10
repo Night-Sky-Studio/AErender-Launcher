@@ -111,15 +111,15 @@ public partial class RenderingWindow : Window {
 
         // var t = new Thread(ThreadStart);
 
-        var pool = new TaskPool(limit);
+        // var pool = new TaskPool(limit);
 
         while (Queue.Any()) {
             if (_currentlyRendering == limit) continue;
 
-            pool.Enqueue(async () => {
-                var toStart = Queue.Take(limit - _currentlyRendering).ToList();
-                await Task.WhenAll(toStart.Select(StartThread));
-            });
+            // pool.Enqueue(async () => {
+            //     var toStart = Queue.Take(limit - _currentlyRendering).ToList();
+            //     await Task.WhenAll(toStart.Select(StartThread));
+            // });
             
 
             // await Task.Factory.ContinueWhenAny(toStart.Select(StartThread).ToArray(), task => {
