@@ -48,8 +48,10 @@ public partial class MainWindow : Window {
         Tasks.Add(new RenderTask {
             Project = "C:\\YandexDisk\\Acer\\Footages (AE)\\AErender Launcher Benchmark Projects\\SuperEffectiveBros - Mograph Practice\\AEPRTC_Eclipse_rev57(ForDist)_2022.aep",
             Output = "C:\\Users\\lunam\\Desktop\\[projectName]\\[compName].[fileExtension]",
+            MissingFiles = true, Sound = true,
+            MemoryLimit = 5,
             Compositions = [
-                new("Main", new FrameSpan(3600, 6130), 1),
+                new("Main", new FrameSpan(3600, 6130), 64),
             ]
         });
         DebugLabel.Text = $"Tasks: {Tasks.Count}";
@@ -114,8 +116,6 @@ public partial class MainWindow : Window {
     }
 
     private async void NewTaskEmpty_OnClick(object? sender, RoutedEventArgs e) {
-        var provider = GetTopLevel(this)?.StorageProvider;
-        
         List<IStorageFile>? aep = await this.ShowOpenFileDialogAsync(
             [ new("After Effects project", "*.aep") ]
         );
