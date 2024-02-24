@@ -65,7 +65,7 @@ public class RenderThread(string executable, string command) : ConsoleThread(exe
             Abort();
         }
 
-        if (data.Contains("error", StringComparison.CurrentCultureIgnoreCase) || State == ThreadState.Error) {
+        if ((data.Contains("error", StringComparison.CurrentCultureIgnoreCase) || State == ThreadState.Error) && State != ThreadState.Finished) {
             CurrentFrame = uint.MaxValue;
             EndFrame = uint.MaxValue;
             Abort();
