@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,7 +17,9 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 using DynamicData;
+using TaskExtensions = AErenderLauncher.Classes.Extensions.TaskExtensions;
 
 namespace AErenderLauncher.Views;
 
@@ -42,15 +46,6 @@ public partial class RenderingWindow : Window {
     }
 
     private async void ThreadsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) {
-        // if (e.Action != NotifyCollectionChangedAction.Add) return;
-        // if (e.NewItems == null) return;
-        // if (!e.NewItems.TryCast<RenderThread>(out var t) || t is not { } threads) return;
-        // _currentlyRendering += threads.Count;
-        //
-        // // this is dumb
-        // //await Task.Factory.ContinueWhenAny(async () => await Task.WhenAll(threads.Select(th => th.StartAsync())));
-        //
-        // _currentlyRendering -= threads.Count;
     }
 
     public RenderingWindow() { 
@@ -84,63 +79,67 @@ public partial class RenderingWindow : Window {
         // }
     }
 
-    private async Task StartThread(RenderThread thread) {
-        _currentlyRendering++;
-        Threads.Add(thread);
-        Queue.Remove(thread);
-        await thread.StartAsync();
-        _currentlyRendering--;
-    }
 
-    private async Task StartTiled(int limit = 4) {
-        //! Tiled rendering
-        // We have threads [N] and a [queue]
-        // 1)   Start first [limit] threads
-        // 2)   When any of the thread finishes -
-        //      start rendering one from [queue]
-        // 3)   If thread errored -
-        //      put it in the end of the queue 
-        // 4)   Make sure that at each time, unless [queue].Count < limit,
-        //      we have [limit] threads rendering at the same time
-
-        // async void ThreadStart() {
-        //     var toStart = Queue.Take(limit - _currentlyRendering).ToList();
-        //     // Wait for any thread to finish
-        //     await Task.WhenAll(toStart.Select(StartThread));
-        // }
-
-        // var t = new Thread(ThreadStart);
-
-        // var pool = new TaskPool(limit);
-
-        while (Queue.Any()) {
-            if (_currentlyRendering == limit) continue;
-
-            // pool.Enqueue(async () => {
-            //     var toStart = Queue.Take(limit - _currentlyRendering).ToList();
-            //     await Task.WhenAll(toStart.Select(StartThread));
-            // });
-            
-
-            // await Task.Factory.ContinueWhenAny(toStart.Select(StartThread).ToArray(), task => {
-            //     _currentlyRendering--;
-            // });
-            //await Task.WhenAny(toStart.Select(StartThread)); // TODO: This is not working...
-
-            // Remove all the finished threads without errors
-            // Threads.RemoveAll(thread => thread is { Finished: true, GotError: false });
-
-            // Add threads that finished with errors to the end of the queue
-            Threads.Where(thread => thread is { Finished: true, GotError: true }).ToList().ForEach(thread => {
-                Queue.Add(thread);
-                Threads.Remove(thread);
-            });
+    public async Task StartTiledRendering(IEnumerable<RenderThread> threads, int maxDegreeOfParallelism = 4) {
+        var threadsList = threads.ToList();
+        Dictionary<int, VoidTaskFactory> taskFactories = new ();
+        for (int i = 0; i < threadsList.Count; i++) {
+            taskFactories.Add(i, new VoidTaskFactory(threadsList[i].StartAsync));
         }
+        
+        var waitingTasks = new List<VoidTaskFactory>(taskFactories.Select(tfi => tfi.Value).ToList());
+        var runningTasks = new List<VoidTaskFactory>(maxDegreeOfParallelism);
+
+        // Start the first 'maxDegreeOfParallelism' tasks.
+        for (int i = 0; i < maxDegreeOfParallelism && waitingTasks.Count > 0; i++) {
+            runningTasks.Add(waitingTasks[0]);
+            waitingTasks.RemoveAt(0);
+        }
+
+        // While there are running tasks.
+        while (runningTasks.Count > 0) {
+        
+            runningTasks.ForEach(tf => {
+                if (tf.TryStart()) {
+                    Threads.Add(Queue[taskFactories.First(t => t.Value == tf).Key]);
+                }
+            });
+
+            // Wait for any task to complete.
+            var completedTaskFactory = await Task.WhenAny(runningTasks.Select(tf => tf.CompletionSource));
+            // callback(completedTaskFactory);
+            Debug.WriteLine($"Task {taskFactories.First(t => t.Value.CompletionSource == completedTaskFactory).Key} completed");
+            
+            // Remove the completed task.
+            runningTasks.Remove(runningTasks.First(tf => tf.CompletionSource == completedTaskFactory));
+
+            // If there are waiting tasks, start a new one.
+            if (waitingTasks.Count > 0) {
+                runningTasks.Add(waitingTasks[0]);
+                waitingTasks.RemoveAt(0);
+            }
+        }
+    }
+    
+    private async Task StartTiled(int limit = 4) {
+        await StartTiledRendering(Queue, limit);
+
+        // while (Queue.Any()) {
+        //     if (_currentlyRendering == limit) continue;
+        //     TODO: Restart errored threads
+        //     // Add threads that finished with errors to the end of the queue
+        //     Threads.Where(thread => thread is { Finished: true, GotError: true }).ToList().ForEach(thread => {
+        //         Queue.Add(thread);
+        //         Threads.Remove(thread);
+        //     });
+        // }
     }
 
     private void AbortRendering_OnClick(object? sender, RoutedEventArgs e) {
         // Kill threads
         foreach (var thread in Queue) thread.Abort();
+        Queue.Clear();
+        Threads.Clear();
         // additionally, kill AfterFX.com
         Process.GetProcessesByName(Helpers.Platform == OS.Windows ? "AfterFX.com" : "aerendercore").ToList().ForEach(p => p.Kill());
     }
