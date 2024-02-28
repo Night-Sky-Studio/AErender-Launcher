@@ -2,7 +2,7 @@
 using AErenderLauncher.Classes.Rendering;
 using NUnit.Framework;
 
-namespace AErenderLauncher.Tests;
+namespace AErenderLauncher.Test;
 
 [TestFixture]
 public class RenderTaskTests {
