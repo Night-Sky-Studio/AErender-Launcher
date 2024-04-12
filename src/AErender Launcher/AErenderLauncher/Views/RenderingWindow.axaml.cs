@@ -3,39 +3,66 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using AErenderLauncher.Classes;
-using AErenderLauncher.Classes.Extensions;
 using AErenderLauncher.Classes.Rendering;
 using AErenderLauncher.Classes.System;
-using AErenderLauncher.Controls;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
-using Avalonia.Threading;
 using DynamicData;
-using TaskExtensions = AErenderLauncher.Classes.Extensions.TaskExtensions;
+using ThreadState = AErenderLauncher.Classes.System.ConsoleThread.ThreadState;
+using ReactiveObject = AErenderLauncher.Classes.ReactiveObject;
+using Stopwatch = AErenderLauncher.Classes.Stopwatch;
+
+using static AErenderLauncher.App;
 
 namespace AErenderLauncher.Views;
+
+public class Progress : ReactiveObject {
+    private long _totalFrames = 1;
+    private long _currentFrames = 0;
+    private string _progressString = "Waiting for aerender...";
+    private double _progressValue = 0;
+    
+    public long TotalFrames {
+        get => _totalFrames;
+        set => RaiseAndSetIfChanged(ref _totalFrames, value);
+    }
+    
+    public long CurrentFrames {
+        get => _currentFrames;
+        set => RaiseAndSetIfChanged(ref _currentFrames, value);
+    }
+    
+    public string ProgressString {
+        get => _progressString;
+        set => RaiseAndSetIfChanged(ref _progressString, value);
+    }
+
+    public double ProgressValue {
+        get => _progressValue;
+        set => RaiseAndSetIfChanged(ref _progressValue, value);
+    }
+
+    public void Reset() {
+        TotalFrames = 1;
+        CurrentFrames = 0;
+        ProgressString = "Waiting for aerender...";
+        ProgressValue = 0;
+    }
+}
 
 public partial class RenderingWindow : Window {
     public ObservableCollection<RenderThread> Threads { get; set; } = new ();
     public ObservableCollection<RenderThread> Queue { get; set; } = new ();
 
-    private int _cr = 0;
-
-    private int _currentlyRendering {
-        get => _cr;
-        set {
-            _cr = value;
-            Debug.WriteLine($"Currently rendering: {_cr}");
-        }
-    }
+    public Progress TotalProgress { get; } = new ();
+    public Stopwatch SW { get; } = new ();
 
     private void Init() {
         InitializeComponent();
@@ -43,9 +70,30 @@ public partial class RenderingWindow : Window {
         ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
         Root.RowDefinitions = Helpers.Platform == OS.macOS ? new RowDefinitions("0,32,*,144") : new RowDefinitions("32,32,*,144");
         Threads.CollectionChanged += ThreadsOnCollectionChanged;
+        
+        SW.Reset();
+        TotalProgress.Reset();
     }
 
-    private async void ThreadsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) {
+    private void ThreadsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) {
+        if (e is { Action: NotifyCollectionChangedAction.Add, NewItems: not null })
+            foreach (var thread in e.NewItems)
+                if (thread is RenderThread renderThread)
+                    renderThread.PropertyChanged += ThreadOnPropertyChanged;
+
+        if (e is { Action: NotifyCollectionChangedAction.Remove, OldItems: not null })
+            foreach (var thread in e.OldItems) 
+                if (thread is RenderThread renderThread) 
+                    renderThread.PropertyChanged -= ThreadOnPropertyChanged;
+    }
+
+    private void ThreadOnPropertyChanged(object? sender, PropertyChangedEventArgs e) {
+        if (e.PropertyName == "EndFrame") {
+            TotalProgress.TotalFrames += Threads.Sum(thread => thread.EndFrame != uint.MaxValue ? thread.EndFrame : 0);
+        }
+        if (e.PropertyName == "CurrentFrame") {
+            TotalProgress.CurrentFrames = Threads.Sum(thread => thread.CurrentFrame != uint.MaxValue ? thread.CurrentFrame : 0);
+        }
     }
 
     public RenderingWindow() { 
@@ -57,26 +105,30 @@ public partial class RenderingWindow : Window {
         Queue.AddRange(threads);
     }
     
-    public async Task Start() {
-        // Starting one by one
-        // foreach (var thread in Threads) await thread.StartAsync();
-        
-        // Starting all at once
-        //await Task.WhenAll(Threads.Select(thread => thread.StartAsync()));
-
-        await StartTiled();
+    public async Task Start(RenderingMode mode = RenderingMode.Tiled, int limit = 4) {
+        SW.Start();
+        switch (mode) {
+            case RenderingMode.Tiled:
+                await StartTiled(limit);
+                break;
+            case RenderingMode.Queue:
+                await StartOneByOne();
+                break;
+            case RenderingMode.AllAtOnce:
+                await StartAll();
+                break;
+        }
+        SW.Stop();
     }
 
     private async Task StartAll() {
-        // ActivateThreads(Threads);
-        // await Task.WhenAll(Queue.Select(thread => thread.StartAsync()));
+        await Task.WhenAll(Queue.Select(thread => thread.StartAsync()));
     }
     
     private async Task StartOneByOne() {
-        // foreach (var thread in Queue) {
-        //     ActivateThreads([thread]);
-        //     await thread.StartAsync();
-        // }
+        foreach (var thread in Queue) {
+            await thread.StartAsync();
+        }
     }
 
 
@@ -102,17 +154,24 @@ public partial class RenderingWindow : Window {
             runningTasks.ForEach(tf => {
                 if (tf.TryStart()) {
                     Threads.Add(Queue[taskFactories.First(t => t.Value == tf).Key]);
+                    Queue.RemoveAt(taskFactories.First(t => t.Value == tf).Key);
                 }
             });
 
             // Wait for any task to complete.
             var completedTaskFactory = await Task.WhenAny(runningTasks.Select(tf => tf.CompletionSource));
             // callback(completedTaskFactory);
-            Debug.WriteLine($"Task {taskFactories.First(t => t.Value.CompletionSource == completedTaskFactory).Key} completed");
+            //Debug.WriteLine($"Task {taskFactories.First(t => t.Value.CompletionSource == completedTaskFactory).Key} completed");
             
             // Remove the completed task.
             runningTasks.Remove(runningTasks.First(tf => tf.CompletionSource == completedTaskFactory));
 
+            // Restart failed tasks.
+            Threads.Where(thread => thread.State == ThreadState.Error).ToList().ForEach(thread => {
+                Queue.Add(thread);
+                Threads.Remove(thread);
+            });
+            
             // If there are waiting tasks, start a new one.
             if (waitingTasks.Count > 0) {
                 runningTasks.Add(waitingTasks[0]);
@@ -123,24 +182,16 @@ public partial class RenderingWindow : Window {
     
     private async Task StartTiled(int limit = 4) {
         await StartTiledRendering(Queue, limit);
-
-        // while (Queue.Any()) {
-        //     if (_currentlyRendering == limit) continue;
-        //     TODO: Restart errored threads
-        //     // Add threads that finished with errors to the end of the queue
-        //     Threads.Where(thread => thread is { Finished: true, GotError: true }).ToList().ForEach(thread => {
-        //         Queue.Add(thread);
-        //         Threads.Remove(thread);
-        //     });
-        // }
     }
 
     private void AbortRendering_OnClick(object? sender, RoutedEventArgs e) {
         // Kill threads
         foreach (var thread in Queue) thread.Abort();
+        SW.Stop();
         Queue.Clear();
         Threads.Clear();
-        // additionally, kill AfterFX.com
+        // additionally, kill AE
         Process.GetProcessesByName(Helpers.Platform == OS.Windows ? "AfterFX.com" : "aerendercore").ToList().ForEach(p => p.Kill());
+        Process.GetProcessesByName(Helpers.Platform == OS.Windows ? "aerender.exe" : "aerender").ToList().ForEach(p => p.Kill());
     }
 }
