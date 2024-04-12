@@ -49,7 +49,8 @@ public static class Helpers {
     }
 
     public static long GetPlatformMemory() {
-        var gcMemoryInfo = GC.GetGCMemoryInfo();
-        return gcMemoryInfo.TotalAvailableMemoryBytes / 1024 / 1024;
+        return GC.GetGCMemoryInfo().TotalAvailableMemoryBytes / 1024 / 1024;
     }
+
+    public static int GetAvailableCores() => Environment.ProcessorCount;
 }

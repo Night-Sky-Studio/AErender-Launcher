@@ -59,6 +59,8 @@ public class Settings {
     public string RenderSettings { get; set; }
 
     public List<string> RecentProjects { get; set; } = new List<string>();
+    
+    public RenderingMode ThreadsRenderMode { get; set; } = RenderingMode.Tiled;
 
     private void InitOutputModules() {
         OutputModules.Add(new OutputModule { Module = "Lossless", Mask = "[compName].[fileExtension]", IsImported = false });
@@ -92,8 +94,8 @@ public class Settings {
         CacheLimit = 100f;
         OutputModuleIndex = 0;
         RenderSettings = "Best Settings";
+        ThreadsRenderMode = RenderingMode.Tiled;
         InitOutputModules();
-
     }
 
     public static Settings? LoadLegacy(string XmlPath) {
@@ -118,7 +120,8 @@ public class Settings {
             MemoryLimit = float.Parse(RootNode["memoryLimit"]?.InnerText ?? "100", CultureInfo.InvariantCulture),
             CacheLimit = float.Parse(RootNode["cacheLimit"]?.InnerText ?? "100", CultureInfo.InvariantCulture),
             OutputModuleIndex = int.Parse(RootNode["outputModule"]?.Attributes["selected"]?.InnerText ?? "-1"),
-            RenderSettings = "Best Settings"
+            RenderSettings = "Best Settings",
+            ThreadsRenderMode = RenderingMode.Tiled
         };
         
         result.DefaultProjectsPath = result.DefaultProjectsPath == "" 
@@ -163,7 +166,7 @@ public class Settings {
     public static bool ExistsLegacy() => File.Exists(LegacySettingsPath);
 
     public static List<AErender> DetectAerender() {
-        List<AErender> result = new List<AErender>();
+        List<AErender> result = new ();
 
         string adobeFolder = Helpers.Platform == OS.macOS
             ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)
@@ -171,7 +174,7 @@ public class Settings {
 
         foreach (string path in Directory.GetDirectories(adobeFolder)) {
             if (path.Contains("Adobe After Effects")) {
-                string aerender = "";
+                string aerender;
 
                 if (Helpers.Platform == OS.macOS) {
                     aerender = Path.Combine(path, "aerender");

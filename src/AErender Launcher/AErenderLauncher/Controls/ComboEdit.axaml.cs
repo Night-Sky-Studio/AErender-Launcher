@@ -69,7 +69,7 @@ public partial class ComboEdit : UserControl {
 
     private void SelectingItemsControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
         if (sender is not ComboBox box) return;
-        Text = box.SelectedItem as string ?? "";
+        Text = $"{box.SelectedItem}";
     }
     private void ComboEditText_OnTextChanged(object? sender, TextChangedEventArgs e) {
         OnTextChanged();
