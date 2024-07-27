@@ -41,9 +41,9 @@ public class RenderTask : ICloneable<RenderTask> {
     }
 
     public int ID { get; init; } = _random.Next(0, 999999);
-    public string Project { get; set; }
+    public required string Project { get; set; }
     public string ProjectName => Path.GetFileNameWithoutExtension(Project);
-    public string Output { get; set; }
+    public required string Output { get; set; }
     public string OutputModule { get; set; } = "Lossless";
     public string RenderSettings { get; set; } = "Best Settings";
 
@@ -116,7 +116,7 @@ public class RenderTask : ICloneable<RenderTask> {
                 if (comp.SplitFrameSpans[i].StartFrame == 0 && comp.SplitFrameSpans[i].EndFrame == 0)
                     exec = exec.Delete("-s 0 -e 0");
 
-                result.Add(new RenderThread(ApplicationSettings.AErenderPath, exec) {
+                result.Add(new RenderThread(Settings.Current.AErenderPath, exec) {
                     ID = _random.Next(0, 999999),
                     Name = comp.CompositionName
                 });
@@ -143,6 +143,13 @@ public class RenderTask : ICloneable<RenderTask> {
             MemoryLimit = MemoryLimit,
             Compositions = new(Compositions.Select(x => (Composition)x.Clone())),
             State = State
+        };
+    }
+
+    public static RenderTask Empty() {
+        return new () {
+            Project = "",
+            Output = ""
         };
     }
 }

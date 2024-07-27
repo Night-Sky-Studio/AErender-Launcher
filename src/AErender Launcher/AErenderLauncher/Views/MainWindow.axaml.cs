@@ -46,8 +46,8 @@ public partial class MainWindow : Window {
         //     ]
         // });
         Tasks.Add(new RenderTask {
-            Project = "C:\\YandexDisk\\Acer\\Footages (AE)\\AErender Launcher Benchmark Projects\\SuperEffectiveBros - Mograph Practice\\AEPRTC_Eclipse_rev57(ForDist)_2022.aep",
-            Output = "C:\\Users\\lunam\\Desktop\\[projectName]\\[compName].[fileExtension]",
+            Project = "C:\\YandexDisk\\Acer\\Footages (AE)\\AErender Launcher Benchmark Projects\\SuperEffectiveBros - Mograph Practice\\AEPRTC_Eclipse_rev57(ForDist)_2024.aep",
+            Output = "C:\\Users\\LilyStilson\\Desktop\\[projectName]\\[compName].[fileExtension]",
             MissingFiles = true, Sound = true,
             MemoryLimit = 5,
             Compositions = [
@@ -85,7 +85,7 @@ public partial class MainWindow : Window {
         List<ProjectItem>? project = await AeProjectParser.ParseProjectAsync(projectPath);
         
         if (project != null) {
-            ApplicationSettings.LastProjectPath = projectPath;
+            Settings.Current.LastProjectPath = projectPath;
         
             ProjectImportDialog dialog = new(project.ToArray(), projectPath);
             RenderTask? task = await dialog.ShowDialog<RenderTask?>(this);
@@ -105,7 +105,7 @@ public partial class MainWindow : Window {
         _renderingWindow = new(aggregatedTasks);
 
         await Task.WhenAll([
-            _renderingWindow.Start(),
+            _renderingWindow.Start(Settings.Current.ThreadsRenderMode, Settings.Current.ThreadsLimit),
             _renderingWindow.ShowDialog(this)
         ]);
     }
@@ -122,7 +122,8 @@ public partial class MainWindow : Window {
 
         if (aep != null && aep.Count != 0 && aep.First().TryGetLocalPath() is { } prgPath) {
             TaskEditor editor = new(new RenderTask {
-                Project = prgPath
+                Project = prgPath,
+                Output = ""
             });
             
             RenderTask? result = await editor.ShowDialog<RenderTask?>(this);

@@ -51,16 +51,16 @@ public partial class ProjectImportDialog : Window {
             Close(null);
         else
             Close(new RenderTask {
-                Project = ApplicationSettings.LastProjectPath,
-                Output = ApplicationSettings.LastOutputPath,
-                Multiprocessing = ApplicationSettings.Multithreaded,
-                MissingFiles = ApplicationSettings.MissingFiles,
-                Sound = ApplicationSettings.Sound,
-                CacheLimit = ApplicationSettings.CacheLimit,
-                MemoryLimit = ApplicationSettings.MemoryLimit,
-                CustomProperties = ApplicationSettings.CustomProperties,
-                OutputModule = ApplicationSettings.ActiveOutputModule?.Module ?? "Lossless",
-                RenderSettings = ApplicationSettings.RenderSettings,
+                Project = Settings.Current.LastProjectPath,
+                Output = Settings.Current.LastOutputPath,
+                Multiprocessing = Settings.Current.Multithreaded,
+                MissingFiles = Settings.Current.MissingFiles,
+                Sound = Settings.Current.Sound,
+                CacheLimit = Settings.Current.CacheLimit,
+                MemoryLimit = Settings.Current.MemoryLimit,
+                CustomProperties = Settings.Current.CustomProperties,
+                OutputModule = Settings.Current.ActiveOutputModule?.Module ?? "Lossless",
+                RenderSettings = Settings.Current.RenderSettings,
                 Compositions = new (compositions)
             });
     }

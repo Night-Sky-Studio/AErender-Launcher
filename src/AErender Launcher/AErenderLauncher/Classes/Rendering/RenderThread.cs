@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
+using System.Linq;
 using AErenderLauncher.Classes.System;
-using Avalonia.Threading;
-using ReactiveUI;
+using ThreadState = AErenderLauncher.Enums.ThreadState;
 
 namespace AErenderLauncher.Classes.Rendering;
 
@@ -45,9 +42,12 @@ public class RenderThread(string executable, string command) : ConsoleThread(exe
     private Timecode? _duration = null;
     private double? _framerate = null;
     
-    protected override void StdoutOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) {
-        string data = $"{e.NewItems?[0]}";
+    protected override void OnOutputReceived(ConsoleThread? sender, string output) {
+        string data = output;
         Log += data + Environment.NewLine;
+
+        if (Log == "")
+            throw new SystemException("What the fuck");
 
         if (!GotError && data.StartsWith("PROGRESS:  ")) {
             _frameData = AerenderParser.ParseFrameData(data);
@@ -55,7 +55,7 @@ public class RenderThread(string executable, string command) : ConsoleThread(exe
             _framerate ??= AerenderParser.ParseFramerate(data);
             
             if (_frameData != null && _duration != null && _framerate != null) {
-                CurrentFrame = _frameData.Value.Frame;   // weird nullable types flex...
+                CurrentFrame = _frameData.Value.Frame;  
                 EndFrame = _duration.Value.ToFrames(_framerate.Value);
             }
         }
@@ -70,8 +70,26 @@ public class RenderThread(string executable, string command) : ConsoleThread(exe
             EndFrame = uint.MaxValue;
             Abort();
         }
-        
-        // OnProgressChanged?.Invoke(null, $"{e.NewItems?[0]}");
+    }
+
+    protected override void OnStateChanged(ConsoleThread? sender, ThreadState state) {
+        Debug.WriteLine($"Thread {ID} state: {state.ToString()}");
+        switch (state) {
+            case ThreadState.Running:
+                if (Log.Contains("Started rendering" + Environment.NewLine))
+                    throw new SystemException("What the fuck");
+                Log += "Started rendering" + Environment.NewLine;
+                break;
+            case ThreadState.Finished:
+                Log += "Finished rendering" + Environment.NewLine;
+                break;
+            case ThreadState.Error:
+                Log += "Error occurred" + Environment.NewLine;
+                break;
+            case ThreadState.Stopped:
+                Log += "Stopped rendering" + Environment.NewLine;
+                break;
+        }
     }
     
     // protected override void OnErrorReceived(string data) { }

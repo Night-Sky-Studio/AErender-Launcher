@@ -8,9 +8,11 @@
         x:Class="AErenderLauncher.Views.TaskEditor"
         x:Name="TaskEditorView"
         WindowStartupLocation="CenterOwner"
+        SystemDecorations="Full"
+        ExtendClientAreaChromeHints="NoChrome"
         Width="640" Height="450"
         Title="Task Editor">
-    <Grid x:Name="Root" RowDefinitions="0,*">
+    <Grid x:Name="Root" RowDefinitions="32,*">
         <controls:IsPlatform Grid.Row="0">
             <controls:IsPlatform.Windows>
                 <controls:TitleBar Title="Edit task" />

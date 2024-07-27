@@ -28,6 +28,8 @@ public class Settings {
         ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents", "AErender", "AErenderConfiguration.xml")
         : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "AErender", "AErenderConfiguration.xml");
 
+    public static Settings Current { get; set; } = new();
+    
     // Language ?
     // Style  ?
 

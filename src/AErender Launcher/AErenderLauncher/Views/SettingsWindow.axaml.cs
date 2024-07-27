@@ -29,7 +29,7 @@ public partial class SettingsWindow : Window {
     }
 
     private void CloseButton_OnClick(object sender, RoutedEventArgs e) {
-        ApplicationSettings.Save();
+        Settings.Current.Save();
         Close();
     }
 
@@ -43,8 +43,8 @@ public partial class SettingsWindow : Window {
         if (result.Count == 0) return;
         if (result.First().TryGetLocalPath() is not { } path) return;
 
-        ApplicationSettings.AErenderPath = path;
-        ViewModel.AErenderPath = ApplicationSettings.AErenderPath;
+        Settings.Current.AErenderPath = path;
+        ViewModel.AErenderPath = Settings.Current.AErenderPath;
     }
 
     private async void AerenderDetectButton_OnClick(object? sender, RoutedEventArgs e) {
@@ -59,8 +59,8 @@ public partial class SettingsWindow : Window {
         }
 
         if (result != null) {
-            ApplicationSettings.AErenderPath = result.Value.Path;
-            ViewModel.AErenderPath = ApplicationSettings.AErenderPath;
+            Settings.Current.AErenderPath = result.Value.Path;
+            ViewModel.AErenderPath = Settings.Current.AErenderPath;
         }
     }
 

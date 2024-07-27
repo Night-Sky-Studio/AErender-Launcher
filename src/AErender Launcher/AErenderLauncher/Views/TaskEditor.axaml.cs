@@ -18,9 +18,11 @@ using static AErenderLauncher.App;
 namespace AErenderLauncher.Views;
 
 public partial class TaskEditor : Window {
+    
+    
     // private RenderTask _initialTask;
     public RenderTask Task { get; init; }
-    public ObservableCollection<OutputModule> outputModules { get; set; } = new(ApplicationSettings.OutputModules);
+    public ObservableCollection<OutputModule> outputModules { get; set; } = new(Settings.Current.OutputModules);
     public ObservableCollection<string> renderSettings { get; set; } = new() {
         "Best Settings",
         "Current Settings",
@@ -48,13 +50,18 @@ public partial class TaskEditor : Window {
     public TaskEditor() {
         InitializeComponent();
         // _initialTask = new RenderTask();
-        Task = new RenderTask();
+        Task = RenderTask.Empty();
+        ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
+        Root.RowDefinitions = Helpers.Platform == OS.macOS ? new RowDefinitions("0,32,*,32") : new RowDefinitions("32,32,*,32");
     }
 
     public TaskEditor(RenderTask task, bool isEditing = false) {
         IsEditing = isEditing;
         Task = task.Clone();
         
+        // ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
+        // Root.RowDefinitions = Helpers.Platform == OS.macOS ? new RowDefinitions("0,32,*,32") : new RowDefinitions("32,32,*,32");
+        //
         InitializeComponent();
 
         // TODO:    Make bindings work

@@ -9,23 +9,21 @@ using AErenderLauncher.Views;
 namespace AErenderLauncher;
 
 public partial class App : Application {
-    public static Settings ApplicationSettings { get; private set; } = new();
-
     public App() {
         Name = "AErender Launcher";
             
         // Load settings
         if (Settings.Exists() && Settings.Load(Settings.SettingsPath) is { } settings) {
-            ApplicationSettings = settings;
+            Settings.Current = settings;
         } else if (Settings.ExistsLegacy() && Settings.LoadLegacy(Settings.LegacySettingsPath) is { } legacySettings) {
-            ApplicationSettings = legacySettings;
+            Settings.Current = legacySettings;
         } else {
-            ApplicationSettings = new Settings();
+            Settings.Current = new ();
         }
             
         // Create Launcher folder if there isn't one
-        if (!Directory.Exists(ApplicationSettings.SettingsFolder)) {
-            Directory.CreateDirectory(ApplicationSettings.SettingsFolder);
+        if (!Directory.Exists(Settings.Current.SettingsFolder)) {
+            Directory.CreateDirectory(Settings.Current.SettingsFolder);
         }
     }
     
