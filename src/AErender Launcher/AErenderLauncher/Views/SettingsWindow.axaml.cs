@@ -25,7 +25,7 @@ public partial class SettingsWindow : Window {
         DataContext = ViewModel;
         
         ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
-        Root.RowDefinitions = Helpers.Platform == OS.macOS ? new RowDefinitions("0,32,*,32") : new RowDefinitions("32,32,*,32");
+        Root.RowDefinitions = Helpers.Platform == OS.macOS ? new ("0,32,*,32") : new ("32,32,*,32");
     }
 
     private void CloseButton_OnClick(object sender, RoutedEventArgs e) {

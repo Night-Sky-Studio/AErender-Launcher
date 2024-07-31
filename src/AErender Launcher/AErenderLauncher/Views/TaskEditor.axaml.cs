@@ -59,10 +59,10 @@ public partial class TaskEditor : Window {
         IsEditing = isEditing;
         Task = task.Clone();
         
-        // ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
-        // Root.RowDefinitions = Helpers.Platform == OS.macOS ? new RowDefinitions("0,32,*,32") : new RowDefinitions("32,32,*,32");
-        //
         InitializeComponent();
+        
+        ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
+        Root.RowDefinitions = Helpers.Platform == OS.macOS ? new ("0,*") : new ("32,*");
 
         // TODO:    Make bindings work
         // Remarks: If somebody will be able to make two-way
@@ -203,21 +203,21 @@ public partial class TaskEditor : Window {
     }
     private void StartFrame_OnTextChanged(object? sender, TextChangedEventArgs e) {
         if (CompList.SelectedItem is not Composition comp) return;
-        if (!int.TryParse(StartFrame.Text, out int result)) return;
+        if (!uint.TryParse(StartFrame.Text, out uint result)) return;
         comp.Frames = comp.Frames with {
             StartFrame = result
         };
     }
     private void EndFrame_OnTextChanged(object? sender, TextChangedEventArgs e) {
         if (CompList.SelectedItem is not Composition comp) return;
-        if (!int.TryParse(EndFrame.Text, out int result)) return;
+        if (!uint.TryParse(EndFrame.Text, out uint result)) return;
         comp.Frames = comp.Frames with {
             EndFrame = result
         };
     }
     private void Split_OnTextChanged(object? sender, TextChangedEventArgs e) {
         if (CompList.SelectedItem is not Composition comp) return;
-        if (!int.TryParse(Split.Text, out int result)) return;
+        if (!uint.TryParse(Split.Text, out uint result)) return;
         comp.Split = result;
     }
 }

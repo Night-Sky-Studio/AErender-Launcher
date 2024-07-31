@@ -48,4 +48,11 @@ public static class CollectionExtensions {
             return false;
         }
     }
+
+    public static void AddMany<T>(this IList<T> list, params T?[] items) {
+        foreach (T? item in items) {
+            if (item is null) continue;
+            list.Add(item);
+        }
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
@@ -7,7 +8,7 @@ using ThreadState = AErenderLauncher.Enums.ThreadState;
 
 namespace AErenderLauncher.Classes.Rendering;
 
-public class RenderThread(string executable, string command) : ConsoleThread(executable, command) {
+public class RenderThread(string executable, List<string> args) : ConsoleThread(executable, args) {
     public int ID { get; set; }
     public string Name { get; set; } = "";
 
@@ -73,7 +74,7 @@ public class RenderThread(string executable, string command) : ConsoleThread(exe
     }
 
     protected override void OnStateChanged(ConsoleThread? sender, ThreadState state) {
-        Debug.WriteLine($"Thread {ID} state: {state.ToString()}");
+        Console.WriteLine($"Thread {ID} state: {state.ToString()}");
         switch (state) {
             case ThreadState.Running:
                 if (Log.Contains("Started rendering" + Environment.NewLine))

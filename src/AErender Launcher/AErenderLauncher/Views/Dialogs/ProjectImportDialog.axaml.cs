@@ -40,8 +40,8 @@ public partial class ProjectImportDialog : Window {
                 compositions.Add(new() {
                     CompositionName = item.Name,
                     Frames = new() {
-                        StartFrame = Convert.ToInt32(item.Frames[0]),
-                        EndFrame = Convert.ToInt32(item.Frames[1])
+                        StartFrame = Convert.ToUInt32(item.Frames[0]),
+                        EndFrame = Convert.ToUInt32(item.Frames[1])
                     },
                 });
             }

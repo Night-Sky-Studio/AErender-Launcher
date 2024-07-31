@@ -54,7 +54,9 @@ public partial class RenderingWindow : Window {
     }
 
     private async Task StartAll() {
-        await Task.WhenAll(ViewModel.Queue.Select(thread => thread.StartAsync()));
+        ViewModel.Threads.AddRange(ViewModel.Queue);
+        ViewModel.Queue.Clear();
+        await Task.WhenAll(ViewModel.Threads.Select(thread => thread.StartAsync()));
     }
     
     private async Task StartOneByOne() {

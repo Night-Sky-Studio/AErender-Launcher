@@ -1,25 +1,23 @@
 ﻿using System;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Diagnostics;
-using System.Reactive.Linq;
+using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using AErenderLauncher.Interfaces;
-using Avalonia.Threading;
 using CliWrap;
-using CliWrap.Buffered;
-using CliWrap.EventStream;
 using CliWrap.Exceptions;
-using NUnit.Framework.Internal.Execution;
 using ThreadState = AErenderLauncher.Enums.ThreadState;
 
 namespace AErenderLauncher.Classes.System;
 
 public class ConsoleThread : ReactiveObject {
     private string _executable { get; }
-    private string _command { get; set; }
+    private List<string> _args { get; set; }
     private Command _process { get; set; }
     private CancellationTokenSource _cts = new ();
     private CancellationToken _cancellationToken => _cts.Token;
@@ -29,7 +27,7 @@ public class ConsoleThread : ReactiveObject {
 
     private event Action<ConsoleThread?, ThreadState>? StateChanged;
 
-    public string FullCommand => $"\"{_executable}\" {_command}";
+    public string FullCommand => $"\"{_executable}\" {string.Join(" ", _args)}";
 
     private ThreadState _state = ThreadState.Stopped;
     public ThreadState State {
@@ -47,11 +45,32 @@ public class ConsoleThread : ReactiveObject {
 
     public event Action<ConsoleThread?, string>? OutputReceived;
     public event Action<ConsoleThread?, string>? ErrorReceived;
+
+    private TcpListener _listener = null!;
+    private TcpClient _client = null!;
+    private NetworkStream? _stream;
+    [NotNullIfNotNull(nameof(_stream))]
+    private StreamReader? Reader { get; set; }
     
-    public ConsoleThread(string executable, string command = "") {
+    private static readonly IPEndPoint DefaultLoopbackEndpoint = new (IPAddress.IPv6Loopback, port: 0);
+
+    public static IPEndPoint? GetAvailableEndpoint() {
+        using var socket = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
+        socket.Bind(DefaultLoopbackEndpoint);
+        if (socket.LocalEndPoint is IPEndPoint endPoint) {
+            return endPoint;
+        }
+        return null;
+    }
+
+    [NotNull]
+    private IPEndPoint? _currentEndpoint = DefaultLoopbackEndpoint;
+        
+    public ConsoleThread(string executable, List<string> args) {
         _executable = executable;
-        _command = command;
+        _args = args;
         _process = CreateProcess();
+        
         OutputReceived += OnOutputReceived;
         ErrorReceived += OnErrorReceived;
         StateChanged += OnStateChanged;
@@ -70,27 +89,74 @@ public class ConsoleThread : ReactiveObject {
     }
     
     private Command CreateProcess() {
-        Command process = Cli.Wrap(_executable)
-            .WithArguments(_command)
-            .WithStandardOutputPipe(PipeTarget.ToDelegate(data => {
-                // Dispatcher.UIThread.Post(() => {
-                    OutputReceived?.Invoke(this, $"{data}");
-                // }, DispatcherPriority.Render);
-            }))
-            .WithStandardErrorPipe(PipeTarget.ToDelegate(data => {
-                // Dispatcher.UIThread.Post(() => {
-                    ErrorReceived?.Invoke(this, $"{data}");
-                // }, DispatcherPriority.Render);
-            }))
+        _currentEndpoint = GetAvailableEndpoint();
+        if (_currentEndpoint is null)
+            throw new NoNullAllowedException("System does not have any available ports? (0-65535)");
+
+        _listener = new(_currentEndpoint);
+        _listener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
+        
+        _listener.Start();
+        
+        Command process = Cli.Wrap(_executable.Replace("aerender.exe", "AfterFX.com"))
+            .WithArguments(["-noui", "-m", "-s", 
+                $"if (typeof gAECommandLineRenderer == 'undefined') {{ app.exitCode = 13; }} else {{ try {{ gAECommandLineRenderer.Render('-port','[::1]:{_currentEndpoint.Port}',{ string.Join(",", _args.Select(s => $"'{s}'")) }); }} catch(e) {{ alert(e); }} }}"
+            ])
+            // .WithStandardOutputPipe(PipeTarget.ToDelegate(s => Console.WriteLine($"AfterFX OUT: {s}")))
+            // .WithStandardErrorPipe(PipeTarget.ToDelegate(s => Console.Error.WriteLine($"AfterFX ERR: {s}")))
             .WithValidation(CommandResultValidation.ZeroExitCode);
 
         return process;
     }
 
+    private void UpdateStreams() {
+        while (!_client.Connected) { }
+        _stream = _client.GetStream();
+        Reader = new(_stream, Encoding.ASCII, leaveOpen: true);
+    }
+    
+    private async Task ReceiveMessage() {
+        try {
+            while (State is not (ThreadState.Error or ThreadState.Finished or ThreadState.Stopped)) {
+                if (Reader is null) {
+                    continue;
+                }
+
+                var response = await Reader.ReadLineAsync();
+                if (response is null || response.Length == 0) continue;
+
+                if (response.ToLower().Contains("error")) {
+                    ErrorReceived?.Invoke(this, response);
+                } else {
+                    OutputReceived?.Invoke(this, response);
+                }
+            }
+        } catch (Exception e) {
+            // TODO: Change to ErrorReceived
+            OutputReceived?.Invoke(this, $"Socket error: {e.Message}");
+            // await Console.Error.WriteLineAsync($"Error: {e.Message}");
+        }
+    }
+    
     public async Task StartAsync() {
         try {
             State = ThreadState.Running;
-            await _process.ExecuteAsync(_cancellationToken);
+            _process.ExecuteAsync(_cancellationToken);
+            OutputReceived?.Invoke(this, "AfterFX started, waiting for connection...");
+            _client = await _listener.AcceptTcpClientAsync(_cancellationToken);
+            UpdateStreams();
+            OutputReceived?.Invoke(this, $"Connected to AfterFX on {_currentEndpoint.Address}:{_currentEndpoint.Port}");
+            await Task.Run(ReceiveMessage, _cancellationToken);
+
+            // await Task.WhenAll(
+            //     _process.ExecuteAsync(_cancellationToken),
+            //     Task.Run(async () => {
+            //         await _client.ConnectAsync(_currentEndpoint, _cancellationToken).AsTask();
+            //         UpdateStreams();
+            //         return Task.CompletedTask;
+            //     }, _cancellationToken),
+            //     Task.Run(ReceiveMessage, _cancellationToken)
+            // );
             //await foreach (var evt in _process.ListenAsync(_cancellationToken)) {
             //  await _process.Observe(Encoding.ASCII, _cancellationToken).ForEachAsync(evt => {
             //      switch (evt) {
