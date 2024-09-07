@@ -7,6 +7,8 @@ using AErenderLauncher.Classes.Extensions;
 using AErenderLauncher.Classes.Rendering;
 using AErenderLauncher.Classes.System.Dialogs;
 using Avalonia;
+using Avalonia.Animation;
+using Avalonia.Animation.Easings;
 using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -22,7 +24,7 @@ public partial class TaskEditor : Window {
     
     // private RenderTask _initialTask;
     public RenderTask Task { get; init; }
-    public ObservableCollection<OutputModule> outputModules { get; set; } = new(Settings.Current.OutputModules);
+    public ObservableCollection<OutputModule> OutputModules { get; set; } = new(Settings.Current.OutputModules);
     public ObservableCollection<string> renderSettings { get; set; } = new() {
         "Best Settings",
         "Current Settings",
@@ -59,10 +61,10 @@ public partial class TaskEditor : Window {
         IsEditing = isEditing;
         Task = task.Clone();
         
-        // ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
-        // Root.RowDefinitions = Helpers.Platform == OS.macOS ? new RowDefinitions("0,32,*,32") : new RowDefinitions("32,32,*,32");
-        //
         InitializeComponent();
+        
+        ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
+        Root.RowDefinitions = Helpers.Platform == OS.macOS ? new ("0,*") : new ("32,*");
 
         // TODO:    Make bindings work
         // Remarks: If somebody will be able to make two-way
@@ -70,7 +72,7 @@ public partial class TaskEditor : Window {
         //          I will be very grateful
         ProjectPath.Text = task.Project;
         OutputPath.Text = task.Output;
-        OutputModuleBox.SelectedIndex = outputModules.IndexOf(outputModules.First(x => x.Module == task.OutputModule));
+        OutputModuleBox.SelectedIndex = OutputModules.IndexOf(OutputModules.First(x => x.Module == task.OutputModule));
         RenderSettings.Text = task.RenderSettings;
         
         MissingCheckbox.IsChecked = task.MissingFiles;
@@ -92,7 +94,7 @@ public partial class TaskEditor : Window {
     private async void OutputPathButton_OnClick(object? sender, RoutedEventArgs e) {
         IStorageFile? file = await this.ShowSaveFileDialogAsync(
             [],// [ new ("[fileExtension]", "*.[fileExtension]") ],
-            SuggestedFileName: outputModules[OutputModuleBox.SelectedIndex].Mask
+            SuggestedFileName: OutputModules[OutputModuleBox.SelectedIndex].Mask
         );
 
         if (file == null) return;
@@ -173,7 +175,7 @@ public partial class TaskEditor : Window {
     private void OutputModuleBox_OnSelectionChanged(object? sender, SelectionChangedEventArgs e) {
         // if (e.AddedItems[0] is OutputModule module && module.Module != Task.OutputModule)
         // Task.OutputModule = module.Module;
-        Task.OutputModule = outputModules[OutputModuleBox.SelectedIndex].Module;
+        Task.OutputModule = OutputModules[OutputModuleBox.SelectedIndex].Module;
     }
 
     private void RenderSettings_OnTextChanged(object? sender, TextChangedEventArgs e) {
@@ -203,21 +205,30 @@ public partial class TaskEditor : Window {
     }
     private void StartFrame_OnTextChanged(object? sender, TextChangedEventArgs e) {
         if (CompList.SelectedItem is not Composition comp) return;
-        if (!int.TryParse(StartFrame.Text, out int result)) return;
+        if (!uint.TryParse(StartFrame.Text, out uint result)) return;
         comp.Frames = comp.Frames with {
             StartFrame = result
         };
     }
     private void EndFrame_OnTextChanged(object? sender, TextChangedEventArgs e) {
         if (CompList.SelectedItem is not Composition comp) return;
-        if (!int.TryParse(EndFrame.Text, out int result)) return;
+        if (!uint.TryParse(EndFrame.Text, out uint result)) return;
         comp.Frames = comp.Frames with {
             EndFrame = result
         };
     }
     private void Split_OnTextChanged(object? sender, TextChangedEventArgs e) {
         if (CompList.SelectedItem is not Composition comp) return;
-        if (!int.TryParse(Split.Text, out int result)) return;
+        if (!uint.TryParse(Split.Text, out uint result)) return;
         comp.Split = result;
+    }
+
+    private void Control_OnLoaded(object? sender, RoutedEventArgs e) {
+        // <PageSlide Duration="0.5" Orientation="Horizontal" SlideInEasing="CircularEaseInOut" SlideOutEasing="CircularEaseInOut" />
+        // Applying transition this way, allows us to double-click on composition in MainWindow to open it here
+        EditorCarousel.PageTransition = new PageSlide(TimeSpan.FromMilliseconds(500)) {
+            SlideInEasing = new CircularEaseInOut(),
+            SlideOutEasing = new CircularEaseInOut()
+        };
     }
 }

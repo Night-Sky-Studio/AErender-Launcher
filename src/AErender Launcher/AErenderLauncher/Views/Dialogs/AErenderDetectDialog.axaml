@@ -13,7 +13,7 @@
         Title="Select aerender version">
     <Window.Resources>
         <ResourceDictionary>
-            <DataTemplate x:Key="AerenderListTemplate" x:DataType="classes:AErender">
+            <DataTemplate x:Key="AerenderListTemplate" x:DataType="classes:AfterFx">
                 <Grid ColumnDefinitions="192,*,64">
                     <TextBlock Grid.Column="0" Text="{Binding Name}"/>
                     <TextBlock Grid.Column="1" Text="{Binding Path}"/>

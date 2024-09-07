@@ -12,26 +12,26 @@ public static class FrameSpanExtensions {
 }
 
 public struct FrameSpan {
-    public int StartFrame { get; set; }
-    public int EndFrame { get; set; }
+    public uint StartFrame { get; set; }
+    public uint EndFrame { get; set; }
 
-    public FrameSpan(int startFrame, int endFrame) {
+    public FrameSpan(uint startFrame, uint endFrame) {
         StartFrame = startFrame;
         EndFrame = endFrame;
     }
 
     public FrameSpan(string startFrame, string endFrame) {
-        StartFrame = int.Parse(startFrame);
-        EndFrame = int.Parse(endFrame);
+        StartFrame = uint.Parse(startFrame);
+        EndFrame = uint.Parse(endFrame);
     }
 
-    public FrameSpan[] Split(int count) {
+    public FrameSpan[] Split(uint count) {
         FrameSpan[] result = new FrameSpan[count];
         result[0].StartFrame = StartFrame;
-        int j = EndFrame - StartFrame;
-        int k = j / count;
+        uint j = EndFrame - StartFrame;
+        uint k = j / count;
         result[0].EndFrame = StartFrame + k;
-        for (int i = 1; i < count; i++) {
+        for (uint i = 1; i < count; i++) {
             result[i].StartFrame = StartFrame + k * i + 1;
             result[i].EndFrame = StartFrame + k * (i + 1);
         }

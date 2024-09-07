@@ -14,20 +14,23 @@ using static AErenderLauncher.App;
 namespace AErenderLauncher.Views.Dialogs;
 
 public partial class ProjectImportDialog : Window {
-    public ObservableCollection<ProjectItem> Items { get; set; } = new ObservableCollection<ProjectItem>();
+    public ObservableCollection<ProjectItem> Items { get; set; } = [];
 
+    private void Init() {
+        ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
+        Root.RowDefinitions = Helpers.Platform == OS.macOS ? new ("0,32,*,32") : new ("32,32,*,32");
+    }
+    
     public ProjectImportDialog() {
         InitializeComponent();
         
-        ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
-        Root.RowDefinitions = Helpers.Platform == OS.macOS ? new RowDefinitions("0,32,*,32") : new RowDefinitions("32,32,*,32");
+        Init();
     }
 
     public ProjectImportDialog(ProjectItem[] items, string projectPath) {
         InitializeComponent();
 
-        ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
-        Root.RowDefinitions = Helpers.Platform == OS.macOS ? new RowDefinitions("0,32,*,32") : new RowDefinitions("32,32,*,32");
+        Init();
         
         Items.AddRange(items);
         ProjectPath.Text = projectPath;
@@ -40,8 +43,8 @@ public partial class ProjectImportDialog : Window {
                 compositions.Add(new() {
                     CompositionName = item.Name,
                     Frames = new() {
-                        StartFrame = Convert.ToInt32(item.Frames[0]),
-                        EndFrame = Convert.ToInt32(item.Frames[1])
+                        StartFrame = Convert.ToUInt32(item.Frames[0]),
+                        EndFrame = Convert.ToUInt32(item.Frames[1])
                     },
                 });
             }

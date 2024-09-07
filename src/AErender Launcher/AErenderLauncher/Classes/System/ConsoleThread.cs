@@ -1,22 +1,13 @@
 ﻿using System;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Diagnostics;
-using System.Reactive.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using AErenderLauncher.Interfaces;
-using Avalonia.Threading;
 using CliWrap;
-using CliWrap.Buffered;
-using CliWrap.EventStream;
 using CliWrap.Exceptions;
-using NUnit.Framework.Internal.Execution;
 using ThreadState = AErenderLauncher.Enums.ThreadState;
 
 namespace AErenderLauncher.Classes.System;
 
+[Obsolete("Use NetworkThread instead")]
 public class ConsoleThread : ReactiveObject {
     private string _executable { get; }
     private string _command { get; set; }

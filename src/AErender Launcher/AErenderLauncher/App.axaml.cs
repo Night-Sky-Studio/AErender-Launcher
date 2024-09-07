@@ -19,6 +19,8 @@ public partial class App : Application {
             Settings.Current = legacySettings;
         } else {
             Settings.Current = new ();
+            Settings.Current.Init();
+            Settings.Current.Save();
         }
             
         // Create Launcher folder if there isn't one
@@ -30,7 +32,7 @@ public partial class App : Application {
     public override void Initialize() {
         AvaloniaXamlLoader.Load(this);
     }
-
+    
     public override void OnFrameworkInitializationCompleted() {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
             desktop.MainWindow = new MainWindow();
