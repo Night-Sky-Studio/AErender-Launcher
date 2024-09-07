@@ -135,8 +135,8 @@ public class RenderTask : ICloneable<RenderTask> {
                 
                 // exec = exec.Replace("\\", "\\\\");
 
-                result.Add(new (Settings.Current.AErenderPath, exec) {
-                    ID = _random.Next(0, 999999),
+                result.Add(new (Settings.Current.AfterEffectsPath, exec) {
+                    Id = _random.Next(0, 999999),
                     Name = comp.CompositionName
                 });
             }
