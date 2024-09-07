@@ -46,12 +46,16 @@ public partial class MainWindow : Window {
         //     ]
         // });
         Tasks.Add(new RenderTask {
-            Project = "C:\\YandexDisk\\Acer\\Footages (AE)\\AErender Launcher Benchmark Projects\\SuperEffectiveBros - Mograph Practice\\AEPRTC_Eclipse_rev57(ForDist)_2024.aep",
-            Output = "C:\\Users\\LilyStilson\\Desktop\\[projectName]\\[compName].[fileExtension]",
+            Project = Helpers.Platform == OS.Windows 
+                ? "C:\\YandexDisk\\Acer\\Footages (AE)\\AErender Launcher Benchmark Projects\\SuperEffectiveBros - Mograph Practice\\AEPRTC_Eclipse_rev57(ForDist)_2024.aep"
+                : "/Users/lilystilson/YandexDisk.localized/Acer/Footages (AE)/AErender Launcher Benchmark Projects/SuperEffectiveBros - Mograph Practice/AEPRTC_Eclipse_rev57(ForDist)_2024.aep",
+            Output = Helpers.Platform == OS.Windows 
+                ? "C:\\Users\\LilyStilson\\Desktop\\[projectName]\\[compName].[fileExtension]"
+                : "/Users/lilystilson/Desktop/Mograph Practice/[compName].[fileExtension]",
             MissingFiles = true, Sound = true,
             MemoryLimit = 5,
             Compositions = [
-                new("Main", new FrameSpan(3600, 6130), 64),
+                new("Main", new FrameSpan(3600, 6130), 2),
             ]
         });
         DebugLabel.Text = $"Tasks: {Tasks.Count}";
