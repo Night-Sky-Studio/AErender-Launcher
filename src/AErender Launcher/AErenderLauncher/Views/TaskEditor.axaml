@@ -11,7 +11,8 @@
         SystemDecorations="Full"
         ExtendClientAreaChromeHints="NoChrome"
         Width="640" Height="450"
-        Title="Task Editor">
+        Title="Task Editor"
+        Loaded="Control_OnLoaded">
     <Grid x:Name="Root" RowDefinitions="32,*">
         <controls:IsPlatform Grid.Row="0">
             <controls:IsPlatform.Windows>
@@ -20,11 +21,7 @@
         </controls:IsPlatform>
         
         <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto">
-            <Carousel Grid.Column="1" x:Name="EditorCarousel" SelectedIndex="0">
-                <Carousel.PageTransition>
-                    <PageSlide Duration="0.5" Orientation="Horizontal" SlideInEasing="CircularEaseInOut" SlideOutEasing="CircularEaseInOut" />
-                </Carousel.PageTransition>
-                
+            <Carousel Grid.Column="1" x:Name="EditorCarousel" SelectedIndex="0" AutoScrollToSelectedItem="False">
                 <Grid RowDefinitions="32,*,32">
                     <Grid Grid.Row="0" ColumnDefinitions="Auto,Auto,*">
                         <Label Grid.Column="0" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Project setup" Margin="16 0 0 0" />
@@ -41,7 +38,7 @@
                         <Grid ColumnDefinitions="128,*" Height="32">
                              <Label Grid.Column="0" Content="Output Module Preset:" VerticalAlignment="Center" />
                              <ComboBox Grid.Column="1" x:Name="OutputModuleBox"  HorizontalAlignment="Stretch" Margin="16 4 0 4" 
-                                       ItemsSource="{Binding ElementName=TaskEditorView, Path=outputModules}" SelectedIndex="-1" SelectionChanged="OutputModuleBox_OnSelectionChanged">
+                                       ItemsSource="{Binding ElementName=TaskEditorView, Path=OutputModules}" SelectedIndex="-1" SelectionChanged="OutputModuleBox_OnSelectionChanged">
                                  <ComboBox.ItemTemplate>
                                      <DataTemplate x:DataType="rendering:OutputModule">
                                          <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"/>

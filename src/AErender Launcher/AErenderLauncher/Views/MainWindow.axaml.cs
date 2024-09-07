@@ -20,9 +20,9 @@ namespace AErenderLauncher.Views;
 
 public partial class MainWindow : Window {
     private RenderingWindow? _renderingWindow;
-    public static ObservableCollection<RenderTask> Tasks { get; set; } = new ();
+    public static ObservableCollection<RenderTask> Tasks { get; set; } = [];
 
-    public static ObservableCollection<RenderThread> Threads { get; set; } = new ();
+    public static ObservableCollection<RenderThread> Threads { get; set; } = [];
 
     public MainWindow() {
         InitializeComponent();
@@ -164,15 +164,7 @@ public partial class MainWindow : Window {
         Tasks.Insert(Tasks.IndexOf(task) + 1, task);
     }
     
-
     private async void Composition_OnDoubleTapped(object? sender, TappedEventArgs e) {
-#pragma warning disable 0162
-        // BUG: This works, but there are two problems
-        //      1. Somehow changing CompList selection before the dialog is shown
-        //         messes up the layout of the ListBoxItem's Content
-        //      2. Transition of EditorCarousel is being triggered regardless
-        //         of the method it's index is being changed (Next() or SelectedIndex)
-        return; // Disabled, unless the problem above is fixed
         if (sender is not ListBoxItem { DataContext: Composition comp } lb) return;
         if (lb.Parent?.Parent is not ListBox bx || int.TryParse($"{bx.Tag}", out var id) == false) return;
         var task = Tasks.GetTaskById(id);
@@ -185,10 +177,8 @@ public partial class MainWindow : Window {
             }
         };
         var newTask = await editor.ShowDialog<RenderTask?>(this);
-        if (newTask != null) Tasks[Tasks.IndexOf(task)] = newTask;
-#pragma warning restore 0162
+        if (newTask is not null) Tasks[Tasks.IndexOf(task)] = newTask;
     }
-
     
     private async void EditTask_OnClick(object? sender, RoutedEventArgs e) {
         if (sender is not Button btn) return;
