@@ -201,4 +201,8 @@ public partial class MainWindow : Window {
     private async void QueueButton_OnClick(object? sender, RoutedEventArgs e) {
         if (_renderingWindow != null) await _renderingWindow.ShowDialog(this);
     }
+
+    private void Window_OnClosing(object? sender, WindowClosingEventArgs e) {
+        Settings.Current.Save();
+    }
 }

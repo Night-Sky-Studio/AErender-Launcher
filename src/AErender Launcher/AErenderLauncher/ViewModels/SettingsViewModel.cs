@@ -12,7 +12,7 @@ public class SettingsViewModel : ReactiveObject {
         .Where(i => i <= Helpers.GetAvailableCores() * 2)
         .ToList());
     
-    private string _aerenderPath = Settings.Current.AErenderPath;
+    private string _aerenderPath = Settings.Current.AfterEffectsPath;
     public string AErenderPath {
         get => _aerenderPath; 
         set => RaiseAndSetIfChanged(ref _aerenderPath, value);
@@ -41,7 +41,7 @@ public class SettingsViewModel : ReactiveObject {
     }
     
     public void WriteToSettings() {
-        Settings.Current.AErenderPath = AErenderPath;
+        Settings.Current.AfterEffectsPath = AErenderPath;
         Settings.Current.DefaultOutputPath = DefaultOutputPath;
         Settings.Current.DefaultProjectsPath = DefaultProjectsPath;
         Settings.Current.ThreadsRenderMode = RenderingMode;

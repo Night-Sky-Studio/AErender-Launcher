@@ -49,6 +49,14 @@ public static class CollectionExtensions {
         }
     }
 
+    public static T? Get<T>(this IList<T> list, int index) where T : struct {
+        try {
+            return list[index];
+        } catch {
+            return null;
+        }
+    }
+    
     public static void AddMany<T>(this IList<T> list, params T?[] items) {
         foreach (T? item in items) {
             if (item is null) continue;
