@@ -1,25 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
+using System.Linq;
 using AErenderLauncher.Classes.System;
-using Avalonia.Threading;
-using ReactiveUI;
+using ThreadState = AErenderLauncher.Enums.ThreadState;
 
 namespace AErenderLauncher.Classes.Rendering;
 
-public class RenderThread(string executable, string command) : ConsoleThread(executable, command) {
-    public int ID { get; set; }
+public class RenderThread(string executable, List<string> args) : NetworkThread(executable, args) {
+    public int Id { get; set; }
     public string Name { get; set; } = "";
 
-    // private RenderProgress _progress = new (0, 0);
-    //
-    // public RenderProgress Progress {
-    //     get => _progress;
-    //     set => RaiseAndSetIfChanged(ref _progress, value);
-    // }
     private uint _currentFrame = 0;
     public uint CurrentFrame { 
         get => _currentFrame;
@@ -39,15 +31,17 @@ public class RenderThread(string executable, string command) : ConsoleThread(exe
     public bool GotError => CurrentFrame == uint.MaxValue && EndFrame == uint.MaxValue;
     public bool WaitingForAerender => CurrentFrame == 0 && EndFrame == 0;
     public bool Finished => CurrentFrame == EndFrame;
-    // public event Action<RenderProgress?, string>? OnProgressChanged;
 
     private AerenderFrameData? _frameData = null;
     private Timecode? _duration = null;
     private double? _framerate = null;
     
-    protected override void StdoutOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) {
-        string data = $"{e.NewItems?[0]}";
+    protected override void OnOutputReceived(NetworkThread? sender, string output) {
+        string data = output;
         Log += data + Environment.NewLine;
+
+        if (Log == "")
+            throw new SystemException("What the fuck");
 
         if (!GotError && data.StartsWith("PROGRESS:  ")) {
             _frameData = AerenderParser.ParseFrameData(data);
@@ -55,7 +49,7 @@ public class RenderThread(string executable, string command) : ConsoleThread(exe
             _framerate ??= AerenderParser.ParseFramerate(data);
             
             if (_frameData != null && _duration != null && _framerate != null) {
-                CurrentFrame = _frameData.Value.Frame;   // weird nullable types flex...
+                CurrentFrame = _frameData.Value.Frame;  
                 EndFrame = _duration.Value.ToFrames(_framerate.Value);
             }
         }
@@ -70,8 +64,26 @@ public class RenderThread(string executable, string command) : ConsoleThread(exe
             EndFrame = uint.MaxValue;
             Abort();
         }
-        
-        // OnProgressChanged?.Invoke(null, $"{e.NewItems?[0]}");
+    }
+
+    protected override void OnStateChanged(NetworkThread? sender, ThreadState state) {
+        Console.WriteLine($"Thread {Id} state: {state.ToString()}");
+        switch (state) {
+            case ThreadState.Running:
+                if (Log.Contains("Started rendering" + Environment.NewLine))
+                    throw new SystemException("What the fuck");
+                Log += "Started rendering" + Environment.NewLine;
+                break;
+            case ThreadState.Finished:
+                Log += "Finished rendering" + Environment.NewLine;
+                break;
+            case ThreadState.Error:
+                Log += "Error occurred" + Environment.NewLine;
+                break;
+            case ThreadState.Stopped:
+                Log += "Stopped rendering" + Environment.NewLine;
+                break;
+        }
     }
     
     // protected override void OnErrorReceived(string data) { }

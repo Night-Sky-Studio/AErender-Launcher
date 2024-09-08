@@ -32,43 +32,43 @@ public static class DialogsService {
         return new(@params);
     } 
     
-    public static async Task<DialogButtons> ShowGenericDialogAsync(this Window OwnerWindow, GenericDialogParams @params) {
-        return await MakeGenericDialog(@params).ShowDialog<DialogButtons>(OwnerWindow);
+    public static async Task<DialogButtons> ShowGenericDialogAsync(this Window ownerWindow, GenericDialogParams @params) {
+        return await MakeGenericDialog(@params).ShowDialog<DialogButtons>(ownerWindow);
     }
 
-    public static async Task<List<IStorageFile>?> ShowOpenFileDialogAsync(this Window OwnerWindow, List<Tuple<string, string>> Filters, string StartingPath = "", bool AllowMultiple = false) {
-        var provider = TopLevel.GetTopLevel(OwnerWindow)?.StorageProvider;
+    public static async Task<List<IStorageFile>?> ShowOpenFileDialogAsync(this Window ownerWindow, List<Tuple<string, string>> filters, string startingPath = "", bool allowMultiple = false) {
+        var provider = TopLevel.GetTopLevel(ownerWindow)?.StorageProvider;
         if (provider == null) return null;
         
         List<FilePickerFileType> filter = new();
-        foreach (Tuple<string, string> tuple in Filters) {
+        foreach (Tuple<string, string> tuple in filters) {
             filter.Add(new(tuple.Item1) {
                 Patterns = new List<string> { tuple.Item2 }
             });
         }
         
         return (await provider.OpenFilePickerAsync(new FilePickerOpenOptions {
-            AllowMultiple = AllowMultiple,
-            SuggestedStartLocation = await provider.TryGetFolderFromPathAsync(StartingPath),
-            FileTypeFilter = Filters.Count > 0 ? filter : null
+            AllowMultiple = allowMultiple,
+            SuggestedStartLocation = await provider.TryGetFolderFromPathAsync(startingPath),
+            FileTypeFilter = filters.Count > 0 ? filter : null
         })).AsList();
     }
     
-    public static async Task<IStorageFile?> ShowSaveFileDialogAsync(this Window OwnerWindow, List<Tuple<string, string>> Filters, string StartingPath = "", string SuggestedFileName = "Untitled") {
-        var provider = TopLevel.GetTopLevel(OwnerWindow)?.StorageProvider;
+    public static async Task<IStorageFile?> ShowSaveFileDialogAsync(this Window ownerWindow, List<Tuple<string, string>> filters, string startingPath = "", string suggestedFileName = "Untitled") {
+        var provider = TopLevel.GetTopLevel(ownerWindow)?.StorageProvider;
         if (provider == null) return null;
         
         List<FilePickerFileType> filter = new();
-        foreach (Tuple<string, string> tuple in Filters) {
+        foreach (Tuple<string, string> tuple in filters) {
             filter.Add(new(tuple.Item1) {
                 Patterns = new List<string> { tuple.Item2 }
             });
         }
         
         return await provider.SaveFilePickerAsync(new FilePickerSaveOptions {
-            SuggestedFileName = SuggestedFileName,
-            SuggestedStartLocation = await provider.TryGetFolderFromPathAsync(StartingPath),
-            FileTypeChoices = Filters.Count > 0 ? filter : null
+            SuggestedFileName = suggestedFileName,
+            SuggestedStartLocation = await provider.TryGetFolderFromPathAsync(startingPath),
+            FileTypeChoices = filters.Count > 0 ? filter : null
         });
     }
 }

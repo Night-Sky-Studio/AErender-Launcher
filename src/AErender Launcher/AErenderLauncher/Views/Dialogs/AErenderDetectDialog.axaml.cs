@@ -10,8 +10,8 @@ using DynamicData;
 namespace AErenderLauncher.Views.Dialogs;
 
 public partial class AErenderDetectDialog : Window {
-    public ObservableCollection<AErender> Paths { get; set; } = new();
-    public AErender? Result { get; private set; }
+    public ObservableCollection<AfterFx> Paths { get; set; } = new();
+    public AfterFx? Result { get; private set; }
 
     private void Init() {
         InitializeComponent();
@@ -24,7 +24,7 @@ public partial class AErenderDetectDialog : Window {
         Init();
     }
 
-    public AErenderDetectDialog(List<AErender> paths) {
+    public AErenderDetectDialog(List<AfterFx> paths) {
         Init();
         Paths.AddRange(paths);
     }

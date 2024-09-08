@@ -25,42 +25,39 @@ public partial class SettingsWindow : Window {
         DataContext = ViewModel;
         
         ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
-        Root.RowDefinitions = Helpers.Platform == OS.macOS ? new RowDefinitions("0,32,*,32") : new RowDefinitions("32,32,*,32");
+        Root.RowDefinitions = Helpers.Platform == OS.macOS ? new ("0,32,*,32") : new ("32,32,*,32");
     }
 
     private void CloseButton_OnClick(object sender, RoutedEventArgs e) {
-        ApplicationSettings.Save();
         Close();
     }
 
     private async void AerenderPathSelectButton_OnClick(object? sender, RoutedEventArgs e) {
         List<IStorageFile>? result = await this.ShowOpenFileDialogAsync(
-            [ new ("aerender", Helpers.Platform == OS.Windows ? "exe" : "*") ],
-            StartingPath: Environment.GetFolderPath(Environment.SpecialFolder.Programs)
+            [ new ("After Effects", Helpers.Platform == OS.Windows ? "AfterFX.com" : "aerendercore") ],
+            startingPath: Environment.GetFolderPath(Environment.SpecialFolder.Programs)
         );
 
         if (result == null) return;
         if (result.Count == 0) return;
         if (result.First().TryGetLocalPath() is not { } path) return;
 
-        ApplicationSettings.AErenderPath = path;
-        ViewModel.AErenderPath = ApplicationSettings.AErenderPath;
+        ViewModel.AErenderPath = Settings.Current.AfterEffectsPath = path;
     }
 
     private async void AerenderDetectButton_OnClick(object? sender, RoutedEventArgs e) {
-        List<AErender> paths = Settings.DetectAerender();
-        AErender? result;
+        List<AfterFx> paths = Settings.DetectAfterEffects();
+        AfterFx? result;
         
         if (paths.Count == 1)
             result = paths[0];
         else {
             AErenderDetectDialog dialog = new(paths);
-            result = await dialog.ShowDialog<AErender?>(this);
+            result = await dialog.ShowDialog<AfterFx?>(this);
         }
 
         if (result != null) {
-            ApplicationSettings.AErenderPath = result.Value.Path;
-            ViewModel.AErenderPath = ApplicationSettings.AErenderPath;
+            ViewModel.AErenderPath = Settings.Current.AfterEffectsPath = result.Value.Path;
         }
     }
 

@@ -15,7 +15,8 @@
         ExtendClientAreaToDecorationsHint="False"
         Width="960" Height="540"
         Icon="/Assets/avalonia-logo.ico"
-        Title="AErender Launcher">
+        Title="AErender Launcher"
+        Closing="Window_OnClosing">
     
     <NativeMenu.Menu>
         <NativeMenu>

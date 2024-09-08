@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace AErenderLauncher.Classes.System;
 
 public class VoidTaskFactory {
-    public Task Task { get; set; }
+    private Task Task { get; }
     private readonly TaskCompletionSource<bool> _taskCompletionSource = new ();
     public Task CompletionSource => _taskCompletionSource.Task;
 
@@ -14,7 +14,7 @@ public class VoidTaskFactory {
             _taskCompletionSource.SetResult(true);
         }
         async void TaskFunc() => await Action();
-        Task = new Task(TaskFunc);
+        Task = new (TaskFunc);
     }
     
     public bool TryStart() {

@@ -20,9 +20,9 @@ namespace AErenderLauncher.Views;
 
 public partial class MainWindow : Window {
     private RenderingWindow? _renderingWindow;
-    public static ObservableCollection<RenderTask> Tasks { get; set; } = new ();
+    public static ObservableCollection<RenderTask> Tasks { get; set; } = [];
 
-    public static ObservableCollection<RenderThread> Threads { get; set; } = new ();
+    public static ObservableCollection<RenderThread> Threads { get; set; } = [];
 
     public MainWindow() {
         InitializeComponent();
@@ -46,12 +46,16 @@ public partial class MainWindow : Window {
         //     ]
         // });
         Tasks.Add(new RenderTask {
-            Project = "C:\\YandexDisk\\Acer\\Footages (AE)\\AErender Launcher Benchmark Projects\\SuperEffectiveBros - Mograph Practice\\AEPRTC_Eclipse_rev57(ForDist)_2022.aep",
-            Output = "C:\\Users\\lunam\\Desktop\\[projectName]\\[compName].[fileExtension]",
+            Project = Helpers.Platform == OS.Windows 
+                ? "C:\\YandexDisk\\Acer\\Footages (AE)\\AErender Launcher Benchmark Projects\\SuperEffectiveBros - Mograph Practice\\AEPRTC_Eclipse_rev57(ForDist)_2024.aep"
+                : "/Users/lilystilson/YandexDisk.localized/Acer/Footages (AE)/AErender Launcher Benchmark Projects/SuperEffectiveBros - Mograph Practice/AEPRTC_Eclipse_rev57(ForDist)_2024.aep",
+            Output = Helpers.Platform == OS.Windows 
+                ? "C:\\Users\\LilyStilson\\Desktop\\[projectName]\\[compName].[fileExtension]"
+                : "/Users/lilystilson/Desktop/Mograph Practice/[compName].[fileExtension]",
             MissingFiles = true, Sound = true,
             MemoryLimit = 5,
             Compositions = [
-                new("Main", new FrameSpan(3600, 6130), 64),
+                new("Main", new FrameSpan(3600, 6130), 2),
             ]
         });
         DebugLabel.Text = $"Tasks: {Tasks.Count}";
@@ -85,7 +89,7 @@ public partial class MainWindow : Window {
         List<ProjectItem>? project = await AeProjectParser.ParseProjectAsync(projectPath);
         
         if (project != null) {
-            ApplicationSettings.LastProjectPath = projectPath;
+            Settings.Current.LastProjectPath = projectPath;
         
             ProjectImportDialog dialog = new(project.ToArray(), projectPath);
             RenderTask? task = await dialog.ShowDialog<RenderTask?>(this);
@@ -105,7 +109,7 @@ public partial class MainWindow : Window {
         _renderingWindow = new(aggregatedTasks);
 
         await Task.WhenAll([
-            _renderingWindow.Start(),
+            _renderingWindow.Start(Settings.Current.ThreadsRenderMode, Settings.Current.ThreadsLimit),
             _renderingWindow.ShowDialog(this)
         ]);
     }
@@ -122,7 +126,8 @@ public partial class MainWindow : Window {
 
         if (aep != null && aep.Count != 0 && aep.First().TryGetLocalPath() is { } prgPath) {
             TaskEditor editor = new(new RenderTask {
-                Project = prgPath
+                Project = prgPath,
+                Output = ""
             });
             
             RenderTask? result = await editor.ShowDialog<RenderTask?>(this);
@@ -163,15 +168,7 @@ public partial class MainWindow : Window {
         Tasks.Insert(Tasks.IndexOf(task) + 1, task);
     }
     
-
     private async void Composition_OnDoubleTapped(object? sender, TappedEventArgs e) {
-#pragma warning disable 0162
-        // BUG: This works, but there are two problems
-        //      1. Somehow changing CompList selection before the dialog is shown
-        //         messes up the layout of the ListBoxItem's Content
-        //      2. Transition of EditorCarousel is being triggered regardless
-        //         of the method it's index is being changed (Next() or SelectedIndex)
-        return; // Disabled, unless the problem above is fixed
         if (sender is not ListBoxItem { DataContext: Composition comp } lb) return;
         if (lb.Parent?.Parent is not ListBox bx || int.TryParse($"{bx.Tag}", out var id) == false) return;
         var task = Tasks.GetTaskById(id);
@@ -184,10 +181,8 @@ public partial class MainWindow : Window {
             }
         };
         var newTask = await editor.ShowDialog<RenderTask?>(this);
-        if (newTask != null) Tasks[Tasks.IndexOf(task)] = newTask;
-#pragma warning restore 0162
+        if (newTask is not null) Tasks[Tasks.IndexOf(task)] = newTask;
     }
-
     
     private async void EditTask_OnClick(object? sender, RoutedEventArgs e) {
         if (sender is not Button btn) return;
@@ -199,5 +194,9 @@ public partial class MainWindow : Window {
 
     private async void QueueButton_OnClick(object? sender, RoutedEventArgs e) {
         if (_renderingWindow != null) await _renderingWindow.ShowDialog(this);
+    }
+
+    private void Window_OnClosing(object? sender, WindowClosingEventArgs e) {
+        Settings.Current.Save();
     }
 }

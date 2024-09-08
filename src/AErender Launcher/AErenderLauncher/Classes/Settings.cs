@@ -5,11 +5,12 @@ using System.Globalization;
 using System.IO;
 using System.Xml;
 using AErenderLauncher.Classes.Rendering;
+using AErenderLauncher.Classes.Extensions;
 using Newtonsoft.Json;
 
 namespace AErenderLauncher.Classes;
 
-public struct AErender {
+public struct AfterFx {
     public string Name { get; set; } 
     public string Path { get; set; } 
     public string Version { get; set; } 
@@ -28,57 +29,59 @@ public class Settings {
         ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents", "AErender", "AErenderConfiguration.xml")
         : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "AErender", "AErenderConfiguration.xml");
 
+    public static Settings Current { get; set; } = new();
+    
     // Language ?
     // Style  ?
 
-    public string AErenderPath { get; set; }
-    public string DefaultProjectsPath { get; set; }
-    public string DefaultOutputPath { get; set; }
+    public string AfterEffectsPath { get; set; } = "";
+    public string DefaultProjectsPath { get; set; } = "";
+    public string DefaultOutputPath { get; set; } = "";
 
     public int OnRenderStart { get; set; }
 
     public int ThreadsLimit { get; set; }
 
-    public List<RenderTask> RenderTasks { get; set; } = new List<RenderTask>();
+    public List<RenderTask> RenderTasks { get; set; } = [];
 
-    public string LastProjectPath { get; set; }
-    public string LastOutputPath { get; set; }
-    public string TempSavePath { get; set; }
+    public string LastProjectPath { get; set; } = "";
+    public string LastOutputPath { get; set; } = "";
+    public string TempSavePath { get; set; } = "";
 
     public bool MissingFiles { get; set; }
     public bool Sound { get; set; }
     public bool Multithreaded { get; set; }
-    public string CustomProperties { get; set; }
+    public string CustomProperties { get; set; } = "";
 
     public float MemoryLimit { get; set; }
     public float CacheLimit { get; set; }
 
     public int OutputModuleIndex { get; set; }
-    public OutputModule? ActiveOutputModule => OutputModules[OutputModuleIndex];
-    public List<OutputModule> OutputModules { get; set; } = new List<OutputModule>();
-    public string RenderSettings { get; set; }
+    public OutputModule? ActiveOutputModule => OutputModules.Get(OutputModuleIndex);
+    public List<OutputModule> OutputModules { get; set; } = [];
+    public string RenderSettings { get; set; } = "Best Settings";
 
-    public List<string> RecentProjects { get; set; } = new List<string>();
+    public List<string> RecentProjects { get; set; } = [];
     
     public RenderingMode ThreadsRenderMode { get; set; } = RenderingMode.Tiled;
 
     private void InitOutputModules() {
-        OutputModules.Add(new OutputModule { Module = "Lossless", Mask = "[compName].[fileExtension]", IsImported = false });
-        OutputModules.Add(new OutputModule { Module = "AIFF 48kHz", Mask = "[compName].[fileExtension]", IsImported = false });
-        OutputModules.Add(new OutputModule { Module = "Alpha Only", Mask = "[compName].[fileExtension]", IsImported = false });
-        OutputModules.Add(new OutputModule { Module = "AVI DV NTSC 48kHz", Mask = "[compName].[fileExtension]", IsImported = false });
-        OutputModules.Add(new OutputModule { Module = "AVI DV PAL 48kHz", Mask = "[compName].[fileExtension]", IsImported = false });
-        OutputModules.Add(new OutputModule { Module = "Lossless with Alpha", Mask = "[compName].[fileExtension]", IsImported = false });
-        OutputModules.Add(new OutputModule { Module = "Multi-Machine Sequence", Mask = "[compName]_[#####].[fileExtension]", IsImported = false });
-        OutputModules.Add(new OutputModule { Module = "Photoshop", Mask = "[compName]_[#####].[fileExtension]", IsImported = false });
-        OutputModules.Add(new OutputModule { Module = "Save Current Preview", Mask = "[compName].[fileExtension]", IsImported = false });
-        OutputModules.Add(new OutputModule { Module = "TIFF Sequence with Alph", Mask = "[compName]_[#####].[fileExtension]", IsImported = false });
+        OutputModules.AddRange([
+            new () { Module = "Lossless", Mask = "[compName].[fileExtension]", IsImported = false },
+            new () { Module = "AIFF 48kHz", Mask = "[compName].[fileExtension]", IsImported = false },
+            new () { Module = "Alpha Only", Mask = "[compName].[fileExtension]", IsImported = false },
+            new () { Module = "AVI DV NTSC 48kHz", Mask = "[compName].[fileExtension]", IsImported = false },
+            new () { Module = "AVI DV PAL 48kHz", Mask = "[compName].[fileExtension]", IsImported = false },
+            new () { Module = "Lossless with Alpha", Mask = "[compName].[fileExtension]", IsImported = false },
+            new () { Module = "Multi-Machine Sequence", Mask = "[compName]_[#####].[fileExtension]", IsImported = false },
+            new () { Module = "Photoshop", Mask = "[compName]_[#####].[fileExtension]", IsImported = false },
+            new () { Module = "Save Current Preview", Mask = "[compName].[fileExtension]", IsImported = false },
+            new () { Module = "TIFF Sequence with Alph", Mask = "[compName]_[#####].[fileExtension]", IsImported = false },
+        ]);
     }
 
-    public Settings() {
-        Debug.WriteLine($"Current settings path: {SettingsPath}");
-
-        AErenderPath = "C:\\Program Files\\Adobe\\Adobe After Effects 2023\\Support Files\\aerender.exe";
+    public void Init() {
+        AfterEffectsPath = "C:\\Program Files\\Adobe\\Adobe After Effects 2023\\Support Files\\aerender.exe";
         DefaultProjectsPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         DefaultOutputPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         OnRenderStart = -1;
@@ -97,29 +100,29 @@ public class Settings {
         ThreadsRenderMode = RenderingMode.Tiled;
         InitOutputModules();
     }
-
-    public static Settings? LoadLegacy(string XmlPath) {
+    
+    public static Settings? LoadLegacy(string xmlPath) {
         XmlDocument document = new XmlDocument();
-        document.Load(XmlPath);
+        document.Load(xmlPath);
 
-        XmlNode RootNode = document.DocumentElement!;
+        XmlNode rootNode = document.DocumentElement!;
 
         Settings result = new Settings {
-            AErenderPath = RootNode["aerender"]?.InnerText ?? "",
-            DefaultProjectsPath = RootNode["defprgpath"]?.InnerText ?? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-            DefaultOutputPath = RootNode["defoutpath"]?.InnerText ?? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-            OnRenderStart = int.Parse(RootNode["onRenderStart"]?.InnerText ?? "-1"),
+            AfterEffectsPath = rootNode["aerender"]?.InnerText ?? "",
+            DefaultProjectsPath = rootNode["defprgpath"]?.InnerText ?? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            DefaultOutputPath = rootNode["defoutpath"]?.InnerText ?? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            OnRenderStart = int.Parse(rootNode["onRenderStart"]?.InnerText ?? "-1"),
             ThreadsLimit = 4,
             LastProjectPath = "",
             LastOutputPath = "",
-            TempSavePath = RootNode["tempSavePath"]?.InnerText ?? "",
-            MissingFiles = bool.Parse(RootNode["missingFiles"]?.InnerText ?? "false"),
-            Sound = bool.Parse(RootNode["sound"]?.InnerText ?? "false"),
-            Multithreaded = bool.Parse(RootNode["thread"]?.InnerText ?? "false"),
-            CustomProperties = RootNode["prop"]?.InnerText ?? "",
-            MemoryLimit = float.Parse(RootNode["memoryLimit"]?.InnerText ?? "100", CultureInfo.InvariantCulture),
-            CacheLimit = float.Parse(RootNode["cacheLimit"]?.InnerText ?? "100", CultureInfo.InvariantCulture),
-            OutputModuleIndex = int.Parse(RootNode["outputModule"]?.Attributes["selected"]?.InnerText ?? "-1"),
+            TempSavePath = rootNode["tempSavePath"]?.InnerText ?? "",
+            MissingFiles = bool.Parse(rootNode["missingFiles"]?.InnerText ?? "false"),
+            Sound = bool.Parse(rootNode["sound"]?.InnerText ?? "false"),
+            Multithreaded = bool.Parse(rootNode["thread"]?.InnerText ?? "false"),
+            CustomProperties = rootNode["prop"]?.InnerText ?? "",
+            MemoryLimit = float.Parse(rootNode["memoryLimit"]?.InnerText ?? "100", CultureInfo.InvariantCulture),
+            CacheLimit = float.Parse(rootNode["cacheLimit"]?.InnerText ?? "100", CultureInfo.InvariantCulture),
+            OutputModuleIndex = int.Parse(rootNode["outputModule"]?.Attributes["selected"]?.InnerText ?? "-1"),
             RenderSettings = "Best Settings",
             ThreadsRenderMode = RenderingMode.Tiled
         };
@@ -132,11 +135,11 @@ public class Settings {
             ? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
             : result.DefaultOutputPath;
 
-        List<OutputModule> ParsedModules = new List<OutputModule>();
+        List<OutputModule> parsedModules = [];
 
         try {
-            foreach (XmlNode node in RootNode["outputModule"]!.ChildNodes) {
-                ParsedModules.Add(new OutputModule {
+            foreach (XmlNode node in rootNode["outputModule"]!.ChildNodes) {
+                parsedModules.Add(new OutputModule {
                     Module = node["moduleName"]!.InnerText,
                     Mask = node["filemask"]!.InnerText,
                     IsImported = bool.Parse(node.Attributes!["imported"]!.InnerText)
@@ -146,13 +149,13 @@ public class Settings {
             // yeet
         }
 
-        result.OutputModules = ParsedModules;
+        result.OutputModules = parsedModules;
 
         return result;
     }
 
-    public static Settings? Load(string JsonPath) {
-        string file = File.ReadAllText(JsonPath);
+    public static Settings? Load(string jsonPath) {
+        string file = File.ReadAllText(jsonPath);
 
         return JsonConvert.DeserializeObject<Settings>(file);
     }
@@ -165,8 +168,8 @@ public class Settings {
 
     public static bool ExistsLegacy() => File.Exists(LegacySettingsPath);
 
-    public static List<AErender> DetectAerender() {
-        List<AErender> result = new ();
+    public static List<AfterFx> DetectAfterEffects() {
+        List<AfterFx> result = [];
 
         string adobeFolder = Helpers.Platform == OS.macOS
             ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)
@@ -174,20 +177,22 @@ public class Settings {
 
         foreach (string path in Directory.GetDirectories(adobeFolder)) {
             if (path.Contains("Adobe After Effects")) {
-                string aerender;
+                string afterFx;
 
                 if (Helpers.Platform == OS.macOS) {
-                    aerender = Path.Combine(path, "aerender");
+                    var aeName = Helpers.GetCurrentDirectoryName(path);
+                    
+                    afterFx = Path.Combine(path, $"{aeName}.app", "Contents", "aerendercore.app");
                     result.Add(new() {
-                        Path = aerender,
-                        Version = Helpers.GetPackageVersionStringDarwin($"{Path.Combine(path, Helpers.GetCurrentDirectoryName(path))}.app") ?? "",
+                        Path = Path.Combine(afterFx, "Contents", "MacOS", "aerendercore"),
+                        Version = Helpers.GetPackageVersionStringDarwin(afterFx) ?? "Unknown",
                         Name = Helpers.GetCurrentDirectoryName(path)
                     });
                 } else {
-                    aerender = Path.Combine(path, "Support Files", "aerender.exe");
+                    afterFx = Path.Combine(path, "Support Files", "AfterFX.com");
                     result.Add(new() {
-                        Path = aerender,
-                        Version = FileVersionInfo.GetVersionInfo(aerender).FileVersion ?? "",
+                        Path = afterFx,
+                        Version = FileVersionInfo.GetVersionInfo(afterFx).FileVersion ?? "Unknown",
                         Name = Helpers.GetCurrentDirectoryName(path)
                     });
                 }

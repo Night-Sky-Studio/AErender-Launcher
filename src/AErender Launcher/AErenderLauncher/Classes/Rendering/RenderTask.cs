@@ -20,9 +20,9 @@ public static class RenderTaskExtensions {
         List<Composition> compositions = new List<Composition>();
 
         for (int i = 0; i < parsed.Count(); i++) {
-            compositions.Add(new Composition {
+            compositions.Add(new () {
                 CompositionName = parsed[i]!["Name"]!.Value<string>()!,
-                Frames = new FrameSpan(parsed[i]!["Frames"]![0]!.Value<int>(), parsed[i]!["Frames"]![1]!.Value<int>()),
+                Frames = new (parsed[i]!["Frames"]![0]!.Value<uint>(), parsed[i]!["Frames"]![1]!.Value<uint>()),
                 Split = 1
             });
         }
@@ -41,9 +41,9 @@ public class RenderTask : ICloneable<RenderTask> {
     }
 
     public int ID { get; init; } = _random.Next(0, 999999);
-    public string Project { get; set; }
+    public required string Project { get; set; }
     public string ProjectName => Path.GetFileNameWithoutExtension(Project);
-    public string Output { get; set; }
+    public required string Output { get; set; }
     public string OutputModule { get; set; } = "Lossless";
     public string RenderSettings { get; set; } = "Best Settings";
 
@@ -91,7 +91,8 @@ public class RenderTask : ICloneable<RenderTask> {
     }
 
     public List<RenderThread> Enqueue() {
-        string exec = "";
+        // string exec = "";
+        List<string> exec = [];
         List<RenderThread> result = new List<RenderThread>();
 
         foreach (Composition comp in Compositions) {
@@ -102,22 +103,40 @@ public class RenderTask : ICloneable<RenderTask> {
                 if (comp.Split > 1)
                     AdjustedOutput = ProcessSplit(AdjustedOutput, i);
 
-                exec = $"-project \"{Project}\" " +
-                       $"-output \"{AdjustedOutput}\" " +
-                       (Sound ? "-sound ON " : "") +
-                       (Multiprocessing ? "-mp " : "") +
-                       (MissingFiles ? "-continueOnMissingFootage " : "") +
-                       $"-comp \"{comp.CompositionName}\" " +
-                       $"-OMtemplate \"{OutputModule}\" " +
-                       $"-RStemplate \"{RenderSettings}\" " +
-                       $"-mem_usage \"{Math.Truncate(MemoryLimit)}\" \"{Math.Truncate(CacheLimit)}\" " +
-                       (CustomProperties != "" ? CustomProperties.Trim() + " " : "") +
-                       $"-s {comp.SplitFrameSpans[i].StartFrame} -e {comp.SplitFrameSpans[i].EndFrame}";
+                // exec = $"-project \"{Project}\" " +
+                //        $"-output \"{AdjustedOutput}\" " +
+                //        (Sound ? "-sound ON " : "") +
+                //        (Multiprocessing ? "-mp " : "") +
+                //        (MissingFiles ? "-continueOnMissingFootage " : "") +
+                //        $"-comp \"{comp.CompositionName}\" " +
+                //        $"-OMtemplate \"{OutputModule}\" " +
+                //        $"-RStemplate \"{RenderSettings}\" " +
+                //        $"-mem_usage \"{Math.Truncate(MemoryLimit)}\" \"{Math.Truncate(CacheLimit)}\" " +
+                //        (CustomProperties != "" ? CustomProperties.Trim() + " " : "") +
+                //        $"-s {comp.SplitFrameSpans[i].StartFrame} -e {comp.SplitFrameSpans[i].EndFrame}";
+                
+                exec.AddMany(
+                    "-project", Project.Replace("\\", "\\\\"),
+                    "-output", AdjustedOutput.Replace("\\", "\\\\"),
+                    Sound ? "-sound" : null, Sound ? "ON" : null,
+                    Multiprocessing ? "-mp" : null,
+                    MissingFiles ? "-continueOnMissingFootage" : null,
+                    "-comp", comp.CompositionName,
+                    "-OMtemplate", OutputModule,
+                    "-RStemplate", RenderSettings,
+                    "-mem_usage", $"{Math.Truncate(MemoryLimit)}", $"{Math.Truncate(CacheLimit)}",
+                    CustomProperties != "" ? CustomProperties.Trim() + " " : null,
+                    "-s", $"{comp.SplitFrameSpans[i].StartFrame}",
+                    "-e", $"{comp.SplitFrameSpans[i].EndFrame}"
+                );
+                
                 if (comp.SplitFrameSpans[i].StartFrame == 0 && comp.SplitFrameSpans[i].EndFrame == 0)
-                    exec = exec.Delete("-s 0 -e 0");
+                    exec.RemoveRange(exec.Count - 2, 2);
+                
+                // exec = exec.Replace("\\", "\\\\");
 
-                result.Add(new RenderThread(ApplicationSettings.AErenderPath, exec) {
-                    ID = _random.Next(0, 999999),
+                result.Add(new (Settings.Current.AfterEffectsPath, exec) {
+                    Id = _random.Next(0, 999999),
                     Name = comp.CompositionName
                 });
             }
@@ -141,8 +160,15 @@ public class RenderTask : ICloneable<RenderTask> {
             CustomProperties = CustomProperties,
             CacheLimit = CacheLimit,
             MemoryLimit = MemoryLimit,
-            Compositions = new(Compositions.Select(x => (Composition)x.Clone())),
+            Compositions = new(Compositions.Select(x => x.Clone())),
             State = State
+        };
+    }
+
+    public static RenderTask Empty() {
+        return new () {
+            Project = "",
+            Output = ""
         };
     }
 }

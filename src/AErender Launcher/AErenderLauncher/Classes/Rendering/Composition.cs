@@ -14,15 +14,15 @@ public class Composition : ReactiveObject, ICloneable<Composition> {
         get => _frames; 
         set => RaiseAndSetIfChanged(ref _frames, value);
     }
-    private int _split = 1;
-    public int Split { 
+    private uint _split = 1;
+    public uint Split { 
         get => _split; 
         set => RaiseAndSetIfChanged(ref _split, value < 1 ? 1 : value);
     }
     public FrameSpan[] SplitFrameSpans => Frames.Split(Split);
 
     public Composition() { }
-    public Composition(string name, FrameSpan frames, int split) {
+    public Composition(string name, FrameSpan frames, uint split) {
         CompositionName = name;
         Frames = frames;
         _split = split;
