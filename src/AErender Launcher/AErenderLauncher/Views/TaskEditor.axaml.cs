@@ -94,7 +94,7 @@ public partial class TaskEditor : Window {
     private async void OutputPathButton_OnClick(object? sender, RoutedEventArgs e) {
         IStorageFile? file = await this.ShowSaveFileDialogAsync(
             [],// [ new ("[fileExtension]", "*.[fileExtension]") ],
-            SuggestedFileName: OutputModules[OutputModuleBox.SelectedIndex].Mask
+            suggestedFileName: OutputModules[OutputModuleBox.SelectedIndex].Mask
         );
 
         if (file == null) return;

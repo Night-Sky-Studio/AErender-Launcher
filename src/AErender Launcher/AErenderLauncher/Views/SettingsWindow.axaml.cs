@@ -35,7 +35,7 @@ public partial class SettingsWindow : Window {
     private async void AerenderPathSelectButton_OnClick(object? sender, RoutedEventArgs e) {
         List<IStorageFile>? result = await this.ShowOpenFileDialogAsync(
             [ new ("After Effects", Helpers.Platform == OS.Windows ? "AfterFX.com" : "aerendercore") ],
-            StartingPath: Environment.GetFolderPath(Environment.SpecialFolder.Programs)
+            startingPath: Environment.GetFolderPath(Environment.SpecialFolder.Programs)
         );
 
         if (result == null) return;

@@ -82,26 +82,9 @@ public class ConsoleThread : ReactiveObject {
         try {
             State = ThreadState.Running;
             await _process.ExecuteAsync(_cancellationToken);
-            //await foreach (var evt in _process.ListenAsync(_cancellationToken)) {
-            //  await _process.Observe(Encoding.ASCII, _cancellationToken).ForEachAsync(evt => {
-            //      switch (evt) {
-            //          case StartedCommandEvent started:
-            //              State = ThreadState.Running;
-            //              break;
-            //          case StandardOutputCommandEvent stdOut:
-            //              Dispatcher.UIThread.Post(() => OutputReceived?.Invoke(this, stdOut.Text));
-            //              break;
-            //          case StandardErrorCommandEvent stdErr:
-            //              Dispatcher.UIThread.Post(() => ErrorReceived?.Invoke(this, stdErr.Text));
-            //              break;
-            //          case ExitedCommandEvent exited:
-            //              State = ThreadState.Finished;
-            //              break;
-            //      }
-            // }, _cancellationToken);
-        } catch (CommandExecutionException e) {
+        } catch (CommandExecutionException) {
             State = ThreadState.Error;
-        } catch (OperationCanceledException e) {
+        } catch (OperationCanceledException) {
             State = ThreadState.Stopped;
         } finally {
             State = ThreadState.Finished;

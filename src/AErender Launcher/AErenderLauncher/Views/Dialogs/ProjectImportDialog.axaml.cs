@@ -37,8 +37,14 @@ public partial class ProjectImportDialog : Window {
     }
     
     private void CloseButton_OnClick(object sender, RoutedEventArgs e) {
+        if (CompositionsList.SelectedItems is not { Count: > 0 } compList) {
+            Close(null);
+            return;
+        }
+        
         List<Composition> compositions = new();
-        foreach (ProjectItem? item in CompositionsList.SelectedItems) {
+        
+        foreach (ProjectItem? item in compList) {
             if (item != null) {
                 compositions.Add(new() {
                     CompositionName = item.Name,
@@ -50,22 +56,19 @@ public partial class ProjectImportDialog : Window {
             }
         }
         
-        if (compositions.Count == 0) 
-            Close(null);
-        else
-            Close(new RenderTask {
-                Project = Settings.Current.LastProjectPath,
-                Output = Settings.Current.LastOutputPath,
-                Multiprocessing = Settings.Current.Multithreaded,
-                MissingFiles = Settings.Current.MissingFiles,
-                Sound = Settings.Current.Sound,
-                CacheLimit = Settings.Current.CacheLimit,
-                MemoryLimit = Settings.Current.MemoryLimit,
-                CustomProperties = Settings.Current.CustomProperties,
-                OutputModule = Settings.Current.ActiveOutputModule?.Module ?? "Lossless",
-                RenderSettings = Settings.Current.RenderSettings,
-                Compositions = new (compositions)
-            });
+        Close(new RenderTask {
+            Project = Settings.Current.LastProjectPath,
+            Output = Settings.Current.LastOutputPath,
+            Multiprocessing = Settings.Current.Multithreaded,
+            MissingFiles = Settings.Current.MissingFiles,
+            Sound = Settings.Current.Sound,
+            CacheLimit = Settings.Current.CacheLimit,
+            MemoryLimit = Settings.Current.MemoryLimit,
+            CustomProperties = Settings.Current.CustomProperties,
+            OutputModule = Settings.Current.ActiveOutputModule?.Module ?? "Lossless",
+            RenderSettings = Settings.Current.RenderSettings,
+            Compositions = new (compositions)
+        });
     }
 
     private void TopLevel_OnClosed(object sender, EventArgs e) {
