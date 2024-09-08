@@ -68,6 +68,12 @@ public partial class RenderingWindow : Window {
 
     public async Task StartTiledRendering(IEnumerable<RenderThread> threads, int maxDegreeOfParallelism = 4) {
         var threadsList = threads.ToList();
+
+        if (threadsList.Count <= maxDegreeOfParallelism) {
+            await StartAll();
+            return;
+        }
+        
         Dictionary<int, VoidTaskFactory> taskFactories = new ();
         for (int i = 0; i < threadsList.Count; i++) {
             taskFactories.Add(i, new (threadsList[i].StartAsync));
@@ -84,7 +90,6 @@ public partial class RenderingWindow : Window {
 
         // While there are running tasks.
         while (runningTasks.Count > 0) {
-        
             foreach (var tf in runningTasks) {
                 if (tf.TryStart()) {
                     ViewModel.Threads.Add(ViewModel.Queue[taskFactories.First(t => t.Value == tf).Key]);

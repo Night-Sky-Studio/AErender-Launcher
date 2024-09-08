@@ -67,15 +67,15 @@ public class NetworkThread : ReactiveObject {
         
         _listener.Start();
         
-        var process = new Process();
-
-        process.StartInfo.FileName = Executable;
-        process.StartInfo.Arguments = string.Join(" ", "-noui", "-m", "-s", 
-            $"if (typeof gAECommandLineRenderer == 'undefined') {{ app.exitCode = 13; }} else {{ try {{ gAECommandLineRenderer.Render('-port','[::1]:{_currentEndpoint.Port}',{ string.Join(",", Args.Select(s => $"'{s}'")) }); }} catch(e) {{ alert(e); }} }}");
-        process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-        process.StartInfo.UseShellExecute = true;
-        
-        return process;
+        return new () {
+            StartInfo = {
+                FileName = Executable,
+                Arguments = string.Join(" ", "-noui", "-m", "-s", 
+                    $"if (typeof gAECommandLineRenderer == 'undefined') {{ app.exitCode = 13; }} else {{ try {{ gAECommandLineRenderer.Render('-port','[::1]:{_currentEndpoint.Port}',{ string.Join(",", Args.Select(s => $"'{s}'")) }); }} catch(e) {{ alert(e); }} }}"),
+                WindowStyle = ProcessWindowStyle.Hidden,
+                UseShellExecute = true
+            }
+        };;
     }
 
     protected NetworkThread(string executable, List<string> args) {
@@ -112,13 +112,13 @@ public class NetworkThread : ReactiveObject {
                 if (response is null || response.Length == 0) continue;
 
                 if (response.ToLower().Contains("error")) {
-                    ErrorReceived?.Invoke(this, $"[ERR] {response}");
+                    ErrorReceived?.Invoke(this, $"{response}");
                 } else {
-                    OutputReceived?.Invoke(this, $"[OUT] {response}");
+                    OutputReceived?.Invoke(this, $"{response}");
                 }
             }
         } catch (Exception e) {
-            ErrorReceived?.Invoke(this, $"[ERR] Socket error: {e.Message}");
+            ErrorReceived?.Invoke(this, $"Socket error: {e.Message}");
             await Console.Error.WriteLineAsync($"[ERR] Socket error: {e.Message}");
         }
     }
@@ -127,19 +127,22 @@ public class NetworkThread : ReactiveObject {
         try {
             State = ThreadState.Running;
             Process.Start();
-            
-            OutputReceived?.Invoke(this, "AfterFX started, waiting for connection...");
-            
+
+            OutputReceived?.Invoke(this, "[OUT] AfterFX started, waiting for connection...");
+
             _client = await _listener.AcceptTcpClientAsync(CancelToken);
             UpdateStreams();
-            
-            OutputReceived?.Invoke(this, $"Connected to AfterFX on {_currentEndpoint.Address}:{_currentEndpoint.Port}");
-            
+
+            OutputReceived?.Invoke(this, $"[OUT] Connected to AfterFX on {_currentEndpoint.Address}:{_currentEndpoint.Port}");
+ 
             await Task.Run(ReceiveMessage, CancelToken);
         } catch (CommandExecutionException) {
             State = ThreadState.Error;
         } catch (OperationCanceledException) {
             State = ThreadState.Stopped;
+        } catch (Exception e) {
+            ErrorReceived?.Invoke(this, $"[ERR] {e.Message}");
+            await Console.Error.WriteLineAsync($"[ERR] {e.Message}");
         } finally {
             State = ThreadState.Finished;
         }
