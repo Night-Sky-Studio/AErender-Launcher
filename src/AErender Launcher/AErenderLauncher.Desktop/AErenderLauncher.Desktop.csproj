@@ -6,9 +6,9 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-        <SelfContained>true</SelfContained>
-        <PublishSingleFile>true</PublishSingleFile>
-        <PublishReadyToRun>true</PublishReadyToRun>
+<!--        <SelfContained>true</SelfContained>-->
+<!--        <PublishSingleFile>true</PublishSingleFile>-->
+<!--        <PublishReadyToRun>true</PublishReadyToRun>-->
     </PropertyGroup>
 
     <PropertyGroup>
