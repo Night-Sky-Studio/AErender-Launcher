@@ -6,9 +6,15 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <PublishAot>true</PublishAot>
 <!--        <SelfContained>true</SelfContained>-->
 <!--        <PublishSingleFile>true</PublishSingleFile>-->
 <!--        <PublishReadyToRun>true</PublishReadyToRun>-->
+        <OutputDir>$(PublishDir)/../</OutputDir>
+        <PlistFilePath>$(ProjectDir)Resources/Info.plist</PlistFilePath>
+        <EntitlementsFilePath>$(ProjectDir)Resources/Entitlements.plist</EntitlementsFilePath>
+        <IconFilePath>$(ProjectDir)Resources/Launcher2020.icns</IconFilePath>
+        <MacOSAppBundlePath>$(OutputDir)bundle/AErender Launcher.app</MacOSAppBundlePath>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -28,4 +34,29 @@
     <ItemGroup>
         <ProjectReference Include="..\AErenderLauncher\AErenderLauncher.csproj"/>
     </ItemGroup>
+
+    <Target Name="Create macOS App Bundle" AfterTargets="Publish" Condition="$([MSBuild]::IsOSPlatform('OSX'))">
+        <Exec Command="mkdir -p $(MacOSAppBundlePath)/Contents/MacOS" />
+        <Exec Command="mkdir -p $(MacOSAppBundlePath)/Contents/Resources" />
+
+        <ItemGroup>
+            <AppBundle Include="$(MacOSAppBundlePath)"  />
+            <AppBundle Include="$(MacOSAppBundlePath)/Contents" />
+            <AppBundle Include="$(MacOSAppBundlePath)/Contents/MacOS" />
+            <AppBundle Include="$(MacOSAppBundlePath)/Contents/Resources" />
+        </ItemGroup>
+        
+        <MakeDir Directories="@(AppBundle)"  />
+        
+        <ItemGroup>
+            <PublishFiles Include="$(OutputDir)/*" />
+        </ItemGroup>
+
+        <Copy SourceFiles="@(PublishFiles)" DestinationFolder="$(MacOSAppBundlePath)/Contents/MacOS" />
+        <Copy SourceFiles="$(PlistFilePath)" DestinationFolder="$(MacOSAppBundlePath)/Contents" />
+        <Copy SourceFiles="$(EntitlementsFilePath)" DestinationFolder="$(MacOSAppBundlePath)/Contents" />
+        <Copy SourceFiles="$(IconFilePath)" DestinationFolder="$(MacOSAppBundlePath)/Contents/Resources" />
+
+        <Message Text="$(SolutionName).app -> $(MacOSAppBundlePath)" Importance="High" />
+    </Target>
 </Project>
