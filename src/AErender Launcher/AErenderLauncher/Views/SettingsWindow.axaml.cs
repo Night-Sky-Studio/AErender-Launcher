@@ -33,7 +33,7 @@ public partial class SettingsWindow : Window {
     }
 
     private async void AerenderPathSelectButton_OnClick(object? sender, RoutedEventArgs e) {
-        List<IStorageFile>? result = await this.ShowOpenFileDialogAsync(
+        var result = await this.ShowOpenFileDialogAsync(
             [ new ("After Effects", Helpers.Platform == OS.Windows ? "AfterFX.com" : "aerendercore") ],
             startingPath: Environment.GetFolderPath(Environment.SpecialFolder.Programs)
         );
@@ -63,5 +63,23 @@ public partial class SettingsWindow : Window {
 
     private void SettingsWindow_OnClosed(object? sender, EventArgs e) {
         ViewModel.WriteToSettings();
+    }
+
+    private async void OutputDirectorySelectButton_OnClick(object? sender, RoutedEventArgs e) {
+        var result = await this.ShowOpenFolderDialogAsync();
+
+        if (result is not { Count: > 0 } list) return;
+        if (list[0].TryGetLocalPath() is not { } path) return;
+        
+        ViewModel.DefaultOutputPath = Settings.Current.DefaultOutputPath = path;
+    }
+
+    private async void ProjectsDirectorySelectButton_OnClick(object? sender, RoutedEventArgs e) {
+        var result = await this.ShowOpenFolderDialogAsync();
+
+        if (result is not { Count: > 0 } list) return;
+        if (list[0].TryGetLocalPath() is not { } path) return;
+        
+        ViewModel.DefaultProjectsPath = Settings.Current.DefaultProjectsPath = path;
     }
 }
