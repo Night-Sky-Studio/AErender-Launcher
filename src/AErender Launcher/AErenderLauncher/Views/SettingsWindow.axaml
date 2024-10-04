@@ -50,12 +50,12 @@
                     <Grid ColumnDefinitions="144,*,28">
                         <Label Grid.Column="0" Content="Default output directory" VerticalAlignment="Center" Margin="0,0,4,0" />
                         <TextBox Grid.Column="1" Text="{Binding DefaultOutputPath}" />
-                        <Button Grid.Column="2" Content="..." Width="24" Margin="4,0,0,0" />
+                        <Button Grid.Column="2" Content="..." Width="24" Margin="4,0,0,0" Click="OutputDirectorySelectButton_OnClick" />
                     </Grid>
                     <Grid ColumnDefinitions="144,*,28">
                         <Label Grid.Column="0" Content="Default projects directory" VerticalAlignment="Center" Margin="0,0,4,0" />
                         <TextBox Grid.Column="1" Text="{Binding DefaultProjectsPath}" />
-                        <Button Grid.Column="2" Content="..." Width="24" Margin="4,0,0,0" />
+                        <Button Grid.Column="2" Content="..." Width="24" Margin="4,0,0,0" Click="ProjectsDirectorySelectButton_OnClick" />
                     </Grid>
                 </StackPanel> 
             </Expander>

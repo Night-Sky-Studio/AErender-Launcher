@@ -30,7 +30,7 @@ public partial class MainWindow : Window {
         DebugLabel.IsVisible = true;
         // Tasks.Add(new RenderTask {
         //     Project = "C:\\YandexDisk\\Acer\\Footages (AE)\\AErender Launcher Benchmark Projects\\Deneb - Mograph Icons\\Mograph Icons.aep",
-        //     Output = "C:\\Users\\lunam\\Desktop\\[projectName]\\[compName].[fileExtension]",
+        //     Output = "C:\\Users\\lilystilson\\Desktop\\[projectName]\\[compName].[fileExtension]",
         //     OutputModule = "Lossless",
         //     RenderSettings = "Best Settings",
         //     MissingFiles = true,
@@ -39,16 +39,16 @@ public partial class MainWindow : Window {
         //     CacheLimit = 100,
         //     MemoryLimit = 5,
         //     Compositions = [
-        //         new("Game Icons", new FrameSpan(0, 120), 1),
-        //         new("Web Icons", new FrameSpan(0, 120), 1),
-        //         new("Ecology Icons", new FrameSpan(0, 120), 1),
-        //         new("Medical Icons", new FrameSpan(0, 120), 1)
+        //         new("Game Icons", new FrameSpan(0, 600), 1),
+        //         new("Web Icons", new FrameSpan(0, 600), 1),
+        //         new("Ecology Icons", new FrameSpan(0, 600), 1),
+        //         new("Medical Icons", new FrameSpan(0, 600), 1)
         //     ]
         // });
         Tasks.Add(new RenderTask {
             Project = Helpers.Platform == OS.Windows 
                 ? "C:\\YandexDisk\\Acer\\Footages (AE)\\AErender Launcher Benchmark Projects\\SuperEffectiveBros - Mograph Practice\\AEPRTC_Eclipse_rev57(ForDist)_2024.aep"
-                : "/Users/lilystilson/YandexDisk.localized/Acer/Footages (AE)/AErender Launcher Benchmark Projects/SuperEffectiveBros - Mograph Practice/AEPRTC_Eclipse_rev57(ForDist)_2024.aep",
+                : "/Users/lilystilson/Yandex.Disk.localized/Acer/Footages (AE)/AErender Launcher Benchmark Projects/SuperEffectiveBros - Mograph Practice/AEPRTC_Eclipse_rev57(ForDist)_2024.aep",
             Output = Helpers.Platform == OS.Windows 
                 ? "C:\\Users\\LilyStilson\\Desktop\\[projectName]\\[compName].[fileExtension]"
                 : "/Users/lilystilson/Desktop/Mograph Practice/[compName].[fileExtension]",
@@ -66,8 +66,9 @@ public partial class MainWindow : Window {
     }
 
     private async void NewTaskButton_OnClick(object sender, RoutedEventArgs e) {
-        List<IStorageFile>? aep = await this.ShowOpenFileDialogAsync(
-            [ new("After Effects project", "*.aep") ]
+        var aep = await this.ShowOpenFileDialogAsync(
+            [ new("After Effects project", "*.aep") ],
+            startingPath: Settings.Current.DefaultProjectsPath
         );
         
         if (aep == null || aep.Count == 0) return;
@@ -120,7 +121,7 @@ public partial class MainWindow : Window {
     }
 
     private async void NewTaskEmpty_OnClick(object? sender, RoutedEventArgs e) {
-        List<IStorageFile>? aep = await this.ShowOpenFileDialogAsync(
+        var aep = await this.ShowOpenFileDialogAsync(
             [ new("After Effects project", "*.aep") ]
         );
 

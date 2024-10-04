@@ -48,7 +48,6 @@ public struct AerenderFrameData {
 }
 
 public static class AerenderParser {
-    
     // PROGRESS:  0:00:00:00 (1): 0 Seconds
     public static AerenderFrameData? ParseFrameData(string data) {
         if (!data.StartsWith("PROGRESS:  ")) return null;
@@ -56,7 +55,7 @@ public static class AerenderParser {
         try {
             return new AerenderFrameData {
                 Timecode = Timecode.FromString(parts[0]),
-                Frame = uint.Parse(parts[1].Delete(["(", "):"])),
+                Frame = uint.Parse(parts[1].Delete("(", "):")),
                 ElapsedTime = uint.Parse(parts[2])
             };
         } catch (Exception) {
@@ -73,6 +72,7 @@ public static class AerenderParser {
     
     // PROGRESS:  Frame Rate: 60.00 (comp)
     public static double? ParseFramerate(string data) {
+        if (data.Contains(',')) data = data.Replace(',', '.');
         if (!data.StartsWith("PROGRESS:  Frame Rate: ")) return null;
         string[] parts = data.Delete("PROGRESS:  ").Split(" ");
         return double.Parse(parts[2]);

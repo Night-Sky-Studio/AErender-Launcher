@@ -67,9 +67,6 @@ public partial class TaskEditor : Window {
         Root.RowDefinitions = Helpers.Platform == OS.macOS ? new ("0,*") : new ("32,*");
 
         // TODO:    Make bindings work
-        // Remarks: If somebody will be able to make two-way
-        //          bindings work without using "viewmodel" hell,
-        //          I will be very grateful
         ProjectPath.Text = task.Project;
         OutputPath.Text = task.Output;
         OutputModuleBox.SelectedIndex = OutputModules.IndexOf(OutputModules.First(x => x.Module == task.OutputModule));
@@ -94,7 +91,8 @@ public partial class TaskEditor : Window {
     private async void OutputPathButton_OnClick(object? sender, RoutedEventArgs e) {
         IStorageFile? file = await this.ShowSaveFileDialogAsync(
             [],// [ new ("[fileExtension]", "*.[fileExtension]") ],
-            suggestedFileName: OutputModules[OutputModuleBox.SelectedIndex].Mask
+            suggestedFileName: OutputModules[OutputModuleBox.SelectedIndex].Mask,
+            startingPath: Settings.Current.DefaultOutputPath
         );
 
         if (file == null) return;

@@ -16,8 +16,8 @@ using ThreadState = AErenderLauncher.Enums.ThreadState;
 
 namespace AErenderLauncher.Classes.System;
 
-public class NetworkThread : ReactiveObject {
-    private Process Process { get; set; }
+public class NetworkThread : ReactiveObject, IDisposable {
+    protected Process Process { get; set; }
     public string Executable { get; }
     public List<string> Args { get; set; }
     
@@ -31,7 +31,7 @@ public class NetworkThread : ReactiveObject {
     private ThreadState _state = ThreadState.Stopped;
     public ThreadState State {
         get => _state;
-        private set {
+        protected set {
             _state = value;
             StateChanged?.Invoke(this, value);
         }
@@ -67,13 +67,33 @@ public class NetworkThread : ReactiveObject {
         
         _listener.Start();
         
+        var arguments = Helpers.Platform == OS.Windows
+            ? string.Join(" ", "-noui", "-m", "-s", 
+                $$"""
+                  if (typeof gAECommandLineRenderer == 'undefined') { 
+                      app.exitCode = 13; 
+                  } else { 
+                      try { 
+                          gAECommandLineRenderer.Render('-port','[::1]:{{_currentEndpoint.Port}}',{{string.Join(",", Args.Select(s => $"'{s}'"))}}); 
+                      } catch(e) { 
+                          alert(e); 
+                      } 
+                  }
+                  """)
+            : string.Join(" ", [
+                "-noui", 
+                .. Args.Select(s => s.Contains(' ') ? $"\"{s}\"" : s), 
+                "-port", $"[::1]:{_currentEndpoint.Port}",
+                "-aerenderpid", Environment.ProcessId
+            ]);
+        
         return new () {
+            EnableRaisingEvents = true,
             StartInfo = {
                 FileName = Executable,
-                Arguments = string.Join(" ", "-noui", "-m", "-s", 
-                    $"if (typeof gAECommandLineRenderer == 'undefined') {{ app.exitCode = 13; }} else {{ try {{ gAECommandLineRenderer.Render('-port','[::1]:{_currentEndpoint.Port}',{ string.Join(",", Args.Select(s => $"'{s}'")) }); }} catch(e) {{ alert(e); }} }}"),
+                Arguments = arguments,
                 WindowStyle = ProcessWindowStyle.Hidden,
-                UseShellExecute = true
+                UseShellExecute = false
             }
         };;
     }
@@ -108,7 +128,7 @@ public class NetworkThread : ReactiveObject {
                     continue;
                 }
 
-                var response = await Reader.ReadLineAsync();
+                var response = await Reader.ReadLineAsync(CancelToken);
                 if (response is null || response.Length == 0) continue;
 
                 if (response.ToLower().Contains("error")) {
@@ -117,6 +137,9 @@ public class NetworkThread : ReactiveObject {
                     OutputReceived?.Invoke(this, $"{response}");
                 }
             }
+        } catch (TaskCanceledException) {
+            // yeet
+            Console.WriteLine("Thread canceled.");
         } catch (Exception e) {
             ErrorReceived?.Invoke(this, $"Socket error: {e.Message}");
             await Console.Error.WriteLineAsync($"[ERR] Socket error: {e.Message}");
@@ -128,12 +151,12 @@ public class NetworkThread : ReactiveObject {
             State = ThreadState.Running;
             Process.Start();
 
-            OutputReceived?.Invoke(this, "[OUT] AfterFX started, waiting for connection...");
+            OutputReceived?.Invoke(this, "AfterFX started, waiting for connection...");
 
             _client = await _listener.AcceptTcpClientAsync(CancelToken);
             UpdateStreams();
 
-            OutputReceived?.Invoke(this, $"[OUT] Connected to AfterFX on {_currentEndpoint.Address}:{_currentEndpoint.Port}");
+            OutputReceived?.Invoke(this, $"Connected to AfterFX on {_currentEndpoint.Address}:{_currentEndpoint.Port}");
  
             await Task.Run(ReceiveMessage, CancelToken);
         } catch (CommandExecutionException) {
@@ -150,5 +173,22 @@ public class NetworkThread : ReactiveObject {
 
     public void Abort() {
         _cts.Cancel();
+        if (State != ThreadState.Running) return;
+        Process.Kill();
+    }
+
+    public void Dispose() {
+        GC.SuppressFinalize(this);
+        _cts.Dispose();
+        _listener.Dispose();
+        _client.Dispose();
+        _stream?.Dispose();
+        Process.Dispose();
+        Reader?.Dispose();
+        GC.ReRegisterForFinalize(this);
+    }
+
+    ~NetworkThread() {
+        Dispose();
     }
 }

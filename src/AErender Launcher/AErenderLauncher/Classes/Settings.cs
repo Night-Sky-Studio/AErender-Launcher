@@ -11,26 +11,30 @@ using Newtonsoft.Json;
 namespace AErenderLauncher.Classes;
 
 public struct AfterFx {
-    public string Name { get; set; } 
-    public string Path { get; set; } 
-    public string Version { get; set; } 
-    
+    public string Name { get; set; }
+    public string Path { get; set; }
+    public string Version { get; set; }
+
     public bool IsEmpty => string.IsNullOrEmpty(Name) || string.IsNullOrEmpty(Path) || string.IsNullOrEmpty(Version);
 }
 
 public class Settings {
     public static readonly string SettingsPath = Helpers.Platform == OS.macOS
-        ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents", "AErender Launcher", "Settings.json")
-        : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AErender Launcher", "Settings.json");
+        ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents",
+            "AErender Launcher", "Settings.json")
+        : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AErender Launcher",
+            "Settings.json");
 
     public string SettingsFolder => Helpers.GetCurrentDirectory(SettingsPath);
 
     public static readonly string LegacySettingsPath = Helpers.Platform == OS.macOS
-        ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents", "AErender", "AErenderConfiguration.xml")
-        : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "AErender", "AErenderConfiguration.xml");
+        ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents", "AErender",
+            "AErenderConfiguration.xml")
+        : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "AErender",
+            "AErenderConfiguration.xml");
 
     public static Settings Current { get; set; } = new();
-    
+
     // Language ?
     // Style  ?
 
@@ -62,7 +66,7 @@ public class Settings {
     public string RenderSettings { get; set; } = "Best Settings";
 
     public List<string> RecentProjects { get; set; } = [];
-    
+
     public RenderingMode ThreadsRenderMode { get; set; } = RenderingMode.Tiled;
 
     private void InitOutputModules() {
@@ -100,7 +104,7 @@ public class Settings {
         ThreadsRenderMode = RenderingMode.Tiled;
         InitOutputModules();
     }
-    
+
     public static Settings? LoadLegacy(string xmlPath) {
         XmlDocument document = new XmlDocument();
         document.Load(xmlPath);
@@ -109,8 +113,10 @@ public class Settings {
 
         Settings result = new Settings {
             AfterEffectsPath = rootNode["aerender"]?.InnerText ?? "",
-            DefaultProjectsPath = rootNode["defprgpath"]?.InnerText ?? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-            DefaultOutputPath = rootNode["defoutpath"]?.InnerText ?? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            DefaultProjectsPath = rootNode["defprgpath"]?.InnerText ??
+                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            DefaultOutputPath = rootNode["defoutpath"]?.InnerText ??
+                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
             OnRenderStart = int.Parse(rootNode["onRenderStart"]?.InnerText ?? "-1"),
             ThreadsLimit = 4,
             LastProjectPath = "",
@@ -126,11 +132,11 @@ public class Settings {
             RenderSettings = "Best Settings",
             ThreadsRenderMode = RenderingMode.Tiled
         };
-        
-        result.DefaultProjectsPath = result.DefaultProjectsPath == "" 
-            ? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) 
+
+        result.DefaultProjectsPath = result.DefaultProjectsPath == ""
+            ? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
             : result.DefaultProjectsPath;
-        
+
         result.DefaultOutputPath = result.DefaultOutputPath == ""
             ? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
             : result.DefaultOutputPath;
@@ -161,6 +167,10 @@ public class Settings {
     }
 
     public void Save() {
+        if (!Directory.Exists(SettingsFolder)) {
+            Directory.CreateDirectory(SettingsFolder);
+        }
+
         File.WriteAllText(SettingsPath, JsonConvert.SerializeObject(this));
     }
 
@@ -181,7 +191,7 @@ public class Settings {
 
                 if (Helpers.Platform == OS.macOS) {
                     var aeName = Helpers.GetCurrentDirectoryName(path);
-                    
+
                     afterFx = Path.Combine(path, $"{aeName}.app", "Contents", "aerendercore.app");
                     result.Add(new() {
                         Path = Path.Combine(afterFx, "Contents", "MacOS", "aerendercore"),
