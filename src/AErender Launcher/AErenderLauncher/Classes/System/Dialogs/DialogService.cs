@@ -32,11 +32,13 @@ public static class DialogsService {
         return new(@params);
     } 
     
-    public static async Task<DialogButtons> ShowGenericDialogAsync(this Window ownerWindow, GenericDialogParams @params) {
+    public static async Task<DialogButtons> ShowGenericDialogAsync(this Window ownerWindow, 
+        GenericDialogParams @params) {
         return await MakeGenericDialog(@params).ShowDialog<DialogButtons>(ownerWindow);
     }
 
-    public static async Task<List<IStorageFile>?> ShowOpenFileDialogAsync(this Window ownerWindow, List<Tuple<string, string>> filters, string startingPath = "", bool allowMultiple = false) {
+    public static async Task<IReadOnlyList<IStorageFile>?> ShowOpenFileDialogAsync(this Window ownerWindow, 
+            List<Tuple<string, string>> filters, string startingPath = "", bool allowMultiple = false) {
         var provider = TopLevel.GetTopLevel(ownerWindow)?.StorageProvider;
         if (provider == null) return null;
         
@@ -54,7 +56,8 @@ public static class DialogsService {
         })).AsList();
     }
     
-    public static async Task<IStorageFile?> ShowSaveFileDialogAsync(this Window ownerWindow, List<Tuple<string, string>> filters, string startingPath = "", string suggestedFileName = "Untitled") {
+    public static async Task<IStorageFile?> ShowSaveFileDialogAsync(this Window ownerWindow, 
+            List<Tuple<string, string>> filters, string startingPath = "", string suggestedFileName = "Untitled") {
         var provider = TopLevel.GetTopLevel(ownerWindow)?.StorageProvider;
         if (provider == null) return null;
         
@@ -69,6 +72,18 @@ public static class DialogsService {
             SuggestedFileName = suggestedFileName,
             SuggestedStartLocation = await provider.TryGetFolderFromPathAsync(startingPath),
             FileTypeChoices = filters.Count > 0 ? filter : null
+        });
+    }
+
+    public static async Task<IReadOnlyList<IStorageFolder>?> ShowOpenFolderDialogAsync(this Window ownerWindow,
+        string startingPath = "", bool allowMultiple = false) {
+        
+        var provider = TopLevel.GetTopLevel(ownerWindow)?.StorageProvider;
+        if (provider is null) return null;
+
+        return await provider.OpenFolderPickerAsync(new FolderPickerOpenOptions {
+            AllowMultiple = allowMultiple,
+            SuggestedStartLocation = await provider.TryGetFolderFromPathAsync(startingPath)
         });
     }
 }
