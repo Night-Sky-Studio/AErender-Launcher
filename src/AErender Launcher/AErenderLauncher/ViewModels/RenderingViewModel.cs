@@ -9,7 +9,7 @@ using AErenderLauncher.Classes.Rendering;
 namespace AErenderLauncher.ViewModels;
 
 public class RenderingViewModel : ReactiveObject {
-    private long _totalFrames = 1;
+    private long _totalFrames = 0;
     public long TotalFrames {
         get => _totalFrames;
         set => RaiseAndSetIfChanged(ref _totalFrames, value);
@@ -61,17 +61,21 @@ public class RenderingViewModel : ReactiveObject {
     }
     
     private void ThreadOnPropertyChanged(object? sender, PropertyChangedEventArgs e) {
-        if (e.PropertyName == "EndFrame") {
-            TotalFrames += Threads.Sum(thread => thread.EndFrame != uint.MaxValue ? thread.EndFrame : 0);
+        switch (e.PropertyName) {
+            case "EndFrame":
+                TotalFrames = Threads.Sum(thread => thread.EndFrame != uint.MaxValue ? thread.EndFrame : 0);
+                break;
+            case "CurrentFrame":
+                CurrentFrames = Threads.Sum(thread => thread.CurrentFrame != uint.MaxValue ? thread.CurrentFrame : 0);
+                break;
         }
-        if (e.PropertyName == "CurrentFrame") {
-            CurrentFrames = Threads.Sum(thread => thread.CurrentFrame != uint.MaxValue ? thread.CurrentFrame : 0);
-        }
-        if (CurrentFrames == TotalFrames)
+
+        if (CurrentFrames == TotalFrames) {
             ProgressString = "Rendering finished!";
-        else if (CurrentFrames < TotalFrames && TotalFrames != 1) {
+            ProgressValue = 100f;
+        } else if (CurrentFrames < TotalFrames && TotalFrames != 1) {
             ProgressString = $"{CurrentFrames} / {TotalFrames}";
-            ProgressValue = Math.Round((double)CurrentFrames / TotalFrames, 2);
+            ProgressValue = Math.Round((double)CurrentFrames / TotalFrames * 100f, 2);
         }
     }
 }
