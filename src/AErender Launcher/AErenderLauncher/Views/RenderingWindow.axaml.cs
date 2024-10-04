@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using AErenderLauncher.Classes;
 using AErenderLauncher.Classes.Rendering;
@@ -15,6 +16,9 @@ namespace AErenderLauncher.Views;
 
 public partial class RenderingWindow : Window {
     public RenderingViewModel ViewModel { get; } = new ();
+
+    private readonly CancellationTokenSource _cts = new ();
+    private CancellationToken CancelToken => _cts.Token;
 
     private void Init() {
         InitializeComponent();
@@ -64,22 +68,22 @@ public partial class RenderingWindow : Window {
             await thread.StartAsync();
         }
     }
-
-
-    public async Task StartTiledRendering(IEnumerable<RenderThread> threads, int maxDegreeOfParallelism = 4) {
+    
+    private async Task StartTiledRendering(IEnumerable<RenderThread> threads, int maxDegreeOfParallelism = 4) {
         var threadsList = threads.ToList();
 
+        // If there are fewer threads than we allow
+        // just start all of them
         if (threadsList.Count <= maxDegreeOfParallelism) {
             await StartAll();
             return;
         }
         
-        Dictionary<int, VoidTaskFactory> taskFactories = new ();
+        var waitingTasks = new List<VoidTaskFactory>();
         for (int i = 0; i < threadsList.Count; i++) {
-            taskFactories.Add(i, new (threadsList[i].StartAsync));
+            waitingTasks.Add(new (threadsList[i].Id, threadsList[i].StartAsync, CancelToken));
         }
         
-        var waitingTasks = new List<VoidTaskFactory>(taskFactories.Select(tfi => tfi.Value).ToList());
         var runningTasks = new List<VoidTaskFactory>(maxDegreeOfParallelism);
 
         // Start the first 'maxDegreeOfParallelism' tasks.
@@ -92,8 +96,9 @@ public partial class RenderingWindow : Window {
         while (runningTasks.Count > 0) {
             foreach (var tf in runningTasks) {
                 if (tf.TryStart()) {
-                    ViewModel.Threads.Add(ViewModel.Queue[taskFactories.First(t => t.Value == tf).Key]);
-                    ViewModel.Queue.RemoveAt(taskFactories.First(t => t.Value == tf).Key);
+                    var idx = ViewModel.Queue.IndexOf(ViewModel.Queue.First(rt => rt.Id == tf.Id));
+                    ViewModel.Threads.Add(ViewModel.Queue[idx]);
+                    ViewModel.Queue.RemoveAt(idx); 
                 }
             }
 
@@ -103,13 +108,8 @@ public partial class RenderingWindow : Window {
             //Debug.WriteLine($"Task {taskFactories.First(t => t.Value.CompletionSource == completedTaskFactory).Key} completed");
             
             // Remove the completed task.
-            runningTasks.Remove(runningTasks.First(tf => tf.CompletionSource == completedTaskFactory));
+            runningTasks.Remove(runningTasks.First(tf => tf.CompletionSource.Id == completedTaskFactory.Id));
 
-            // Adjust finished tasks' progress.
-            // ViewModel.Threads.Where(thread => thread.State == ThreadState.Finished).ToList().ForEach(thread => {
-            //     thread.CurrentFrame = thread.EndFrame;
-            // });
-            
             // Restart failed tasks.
             ViewModel.Threads.Where(thread => thread.State == ThreadState.Error).ToList().ForEach(thread => {
                 ViewModel.Queue.Add(thread);
@@ -117,10 +117,9 @@ public partial class RenderingWindow : Window {
             });
             
             // If there are waiting tasks, start a new one.
-            if (waitingTasks.Count > 0) {
-                runningTasks.Add(waitingTasks[0]);
-                waitingTasks.RemoveAt(0);
-            }
+            if (waitingTasks.Count <= 0) continue;
+            runningTasks.Add(waitingTasks[0]);
+            waitingTasks.RemoveAt(0);
         }
     }
     
@@ -129,13 +128,18 @@ public partial class RenderingWindow : Window {
     }
 
     private void AbortRendering_OnClick(object? sender, RoutedEventArgs e) {
+        ViewModel.SW.Stop();
+        
+        _cts.Cancel();
+        
         // Kill threads
         foreach (var thread in ViewModel.Queue) thread.Abort();
-        ViewModel.SW.Stop();
+        foreach (var thread in ViewModel.Threads) thread.Abort();
+        
         ViewModel.Queue.Clear();
         ViewModel.Threads.Clear();
         // additionally, kill AE
         Process.GetProcessesByName(Helpers.Platform == OS.Windows ? "AfterFX.com" : "aerendercore").ToList().ForEach(p => p.Kill());
-        Process.GetProcessesByName(Helpers.Platform == OS.Windows ? "aerender.exe" : "aerender").ToList().ForEach(p => p.Kill());
+        // Process.GetProcessesByName(Helpers.Platform == OS.Windows ? "aerender.exe" : "aerender").ToList().ForEach(p => p.Kill());
     }
 }
