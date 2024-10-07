@@ -63,4 +63,12 @@ public static class CollectionExtensions {
             list.Add(item);
         }
     }
+
+    public static int IndexOf<T>(this IList<T> list, Predicate<T> match) {
+        for (int i = 0; i < list.Count; i++) {
+            if (match(list[i])) return i;
+        }
+
+        return -1;
+    }
 }
