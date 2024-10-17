@@ -4,28 +4,26 @@ using AErenderLauncher.Classes.Extensions;
 
 namespace AErenderLauncher.Classes.Rendering;
 
-public static class OMListExtensions {
-    public static int IndexOf(this IList<OutputModule> list, string module) {
-        return list.IndexOf((om) => om.Module == module);
-    }
-}
-
-public record struct OutputModule {
-    public string Module;
-    public string Mask;
-    public bool IsImported;
-
+public class OutputModule(string module, string mask, bool isImported = false) : ReactiveObject, 
+    IEquatable<OutputModule> {
+    private string _module = module;
+    private string _mask = mask;
+    
+    public string Module { get => _module; set => RaiseAndSetIfChanged(ref _module, value); }
+    public string Mask { get => _mask; set => RaiseAndSetIfChanged(ref _mask, value); }
+    public bool IsImported { get; set; } = isImported;
+    
     public static readonly List<OutputModule> DefaultModules = [
-        new () { Module = "Lossless",                 Mask = "[compName].[fileExtension]",         IsImported = false },
-        new () { Module = "AIFF 48kHz",               Mask = "[compName].[fileExtension]",         IsImported = false },
-        new () { Module = "Alpha Only",               Mask = "[compName].[fileExtension]",         IsImported = false },
-        new () { Module = "AVI DV NTSC 48kHz",        Mask = "[compName].[fileExtension]",         IsImported = false },
-        new () { Module = "AVI DV PAL 48kHz",         Mask = "[compName].[fileExtension]",         IsImported = false },
-        new () { Module = "Lossless with Alpha",      Mask = "[compName].[fileExtension]",         IsImported = false },
-        new () { Module = "Multi-Machine Sequence",   Mask = "[compName]_[#####].[fileExtension]", IsImported = false },
-        new () { Module = "Photoshop",                Mask = "[compName]_[#####].[fileExtension]", IsImported = false },
-        new () { Module = "Save Current Preview",     Mask = "[compName].[fileExtension]",         IsImported = false },
-        new () { Module = "TIFF Sequence with Alpha", Mask = "[compName]_[#####].[fileExtension]", IsImported = false },
+        new ("Lossless",                "[compName].[fileExtension]"),
+        new ("AIFF 48kHz",              "[compName].[fileExtension]"),
+        new ("Alpha Only",              "[compName].[fileExtension]"),
+        new ("AVI DV NTSC 48kHz",       "[compName].[fileExtension]"),
+        new ("AVI DV PAL 48kHz",        "[compName].[fileExtension]"),
+        new ("Lossless with Alpha",     "[compName].[fileExtension]"),
+        new ("Multi-Machine Sequence",  "[compName]_[#####].[fileExtension]"),
+        new ("Photoshop",               "[compName]_[#####].[fileExtension]"),
+        new ("Save Current Preview",    "[compName].[fileExtension]"),
+        new ("TIFF Sequence with Alpha","[compName]_[#####].[fileExtension]")
     ];
     
     public static implicit operator OutputModule? (Dictionary<string, object> module) {
@@ -36,8 +34,14 @@ public record struct OutputModule {
         if (mask is null || moduleName is null)
             return null;
         
-        return new () { Mask = mask, Module = moduleName, IsImported = isImported };
+        return new (moduleName, mask, isImported);
     }
     
-    public readonly string DisplayName => Module + (IsImported? " (imported)" : "");
+    public string DisplayName => Module + (IsImported? " (imported)" : "");
+
+    public bool Equals(OutputModule? other) {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return Module == other.Module && Mask == other.Mask && IsImported == other.IsImported;
+    }
 }

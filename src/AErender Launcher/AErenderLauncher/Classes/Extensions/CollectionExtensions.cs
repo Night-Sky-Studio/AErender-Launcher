@@ -49,7 +49,7 @@ public static class CollectionExtensions {
         }
     }
 
-    public static T? Get<T>(this IList<T> list, int index) where T : struct {
+    public static T? Get<T>(this IList<T> list, int index) where T : class {
         try {
             return list[index];
         } catch {

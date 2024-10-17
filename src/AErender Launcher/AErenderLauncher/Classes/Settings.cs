@@ -136,11 +136,11 @@ public class Settings {
 
         try {
             foreach (XmlNode node in rootNode["outputModule"]!.ChildNodes) {
-                parsedModules.Add(new OutputModule {
-                    Module = node["moduleName"]!.InnerText,
-                    Mask = node["filemask"]!.InnerText,
-                    IsImported = bool.Parse(node.Attributes!["imported"]!.InnerText)
-                });
+                parsedModules.Add(new OutputModule(
+                    node["moduleName"]!.InnerText,
+                    node["filemask"]!.InnerText,
+                    bool.Parse(node.Attributes!["imported"]!.InnerText)
+                ));
             }
         } catch {
             // yeet
