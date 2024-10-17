@@ -1,7 +1,5 @@
-﻿using Avalonia;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 
 namespace AErenderLauncher.Classes.System.Dialogs.Views;
@@ -79,14 +77,14 @@ public partial class GenericDialogWindow : Window {
     }
 
     private void Cancel_OnClick(object sender, RoutedEventArgs e) {
-        Close(DialogButtons.Cancel);
+        Close(DialogButton.Cancel);
     }
 
     private void Secondary_OnClick(object sender, RoutedEventArgs e) {
-        Close(DialogButtons.Secondary);
+        Close(DialogButton.Secondary);
     }
 
     private void Primary_OnClick(object sender, RoutedEventArgs e) {
-        Close(DialogButtons.Primary);
+        Close(DialogButton.Primary);
     }
 }
