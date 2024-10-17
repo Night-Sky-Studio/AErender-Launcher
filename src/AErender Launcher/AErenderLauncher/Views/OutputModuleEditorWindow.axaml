@@ -1,0 +1,122 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:AErenderLauncher.Controls"
+        xmlns:vm="clr-namespace:AErenderLauncher.ViewModels"
+        xmlns:rendering="clr-namespace:AErenderLauncher.Classes.Rendering"
+        xmlns:alba="urn:alba:avalonia"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="AErenderLauncher.Views.OutputModuleEditorWindow"
+        WindowStartupLocation="CenterScreen"
+        SystemDecorations="Full"
+        ExtendClientAreaChromeHints="NoChrome"
+        ExtendClientAreaTitleBarHeightHint="-1"
+        ExtendClientAreaToDecorationsHint="False"
+        Height="384" Width="680"
+        Title="Output Module Editor"
+        Closing="OMEditorWindow_OnClosing">
+    
+    <Window.Resources>
+        <ResourceDictionary>
+            <ItemsPanelTemplate x:Key="FlagsPanelTemplate">
+                <alba:FlexPanel Wrap="Wrap" JustifyContent="Center"
+                                AlignItems="Center" AlignContent="FlexStart"
+                                RowGap="8" ColumnGap="8"/>
+            </ItemsPanelTemplate>
+            <DataTemplate x:Key="FlagsButtonTemplate" x:DataType="x:String">
+                <Button Content="{Binding}" ClickMode="Press"
+                        PointerMoved="FlagButton_OnPointerMoved" Click="FlagButton_OnClick"/>
+            </DataTemplate>
+        </ResourceDictionary>
+    </Window.Resources>
+    
+    <Design.DataContext>
+        <vm:OutputModuleEditorViewModel />
+    </Design.DataContext>
+    
+    <Grid x:Name="Root" RowDefinitions="32,32,*">
+        <controls:IsPlatform Grid.Row="0">
+            <controls:IsPlatform.Windows>
+                <controls:TitleBar VerticalAlignment="Top" Title="Rendering Progress" CloseBtnHidesWindow="True" />
+            </controls:IsPlatform.Windows>
+        </controls:IsPlatform>
+        
+        <Border Grid.Row="1" Classes="Toolbar" BorderThickness="1">
+            <Label Content="Output Module Editor" FontWeight="Bold" FontSize="16" 
+                   VerticalAlignment="Center" HorizontalAlignment="Left" Margin="16 0 0 0"/>
+        </Border>
+        
+        <Grid Grid.Row="2" ColumnDefinitions="240, 4, *" RowDefinitions="*,32">
+            <ListBox Grid.Column="0" x:DataType="vm:OutputModuleEditorViewModel" 
+                     ItemsSource="{Binding OutputModules}" Padding="0" 
+                     SelectionMode="AlwaysSelected"
+                     SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="rendering:OutputModule">
+                        <TextBlock Text="{Binding Module}" VerticalAlignment="Center" Margin="2"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <Grid Grid.Row="1" Grid.Column="0" ColumnDefinitions="*,4,*" Margin="4">
+                <Button Grid.Column="0" Content="+" Click="AddModuleButton_OnClick" />
+                <Button Grid.Column="2" Content="-" Click="RemoveModuleButton_OnClick"/>
+            </Grid>
+            <GridSplitter Grid.Column="1" Grid.Row="0" Background="Black" ResizeDirection="Columns"/>
+            <Grid Grid.Column="2" Grid.Row="0" RowDefinitions="Auto, Auto, *">
+                <Grid Grid.Row="0" ColumnDefinitions="Auto, *">
+                    <TextBlock Grid.Column="0" Text="Output module" VerticalAlignment="Center" 
+                               Margin="0,0,8,0" />
+                    <TextBox Grid.Column="1" x:DataType="vm:OutputModuleEditorViewModel" 
+                             Text="{Binding SelectedModule.Module, FallbackValue=''}" />
+                </Grid>
+                <StackPanel Grid.Row="1" Margin="0, 8">
+                    <TextBlock Text="Output file name structure" HorizontalAlignment="Center" 
+                               Margin="0,0,8,0" />
+                    <TextBox x:DataType="vm:OutputModuleEditorViewModel" Height="48" 
+                             x:Name="MaskTextBox"
+                             VerticalContentAlignment="Center"
+                             DragDrop.AllowDrop="True"
+                             Text="{Binding SelectedModule.Mask, FallbackValue=''}" />
+                </StackPanel>
+                <TabControl Grid.Row="2">
+                    <TabItem Header="Project">
+                        <ItemsControl x:DataType="vm:OutputModuleEditorViewModel" 
+                                      ItemsSource="{Binding ProjectButtons}"
+                                      ItemTemplate="{StaticResource FlagsButtonTemplate}"
+                                      ItemsPanel="{StaticResource FlagsPanelTemplate}" />
+                    </TabItem>
+                    <TabItem Header="Composition">
+                        <ItemsControl x:DataType="vm:OutputModuleEditorViewModel" 
+                                      ItemsSource="{Binding CompositionButtons}"
+                                      ItemTemplate="{StaticResource FlagsButtonTemplate}"
+                                      ItemsPanel="{StaticResource FlagsPanelTemplate}" />
+                    </TabItem>
+                    <TabItem Header="Timecode">
+                        <ItemsControl x:DataType="vm:OutputModuleEditorViewModel" 
+                                      ItemsSource="{Binding TimecodeButtons}"
+                                      ItemTemplate="{StaticResource FlagsButtonTemplate}"
+                                      ItemsPanel="{StaticResource FlagsPanelTemplate}" />
+                    </TabItem>
+                    <TabItem Header="Image">
+                        <ItemsControl x:DataType="vm:OutputModuleEditorViewModel" 
+                                      ItemsSource="{Binding ImageButtons}"
+                                      ItemTemplate="{StaticResource FlagsButtonTemplate}"
+                                      ItemsPanel="{StaticResource FlagsPanelTemplate}" />
+                    </TabItem>
+                    <TabItem Header="Date">
+                        <ItemsControl x:DataType="vm:OutputModuleEditorViewModel" 
+                                      ItemsSource="{Binding DateButtons}"
+                                      ItemTemplate="{StaticResource FlagsButtonTemplate}"
+                                      ItemsPanel="{StaticResource FlagsPanelTemplate}" />
+                    </TabItem>
+                </TabControl>
+            </Grid>
+            <Grid Grid.Row="1" Grid.Column="2" ColumnDefinitions="*,*" Margin="4">
+                <Button Grid.Column="0" Content="Save" HorizontalAlignment="Left" Click="SaveButton_OnClick"/>
+                <Button Grid.Column="1" Content="Cancel" HorizontalAlignment="Right" Click="CancelButton_OnClick"/>
+            </Grid>
+        </Grid>
+        
+    </Grid>
+</Window>
