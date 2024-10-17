@@ -20,8 +20,6 @@ using static AErenderLauncher.App;
 namespace AErenderLauncher.Views;
 
 public partial class TaskEditor : Window {
-    
-    
     // private RenderTask _initialTask;
     public RenderTask Task { get; init; }
     public ObservableCollection<OutputModule> OutputModules { get; set; } = new(Settings.Current.OutputModules);
