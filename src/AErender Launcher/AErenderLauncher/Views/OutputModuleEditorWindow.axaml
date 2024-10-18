@@ -14,7 +14,7 @@
         ExtendClientAreaTitleBarHeightHint="-1"
         ExtendClientAreaToDecorationsHint="False"
         Height="384" Width="680"
-        Title="Output Module Editor"
+        Title="Output module presets configurator"
         Closing="OMEditorWindow_OnClosing">
     
     <Window.Resources>
@@ -38,12 +38,12 @@
     <Grid x:Name="Root" RowDefinitions="32,32,*">
         <controls:IsPlatform Grid.Row="0">
             <controls:IsPlatform.Windows>
-                <controls:TitleBar VerticalAlignment="Top" Title="Output Module Editor" CloseBtnHidesWindow="False" />
+                <controls:TitleBar VerticalAlignment="Top" Title="Output module presets configurator" CloseBtnHidesWindow="False" />
             </controls:IsPlatform.Windows>
         </controls:IsPlatform>
         
         <Border Grid.Row="1" Classes="Toolbar" BorderThickness="1">
-            <Label Content="Output Module Editor" FontWeight="Bold" FontSize="16" 
+            <Label Content="Output module presets configurator" FontWeight="Bold" FontSize="16" 
                    VerticalAlignment="Center" HorizontalAlignment="Left" Margin="16 0 0 0"/>
         </Border>
         
