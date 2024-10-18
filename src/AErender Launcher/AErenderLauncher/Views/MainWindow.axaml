@@ -16,6 +16,7 @@
         Width="960" Height="540"
         Icon="/Assets/avalonia-logo.ico"
         Title="AErender Launcher"
+        Opened="MainWindow_OnOpened"
         Closing="Window_OnClosing">
     
     <NativeMenu.Menu>
@@ -27,10 +28,10 @@
                         <NativeMenuItem Header="Check for updates" />
                         <NativeMenuItemSeparator />
                         <NativeMenuItem Header="Settings" 
-                                        Gesture="{OnPlatform macOS='Cmd+P', Windows='Ctrl+P'}"/>
+                                        Gesture="Ctrl+P" />
                         <NativeMenuItemSeparator />
                         <NativeMenuItem Header="Quit AErender Launcher" 
-                                        Gesture="{OnPlatform macOS='Cmd+Q', Windows='Alt+F4'}" />
+                                        Gesture="Alt+F4" />
                     </NativeMenu>
                 </NativeMenuItem.Menu>
             </NativeMenuItem>

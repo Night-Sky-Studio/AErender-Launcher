@@ -1,14 +1,20 @@
 using System;
 using System.IO;
+using System.Reflection;
 using AErenderLauncher.Classes;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using AErenderLauncher.Views;
+using Semver;
 
 namespace AErenderLauncher;
 
 public partial class App : Application {
+    public static SemVersion Version => SemVersion.Parse(Assembly.GetExecutingAssembly()
+        .GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion)
+        .WithoutMetadata();
+    
     public App() {
         Name = "AErender Launcher";
             

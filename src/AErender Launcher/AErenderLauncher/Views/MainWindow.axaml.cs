@@ -13,8 +13,6 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
-using Avalonia.Threading;
-using static AErenderLauncher.App;
 
 namespace AErenderLauncher.Views;
 
@@ -26,6 +24,8 @@ public partial class MainWindow : Window {
 
     public MainWindow() {
         InitializeComponent();
+        
+        Title = $"AErender Launcher (v{App.Version.WithoutMetadata()})";
 #if DEBUG
         // Tasks.Add(new RenderTask {
         //     Project = "C:\\YandexDisk\\Acer\\Footages (AE)\\AErender Launcher Benchmark Projects\\Deneb - Mograph Icons\\Mograph Icons.aep",
@@ -202,5 +202,9 @@ public partial class MainWindow : Window {
     private async void OutputModuleEditorMenuItem_OnClick(object? sender, EventArgs e) {
         var omEditorWindow = new OutputModuleEditorWindow();
         await omEditorWindow.ShowDialog(this);
+    }
+
+    private async void MainWindow_OnOpened(object? sender, EventArgs e) {
+        Console.WriteLine((await Helpers.CheckForUpdates())?.version);
     }
 }

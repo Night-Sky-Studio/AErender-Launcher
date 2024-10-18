@@ -1,62 +1,54 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <OutputType>WinExe</OutputType>
-        <!--If you are willing to use Windows/MacOS native APIs you will need to create 3 projects.
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <!--If you are willing to use Windows/MacOS native APIs you will need to create 3 projects.
         One for Windows with net8.0-windows TFM, one for MacOS with net8.0-macos and one with net8.0 TFM for Linux.-->
-        <TargetFramework>net8.0</TargetFramework>
-        <Nullable>enable</Nullable>
-        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-        <PublishAot>true</PublishAot>
-<!--        <SelfContained>true</SelfContained>-->
-<!--        <PublishSingleFile>true</PublishSingleFile>-->
-<!--        <PublishReadyToRun>true</PublishReadyToRun>-->
-        <OutputDir>$(PublishDir)/../</OutputDir>
-        <PlistFilePath>$(ProjectDir)Resources/Info.plist</PlistFilePath>
-        <EntitlementsFilePath>$(ProjectDir)Resources/Entitlements.plist</EntitlementsFilePath>
-        <IconFilePath>$(ProjectDir)Resources/Launcher2020.icns</IconFilePath>
-        <MacOSAppBundlePath>$(OutputDir)bundle/AErender Launcher.app</MacOSAppBundlePath>
-    </PropertyGroup>
-
-    <PropertyGroup>
-        <ApplicationManifest>app.manifest</ApplicationManifest>
-    </PropertyGroup>
-
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <PublishAot>true</PublishAot>
+    <!--        <SelfContained>true</SelfContained>-->
+    <!--        <PublishSingleFile>true</PublishSingleFile>-->
+    <!--        <PublishReadyToRun>true</PublishReadyToRun>-->
+    <OutputDir>$(PublishDir)/../</OutputDir>
+    <PlistFilePath>$(ProjectDir)Resources/Info.plist</PlistFilePath>
+    <EntitlementsFilePath>$(ProjectDir)Resources/Entitlements.plist</EntitlementsFilePath>
+    <IconFilePath>$(ProjectDir)Resources/Launcher2020.icns</IconFilePath>
+    <MacOSAppBundlePath>$(OutputDir)bundle/AErender Launcher.app</MacOSAppBundlePath>
+    <Version>0.3.0-alpha</Version>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Controls.ItemsRepeater" Version="11.0.8" />
+    <PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="11.0.2" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.0.8" />
+    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.8" />
+    <PackageReference Include="Avalonia.Themes.Simple" Version="11.0.8" />
+    <PackageReference Include="CliWrap" Version="3.6.6" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AErenderLauncher\AErenderLauncher.csproj" />
+  </ItemGroup>
+  <Target Name="Create macOS App Bundle" AfterTargets="Publish" Condition="$([MSBuild]::IsOSPlatform('OSX'))">
+    <Exec Command="mkdir -p $(MacOSAppBundlePath)/Contents/MacOS" />
+    <Exec Command="mkdir -p $(MacOSAppBundlePath)/Contents/Resources" />
     <ItemGroup>
-        <PackageReference Include="Avalonia.Controls.ItemsRepeater" Version="11.0.8" />
-        <PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="11.0.2" />
-        <PackageReference Include="Avalonia.Desktop" Version="11.0.8" />
-        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.8" />
-        <PackageReference Include="Avalonia.Themes.Simple" Version="11.0.8" />
-        <PackageReference Include="CliWrap" Version="3.6.6" />
+      <AppBundle Include="$(MacOSAppBundlePath)" />
+      <AppBundle Include="$(MacOSAppBundlePath)/Contents" />
+      <AppBundle Include="$(MacOSAppBundlePath)/Contents/MacOS" />
+      <AppBundle Include="$(MacOSAppBundlePath)/Contents/Resources" />
     </ItemGroup>
-
+    <MakeDir Directories="@(AppBundle)" />
     <ItemGroup>
-        <ProjectReference Include="..\AErenderLauncher\AErenderLauncher.csproj"/>
+      <PublishFiles Include="$(OutputDir)/*" />
     </ItemGroup>
-
-    <Target Name="Create macOS App Bundle" AfterTargets="Publish" Condition="$([MSBuild]::IsOSPlatform('OSX'))">
-        <Exec Command="mkdir -p $(MacOSAppBundlePath)/Contents/MacOS" />
-        <Exec Command="mkdir -p $(MacOSAppBundlePath)/Contents/Resources" />
-
-        <ItemGroup>
-            <AppBundle Include="$(MacOSAppBundlePath)"  />
-            <AppBundle Include="$(MacOSAppBundlePath)/Contents" />
-            <AppBundle Include="$(MacOSAppBundlePath)/Contents/MacOS" />
-            <AppBundle Include="$(MacOSAppBundlePath)/Contents/Resources" />
-        </ItemGroup>
-        
-        <MakeDir Directories="@(AppBundle)"  />
-        
-        <ItemGroup>
-            <PublishFiles Include="$(OutputDir)/*" />
-        </ItemGroup>
-
-        <Copy SourceFiles="@(PublishFiles)" DestinationFolder="$(MacOSAppBundlePath)/Contents/MacOS" />
-        <Copy SourceFiles="$(PlistFilePath)" DestinationFolder="$(MacOSAppBundlePath)/Contents" />
-        <Copy SourceFiles="$(EntitlementsFilePath)" DestinationFolder="$(MacOSAppBundlePath)/Contents" />
-        <Copy SourceFiles="$(IconFilePath)" DestinationFolder="$(MacOSAppBundlePath)/Contents/Resources" />
-
-        <Message Text="$(SolutionName).app -> $(MacOSAppBundlePath)" Importance="High" />
-    </Target>
+    <Copy SourceFiles="@(PublishFiles)" DestinationFolder="$(MacOSAppBundlePath)/Contents/MacOS" />
+    <Copy SourceFiles="$(PlistFilePath)" DestinationFolder="$(MacOSAppBundlePath)/Contents" />
+    <Copy SourceFiles="$(EntitlementsFilePath)" DestinationFolder="$(MacOSAppBundlePath)/Contents" />
+    <Copy SourceFiles="$(IconFilePath)" DestinationFolder="$(MacOSAppBundlePath)/Contents/Resources" />
+    <Message Text="$(SolutionName).app -&gt; $(MacOSAppBundlePath)" Importance="High" />
+  </Target>
 </Project>

@@ -1,37 +1,36 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <Nullable>enable</Nullable>
-        <LangVersion>latest</LangVersion>
-        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-        <DefineConstants Condition="$([MSBuild]::IsOSPlatform('OSX'))">MACOS</DefineConstants>
-        <DefineConstants Condition="$([MSBuild]::IsOSPlatform('Windows'))">WINDOWS</DefineConstants>
-    </PropertyGroup>
-
-    <ItemGroup>
-        <AvaloniaResource Include="Assets\**"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="Alba.Avalonia.FlexPanel" Version="0.5.3" />
-        <PackageReference Include="Avalonia" Version="11.0.8" />
-        <PackageReference Include="Avalonia.Controls.ItemsRepeater" Version="11.0.8" />
-        <PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="11.0.2" />
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.8" />
-        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.8" />
-        <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.8" />
-        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.8" />
-        <PackageReference Include="Avalonia.Themes.Simple" Version="11.0.8" />
-        <PackageReference Include="CliWrap" Version="3.6.6" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-        <PackageReference Include="NUnit" Version="4.0.1" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Update="Classes\System\Dialogs\Windows\GenericDialogWindow.axaml.cs">
-        <DependentUpon>GenericDialogWindow.axaml</DependentUpon>
-        <SubType>Code</SubType>
-      </Compile>
-    </ItemGroup>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <DefineConstants Condition="$([MSBuild]::IsOSPlatform('OSX'))">MACOS</DefineConstants>
+    <DefineConstants Condition="$([MSBuild]::IsOSPlatform('Windows'))">WINDOWS</DefineConstants>
+    <Version>0.3.0-alpha</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Alba.Avalonia.FlexPanel" Version="0.5.3" />
+    <PackageReference Include="Avalonia" Version="11.0.8" />
+    <PackageReference Include="Avalonia.Controls.ItemsRepeater" Version="11.0.8" />
+    <PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="11.0.2" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.8" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.8" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.8" />
+    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.8" />
+    <PackageReference Include="Avalonia.Themes.Simple" Version="11.0.8" />
+    <PackageReference Include="CliWrap" Version="3.6.6" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="NUnit" Version="4.0.1" />
+    <PackageReference Include="Semver" Version="3.0.0-beta.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Classes\System\Dialogs\Windows\GenericDialogWindow.axaml.cs">
+      <DependentUpon>GenericDialogWindow.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
 </Project>
