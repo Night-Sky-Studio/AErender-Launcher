@@ -49,7 +49,7 @@ public static class CollectionExtensions {
         }
     }
 
-    public static T? Get<T>(this IList<T> list, int index) where T : struct {
+    public static T? Get<T>(this IList<T> list, int index) where T : class {
         try {
             return list[index];
         } catch {
@@ -62,5 +62,13 @@ public static class CollectionExtensions {
             if (item is null) continue;
             list.Add(item);
         }
+    }
+
+    public static int IndexOf<T>(this IList<T> list, Predicate<T> match) {
+        for (int i = 0; i < list.Count; i++) {
+            if (match(list[i])) return i;
+        }
+
+        return -1;
     }
 }

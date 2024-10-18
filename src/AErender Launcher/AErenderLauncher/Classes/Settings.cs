@@ -70,18 +70,7 @@ public class Settings {
     public RenderingMode ThreadsRenderMode { get; set; } = RenderingMode.Tiled;
 
     private void InitOutputModules() {
-        OutputModules.AddRange([
-            new () { Module = "Lossless", Mask = "[compName].[fileExtension]", IsImported = false },
-            new () { Module = "AIFF 48kHz", Mask = "[compName].[fileExtension]", IsImported = false },
-            new () { Module = "Alpha Only", Mask = "[compName].[fileExtension]", IsImported = false },
-            new () { Module = "AVI DV NTSC 48kHz", Mask = "[compName].[fileExtension]", IsImported = false },
-            new () { Module = "AVI DV PAL 48kHz", Mask = "[compName].[fileExtension]", IsImported = false },
-            new () { Module = "Lossless with Alpha", Mask = "[compName].[fileExtension]", IsImported = false },
-            new () { Module = "Multi-Machine Sequence", Mask = "[compName]_[#####].[fileExtension]", IsImported = false },
-            new () { Module = "Photoshop", Mask = "[compName]_[#####].[fileExtension]", IsImported = false },
-            new () { Module = "Save Current Preview", Mask = "[compName].[fileExtension]", IsImported = false },
-            new () { Module = "TIFF Sequence with Alph", Mask = "[compName]_[#####].[fileExtension]", IsImported = false },
-        ]);
+        OutputModules.AddRange(OutputModule.DefaultModules);
     }
 
     public void Init() {
@@ -106,6 +95,8 @@ public class Settings {
     }
 
     public static Settings? LoadLegacy(string xmlPath) {
+        if (!File.Exists(xmlPath)) return null;
+        
         XmlDocument document = new XmlDocument();
         document.Load(xmlPath);
 
@@ -145,11 +136,11 @@ public class Settings {
 
         try {
             foreach (XmlNode node in rootNode["outputModule"]!.ChildNodes) {
-                parsedModules.Add(new OutputModule {
-                    Module = node["moduleName"]!.InnerText,
-                    Mask = node["filemask"]!.InnerText,
-                    IsImported = bool.Parse(node.Attributes!["imported"]!.InnerText)
-                });
+                parsedModules.Add(new OutputModule(
+                    node["moduleName"]!.InnerText,
+                    node["filemask"]!.InnerText,
+                    bool.Parse(node.Attributes!["imported"]!.InnerText)
+                ));
             }
         } catch {
             // yeet

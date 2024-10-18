@@ -4,6 +4,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="AErenderLauncher.Classes.System.Dialogs.Views.GenericDialogWindow"
+        WindowStartupLocation="CenterScreen"
+        SystemDecorations="BorderOnly"
+        ExtendClientAreaChromeHints="NoChrome"
+        SizeToContent="WidthAndHeight"
         Title="GenericDialogWindow">
     
     <Grid RowDefinitions="Auto,*,Auto,Auto" Margin="16">

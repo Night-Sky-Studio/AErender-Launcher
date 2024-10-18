@@ -20,15 +20,17 @@
     
     <NativeMenu.Menu>
         <NativeMenu>
-            <NativeMenuItem Header="AErender Launcher">
+            <NativeMenuItem Header="{OnPlatform macOS='', Default='AErender Launcher'}">
                 <NativeMenuItem.Menu>
                     <NativeMenu>
                         <NativeMenuItem Header="About" />
                         <NativeMenuItem Header="Check for updates" />
                         <NativeMenuItemSeparator />
-                        <NativeMenuItem Header="Settings" />
+                        <NativeMenuItem Header="Settings" 
+                                        Gesture="{OnPlatform macOS='Cmd+P', Windows='Ctrl+P'}"/>
                         <NativeMenuItemSeparator />
-                        <NativeMenuItem Header="Quit AErender Launcher" />
+                        <NativeMenuItem Header="Quit AErender Launcher" 
+                                        Gesture="{OnPlatform macOS='Cmd+Q', Windows='Alt+F4'}" />
                     </NativeMenu>
                 </NativeMenuItem.Menu>
             </NativeMenuItem>
@@ -36,17 +38,24 @@
                 <NativeMenu>
                     <NativeMenuItem Header="Recent projects"/>
                     <NativeMenuItemSeparator />
-                    <NativeMenuItem Header="Import project configuration" />
-                    <NativeMenuItem Header="Export project configuration" />
+                    <NativeMenuItem Header="Import project configuration" 
+                                    Gesture="{OnPlatform macOS='Cmd+I', Windows='Ctrl+I'}" />
+                    <NativeMenuItem Header="Export project configuration" 
+                                    Gesture="{OnPlatform macOS='Cmd+E', Windows='Ctrl+E'}" />
                 </NativeMenu>
             </NativeMenuItem>
             <NativeMenuItem Header="Edit">
                 <NativeMenu>
-                    <NativeMenuItem Header="New task" />
+                    <NativeMenuItem Header="New task" 
+                                    Gesture="{OnPlatform macOS='Cmd+N', Windows='Ctrl+N'}" />
+                    <NativeMenuItemSeparator />
+                    <NativeMenuItem Header="Output Module Editor" 
+                                    Gesture="{OnPlatform macOS='Cmd+O', Windows='Ctrl+O'}"
+                                    Click="OutputModuleEditorMenuItem_OnClick" />
                 </NativeMenu>
             </NativeMenuItem>
-            <NativeMenuItem Header="Tasks"></NativeMenuItem>
-            <NativeMenuItem Header="Help"></NativeMenuItem>
+            <NativeMenuItem Header="Tasks" />
+            <NativeMenuItem Header="Help" />
         </NativeMenu>
     </NativeMenu.Menu>
     
@@ -80,7 +89,7 @@
             <Border Grid.Row="1" Classes="Toolbar">
                 <Grid>
                     <Label Content="Tasks" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="16 0 0 0"/>
-                    <TextBlock x:Name="DebugLabel" HorizontalAlignment="Center" VerticalAlignment="Center" Text=""/>
+                    
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="4" Margin="4">
                         <Button x:Name="NewTaskButton" Content="New Task" Width="96" Click="NewTaskButton_OnClick">
                             <Button.ContextMenu>

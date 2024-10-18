@@ -27,7 +27,6 @@ public partial class MainWindow : Window {
     public MainWindow() {
         InitializeComponent();
 #if DEBUG
-        DebugLabel.IsVisible = true;
         // Tasks.Add(new RenderTask {
         //     Project = "C:\\YandexDisk\\Acer\\Footages (AE)\\AErender Launcher Benchmark Projects\\Deneb - Mograph Icons\\Mograph Icons.aep",
         //     Output = "C:\\Users\\lilystilson\\Desktop\\[projectName]\\[compName].[fileExtension]",
@@ -58,7 +57,6 @@ public partial class MainWindow : Window {
                 new("Main", new FrameSpan(3600, 6130), 2),
             ]
         });
-        DebugLabel.Text = $"Tasks: {Tasks.Count}";
 #endif
 
         ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
@@ -199,5 +197,10 @@ public partial class MainWindow : Window {
 
     private void Window_OnClosing(object? sender, WindowClosingEventArgs e) {
         Settings.Current.Save();
+    }
+
+    private async void OutputModuleEditorMenuItem_OnClick(object? sender, EventArgs e) {
+        var omEditorWindow = new OutputModuleEditorWindow();
+        await omEditorWindow.ShowDialog(this);
     }
 }
