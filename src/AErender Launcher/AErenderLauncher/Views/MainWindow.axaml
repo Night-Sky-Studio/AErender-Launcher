@@ -26,9 +26,11 @@
                         <NativeMenuItem Header="About" />
                         <NativeMenuItem Header="Check for updates" />
                         <NativeMenuItemSeparator />
-                        <NativeMenuItem Header="Settings" Gesture="Cmd+P" />
+                        <NativeMenuItem Header="Settings" 
+                                        Gesture="{OnPlatform macOS='Cmd+P', Windows='Ctrl+P'}"/>
                         <NativeMenuItemSeparator />
-                        <NativeMenuItem Header="Quit AErender Launcher" Gesture="Cmd+Q" />
+                        <NativeMenuItem Header="Quit AErender Launcher" 
+                                        Gesture="{OnPlatform macOS='Cmd+Q', Windows='Alt+F4'}" />
                     </NativeMenu>
                 </NativeMenuItem.Menu>
             </NativeMenuItem>
@@ -49,7 +51,7 @@
                     <NativeMenuItemSeparator />
                     <NativeMenuItem Header="Output Module Editor" 
                                     Gesture="{OnPlatform macOS='Cmd+O', Windows='Ctrl+O'}"
-                                    Click="OutputModuleEditorMenuItem_OnClick"/>
+                                    Click="OutputModuleEditorMenuItem_OnClick" />
                 </NativeMenu>
             </NativeMenuItem>
             <NativeMenuItem Header="Tasks" />
