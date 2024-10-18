@@ -38,7 +38,7 @@
     <Grid x:Name="Root" RowDefinitions="32,32,*">
         <controls:IsPlatform Grid.Row="0">
             <controls:IsPlatform.Windows>
-                <controls:TitleBar VerticalAlignment="Top" Title="Rendering Progress" CloseBtnHidesWindow="True" />
+                <controls:TitleBar VerticalAlignment="Top" Title="Output Module Editor" CloseBtnHidesWindow="False" />
             </controls:IsPlatform.Windows>
         </controls:IsPlatform>
         
