@@ -34,7 +34,9 @@ public partial class OutputModuleEditorWindow : Window {
     }
 
     private void OutputModulesOnItemPropertyChanged(object? sender, ItemPropertyChangedEventArgs<OutputModule> e) {
+#if MACOS
         this.SetDocumentEdited(ViewModel.IsEdited);
+#endif
     }
 
     public OutputModuleEditorWindow() {
@@ -116,16 +118,14 @@ public partial class OutputModuleEditorWindow : Window {
     /// event, instead relying on <see cref="Button.Click"/> event. But Click event does not provide any
     /// <see cref="PointerEventArgs"/> that are required for the <see cref="DragDrop.DoDragDrop"/>. So we capture those
     /// args from <see cref="InputElement.PointerMoved"/> event and give them to DragDrop later.
-    private PointerEventArgs _pointer;
+    private PointerEventArgs? _pointer;
     private void FlagButton_OnPointerMoved(object? sender, PointerEventArgs e) {
         _pointer = e;
     }
     private void FlagButton_OnClick(object? sender, RoutedEventArgs e) {
-        Debug.WriteLine("Pointer pressed");
         if (sender is Button button) {
-            if (button.Content is not string) return;
-            Debug.WriteLine("Dragging start");
-
+            if (button.Content is not string || _pointer is null) return;
+            
             var data = new DataObject();
             data.Set("Text", button.Content);
 
