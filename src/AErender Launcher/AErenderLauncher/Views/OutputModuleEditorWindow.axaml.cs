@@ -92,7 +92,7 @@ public partial class OutputModuleEditorWindow : Window {
     private void MaskTextBox_OnDragOver(object? sender, DragEventArgs e) {
         // Check if the data being dragged contains a string (button content)
         if (e.Data.Contains(DataFormats.Text)) {
-            e.DragEffects = DragDropEffects.Move;
+            e.DragEffects = DragDropEffects.Move | DragDropEffects.Link | DragDropEffects.Copy;
         } else {
             e.DragEffects = DragDropEffects.None;
         }
@@ -104,8 +104,12 @@ public partial class OutputModuleEditorWindow : Window {
     private void MaskTextBox_OnDrop(object? sender, DragEventArgs e) {
         if (e.Data.Contains(DataFormats.Text)) {
             var text = e.Data.GetText();
+            if (text is null) return;
             if (sender is TextBox textBox) {
-                textBox.Text = text;
+                var pos = textBox.CaretIndex;
+                textBox.Text = textBox.Text?.Insert(pos, text);
+                textBox.CaretIndex = pos + text.Length;
+                textBox.Focus();
             }
         }
 
