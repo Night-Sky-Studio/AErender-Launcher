@@ -10,6 +10,7 @@ using AErenderLauncher.Classes.Rendering;
 using AErenderLauncher.Classes.System.Dialogs;
 using AErenderLauncher.ViewModels;
 using AErenderLauncher.Views.Dialogs;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -200,5 +201,9 @@ public partial class MainWindow : Window {
 
     private async void MainWindow_OnOpened(object? sender, EventArgs e) {
         ViewModel.Update = (await Helpers.CheckForUpdates())?.version;
+    }
+
+    private void AboutMenu_OnClick(object? sender, EventArgs e) {
+        App.OpenAboutWindow();
     }
 }

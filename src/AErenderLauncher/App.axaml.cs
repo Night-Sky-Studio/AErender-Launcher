@@ -12,9 +12,7 @@ namespace AErenderLauncher;
 
 public partial class App : Application {
     public static SemVersion Version => SemVersion.Parse(Assembly.GetExecutingAssembly()
-        .GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion)
-        .WithoutMetadata();
-    
+        .GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion);
     public App() {
         Name = "AErender Launcher";
             
@@ -50,4 +48,11 @@ public partial class App : Application {
 
         base.OnFrameworkInitializationCompleted();
     }
+
+    public static void OpenAboutWindow() {
+        var aboutWindow = new AboutWindow();
+        aboutWindow.Show();
+    }
+
+    private void AboutMenu_OnClick(object? sender, EventArgs e) => OpenAboutWindow();
 }

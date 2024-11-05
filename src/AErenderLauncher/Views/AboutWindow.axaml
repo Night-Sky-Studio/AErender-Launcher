@@ -1,0 +1,62 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:AErenderLauncher.Controls"
+        xmlns:vm="clr-namespace:AErenderLauncher.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="AErenderLauncher.Views.AboutWindow"
+        Title="About AErender Launcher"
+        WindowStartupLocation="CenterOwner"
+        SystemDecorations="Full"
+        ExtendClientAreaChromeHints="NoChrome"
+        Width="720" Height="320"
+        x:DataType="vm:AboutWindowViewModel">
+    
+    <Design.DataContext>
+        <vm:AboutWindowViewModel />
+    </Design.DataContext>
+    
+    <Grid x:Name="Root" RowDefinitions="32,*">
+        <controls:IsPlatform Grid.Row="0">
+            <controls:IsPlatform.Windows>
+                <controls:TitleBar VerticalAlignment="Top" Title="Output module presets configurator" CloseBtnHidesWindow="False" />
+            </controls:IsPlatform.Windows>
+        </controls:IsPlatform>
+        
+        <Grid Grid.Row="1" ColumnDefinitions="25*, 75*" 
+              RowDefinitions="*,50, 50, 30, 30, *, 30, *, 50">
+            
+            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="8" Source="../Assets/icon_base.png" 
+                   Height="128" Width="128"/>
+            
+            <StackPanel Grid.Column="1" Grid.Row="1">
+                <TextBlock Text="AErender Launcher"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Version: "/>
+                    <TextBlock Text="{Binding VersionText}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Commit: "/>
+                    <TextBlock Text="{Binding Version.Metadata}"/>
+                </StackPanel>
+            </StackPanel>
+            
+            <TextBlock Grid.Column="1" Grid.Row="2" 
+                       Text="Created by Lin Stilson // Further development by Lily Stilson" />
+            
+            <TextBlock Grid.Column="1" Grid.Row="3" 
+                       Text="Rendering manager for Adobe After Effects"/>
+            
+            <TextBlock Grid.Column="1" Grid.Row="4" 
+                       Text="From Russia with 💙💛"/>
+            
+            <TextBlock Grid.Column="1" Grid.Row="6" 
+                       Text="aerenderlauncher.com"/>
+            
+            <TextBlock Grid.Column="1" Grid.Row="8" 
+                       Text="Adobe After Effects is a property of Adobe Systems inc."/>
+        </Grid>
+        
+    </Grid>
+</Window>

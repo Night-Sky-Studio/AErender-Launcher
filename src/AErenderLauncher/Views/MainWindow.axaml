@@ -30,7 +30,7 @@
             <NativeMenuItem Header="{OnPlatform macOS='', Default='AErender Launcher'}">
                 <NativeMenuItem.Menu>
                     <NativeMenu>
-                        <NativeMenuItem Header="About" />
+                        <NativeMenuItem Header="About" Click="AboutMenu_OnClick" />
                         <NativeMenuItem Header="Check for updates" />
                         <NativeMenuItemSeparator />
                         <NativeMenuItem Header="Settings" 
