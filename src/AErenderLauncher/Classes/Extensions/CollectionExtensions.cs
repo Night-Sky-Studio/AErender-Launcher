@@ -25,8 +25,6 @@ public static class CollectionExtensions {
         (list[indexA], list[indexB]) = (list[indexB], list[indexA]);
     }
     
-    public static RenderTask GetTaskById(this IEnumerable<RenderTask> tasks, int id) => tasks.First(x => x.ID == id);
-    
     public static Composition GetCompositionByName(this IEnumerable<Composition> compositions, string name) => compositions.First(x => x.CompositionName == name);
     
     public static IList<T> RemoveAll<T>(this IList<T> list, Predicate<T> match) {

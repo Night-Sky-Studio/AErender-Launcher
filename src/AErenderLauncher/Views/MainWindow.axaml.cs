@@ -8,6 +8,7 @@ using AErenderLauncher.Classes.Extensions;
 using AErenderLauncher.Classes.Project;
 using AErenderLauncher.Classes.Rendering;
 using AErenderLauncher.Classes.System.Dialogs;
+using AErenderLauncher.ViewModels;
 using AErenderLauncher.Views.Dialogs;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -18,16 +19,17 @@ namespace AErenderLauncher.Views;
 
 public partial class MainWindow : Window {
     private RenderingWindow? _renderingWindow;
-    public static ObservableCollection<RenderTask> Tasks { get; set; } = [];
 
-    public static ObservableCollection<RenderThread> Threads { get; set; } = [];
+    private MainWindowViewModel ViewModel { get; } = new();
 
     public MainWindow() {
         InitializeComponent();
         
+        DataContext = ViewModel;
+        
         Title = $"AErender Launcher (v{App.Version.WithoutMetadata()})";
 #if DEBUG
-        // Tasks.Add(new RenderTask {
+        // ViewModel.Tasks.Add(new RenderTask {
         //     Project = "C:\\YandexDisk\\Acer\\Footages (AE)\\AErender Launcher Benchmark Projects\\Deneb - Mograph Icons\\Mograph Icons.aep",
         //     Output = "C:\\Users\\lilystilson\\Desktop\\[projectName]\\[compName].[fileExtension]",
         //     OutputModule = "Lossless",
@@ -44,7 +46,7 @@ public partial class MainWindow : Window {
         //         new("Medical Icons", new FrameSpan(0, 600), 1)
         //     ]
         // });
-        Tasks.Add(new RenderTask {
+        ViewModel.Tasks.Add(new RenderTask {
             Project = Helpers.Platform == OS.Windows 
                 ? "C:\\YandexDisk\\Acer\\Footages (AE)\\AErender Launcher Benchmark Projects\\SuperEffectiveBros - Mograph Practice\\AEPRTC_Eclipse_rev57(ForDist)_2024.aep"
                 : "/Users/lilystilson/Yandex.Disk.localized/Acer/Footages (AE)/AErender Launcher Benchmark Projects/SuperEffectiveBros - Mograph Practice/AEPRTC_Eclipse_rev57(ForDist)_2024.aep",
@@ -75,7 +77,7 @@ public partial class MainWindow : Window {
         Overlay.IsVisible = true;
         
         if (aep.First().TryGetLocalPath() is { } path && await ParseProject(path) is { } task) {
-            Tasks.Add(task);
+            ViewModel.Tasks.Add(task);
         } else {
             // TODO: Fallback, manual input
             System.Diagnostics.Debug.WriteLine("Failed to parse project");
@@ -100,7 +102,7 @@ public partial class MainWindow : Window {
     }
 
     private async void Launch_OnClick(object sender, RoutedEventArgs e) {
-        var aggregatedTasks = Tasks.Aggregate(new List<RenderThread>(), (threads, task) => {
+        var aggregatedTasks = ViewModel.Tasks.Aggregate(new List<RenderThread>(), (threads, task) => {
             threads.AddRange(task.Enqueue());
             return threads;
         });
@@ -131,46 +133,38 @@ public partial class MainWindow : Window {
             
             RenderTask? result = await editor.ShowDialog<RenderTask?>(this);
             if (result != null) {
-                Tasks.Add(result);
+                ViewModel.Tasks.Add(result);
             }
         }
     }
 
     private void MoveTaskUp_OnClick(object? sender, RoutedEventArgs e) {
         if (sender is not Button btn) return;
-        RenderTask task = Tasks.GetTaskById(int.Parse($"{btn.Tag}"));
-        int index = Tasks.IndexOf(task);
-        if (index > 0) {
-            Tasks.Swap(index, index - 1);
-        }
+        ViewModel.MoveTaskUp(ViewModel.GetTaskById(int.Parse($"{btn.Tag}")));
+
     }
 
     private void MoveTaskDown_OnClick(object? sender, RoutedEventArgs e) {
         if (sender is not Button btn) return;
-        RenderTask task = Tasks.GetTaskById(int.Parse($"{btn.Tag}"));
-        int index = Tasks.IndexOf(task);
-        if (index < Tasks.Count - 1) {
-            Tasks.Swap(index, index + 1);
-        }
+        ViewModel.MoveTaskDown(ViewModel.GetTaskById(int.Parse($"{btn.Tag}")));
     }
 
     private void RemoveTask_OnClick(object? sender, RoutedEventArgs e) {
         if (sender is not Button btn) return;
-        RenderTask task = Tasks.GetTaskById(int.Parse($"{btn.Tag}"));
-        Tasks.Remove(task);
+        ViewModel.Tasks.Remove(ViewModel.GetTaskById(int.Parse($"{btn.Tag}")));
     }
 
     // TODO: questionable need for this...
     private void DuplicateTask_OnClick(object? sender, RoutedEventArgs e) {
         if (sender is not Button btn) return;
-        RenderTask task = Tasks.GetTaskById(int.Parse($"{btn.Tag}"));
-        Tasks.Insert(Tasks.IndexOf(task) + 1, task);
+        var task = ViewModel.GetTaskById(int.Parse($"{btn.Tag}"));
+        ViewModel.Tasks.Insert(ViewModel.Tasks.IndexOf(task) + 1, task.Clone());
     }
     
     private async void Composition_OnDoubleTapped(object? sender, TappedEventArgs e) {
         if (sender is not ListBoxItem { DataContext: Composition comp } lb) return;
         if (lb.Parent?.Parent is not ListBox bx || int.TryParse($"{bx.Tag}", out var id) == false) return;
-        var task = Tasks.GetTaskById(id);
+        var task = ViewModel.GetTaskById(id);
         TaskEditor editor = new(task) {
             EditorCarousel = {
                 SelectedIndex = 1
@@ -180,15 +174,15 @@ public partial class MainWindow : Window {
             }
         };
         var newTask = await editor.ShowDialog<RenderTask?>(this);
-        if (newTask is not null) Tasks[Tasks.IndexOf(task)] = newTask;
+        if (newTask is not null) ViewModel.Tasks[ViewModel.Tasks.IndexOf(task)] = newTask;
     }
     
     private async void EditTask_OnClick(object? sender, RoutedEventArgs e) {
         if (sender is not Button btn) return;
-        var task = Tasks.GetTaskById(int.Parse($"{btn.Tag}"));
-        TaskEditor editor = new(Tasks.GetTaskById(int.Parse($"{btn.Tag}")), true);
+        var task = ViewModel.GetTaskById(int.Parse($"{btn.Tag}"));
+        TaskEditor editor = new(task, true);
         var newTask = await editor.ShowDialog<RenderTask?>(this);
-        if (newTask != null) Tasks[Tasks.IndexOf(task)] = newTask;
+        if (newTask != null) ViewModel.Tasks[ViewModel.Tasks.IndexOf(task)] = newTask;
     }
 
     private async void QueueButton_OnClick(object? sender, RoutedEventArgs e) {
@@ -205,6 +199,6 @@ public partial class MainWindow : Window {
     }
 
     private async void MainWindow_OnOpened(object? sender, EventArgs e) {
-        Console.WriteLine((await Helpers.CheckForUpdates())?.version);
+        ViewModel.Update = (await Helpers.CheckForUpdates())?.version;
     }
 }
