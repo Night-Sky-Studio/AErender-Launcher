@@ -11,7 +11,7 @@ public class ReactiveObject : IReactiveObject {
     public void RaisePropertyChanging(PropertyChangingEventArgs e) => PropertyChanging?.Invoke(this, e);
     public void RaisePropertyChanged(PropertyChangedEventArgs e) => PropertyChanged?.Invoke(this, e);
 
-    protected void RaiseAndSetIfChanged<T>(ref T field, T value, [CallerMemberName] string? propertyName = null) {
+    protected virtual void RaiseAndSetIfChanged<T>(ref T field, T value, [CallerMemberName] string? propertyName = null) {
         if (EqualityComparer<T>.Default.Equals(field, value)) return;
         RaisePropertyChanging(new PropertyChangingEventArgs(propertyName));
         field = value;

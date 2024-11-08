@@ -12,11 +12,22 @@ public class SettingsViewModel : ReactiveObject {
         .Where(i => i <= Helpers.GetAvailableCores() * 2)
         .ToList());
     
-    private string _aerenderPath = Settings.Current.AfterEffectsPath;
-    public string AErenderPath {
-        get => _aerenderPath; 
-        set => RaiseAndSetIfChanged(ref _aerenderPath, value);
+    private AfterFx? _afterFx = Settings.Current.AfterEffects;
+    public AfterFx? AfterFx {
+        get => _afterFx; 
+        set => RaiseAndSetIfChanged(ref _afterFx, value);
     }
+    private FFmpeg? _ffmpeg = Settings.Current.FFmpeg;
+    public FFmpeg? FFmpeg {
+        get => _ffmpeg;
+        set {
+            RaiseAndSetIfChanged(ref _ffmpeg, value);
+            RaisePropertyChanged(new (nameof(FFmpegInfo)));
+        }
+    }
+
+    public string FFmpegInfo => FFmpeg is not null ? $"{FFmpeg.Version} ({FFmpeg.Path})" : "Not found";
+    
     private string _outputPath = Settings.Current.DefaultOutputPath;
     public string DefaultOutputPath {
         get => _outputPath; 
@@ -39,9 +50,15 @@ public class SettingsViewModel : ReactiveObject {
         get => _threadsLimit; 
         set => RaiseAndSetIfChanged(ref _threadsLimit, value);
     }
-    
+
+    protected override void RaiseAndSetIfChanged<T>(ref T field, T value, string? propertyName = null) {
+        base.RaiseAndSetIfChanged(ref field, value, propertyName);
+        WriteToSettings();
+    }
+
     public void WriteToSettings() {
-        Settings.Current.AfterEffectsPath = AErenderPath;
+        Settings.Current.AfterEffects = AfterFx;
+        Settings.Current.FFmpeg = FFmpeg;
         Settings.Current.DefaultOutputPath = DefaultOutputPath;
         Settings.Current.DefaultProjectsPath = DefaultProjectsPath;
         Settings.Current.ThreadsRenderMode = RenderingMode;

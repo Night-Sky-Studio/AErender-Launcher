@@ -3,19 +3,59 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Xml;
 using AErenderLauncher.Classes.Rendering;
 using AErenderLauncher.Classes.Extensions;
+using CliWrap;
+using FFMpegCore;
 using Newtonsoft.Json;
 
 namespace AErenderLauncher.Classes;
 
-public struct AfterFx {
-    public string Name { get; set; }
-    public string Path { get; set; }
-    public string Version { get; set; }
+public record AfterFx {
+    public AfterFx() {
+        Name = "";
+        AfterFxPath = "";
+        AerenderPath = "";
+        Version = "";
+    }
+    public AfterFx(string path) {
+        var name = Helpers.GetCurrentDirectoryName(path);
 
-    public bool IsEmpty => string.IsNullOrEmpty(Name) || string.IsNullOrEmpty(Path) || string.IsNullOrEmpty(Version);
+        Name = name.Delete(".app");
+        AfterFxPath = path;
+        
+        if (Helpers.Platform == OS.macOS) {
+            var app = path.Contains(".app") ? path : Path.Combine(AfterFxPath, $"{name}.app");
+            AerenderPath = Path.Combine(app, "Contents", "aerendercore.app", 
+                "Contents", "MacOS", "aerendercore");
+            Version = Helpers.GetPackageVersionStringDarwin(app) ?? "Unknown";
+        } else {
+            var supportFiles = Path.GetDirectoryName(path) ?? Path.Combine(AfterFxPath, "Support Files");
+            AerenderPath = Path.Combine(supportFiles, "AfterFX.com");
+            Version = FileVersionInfo.GetVersionInfo(AerenderPath).FileVersion ?? "Unknown";
+        }
+    }
+    
+    public string Name { get; set; }
+    public string AerenderPath { get; set; }
+    public string AfterFxPath { get; set; }
+    public string Version { get; set; }
+}
+
+public record FFmpeg {
+    public required string Version { get; set; }
+    public required string Compiler { get; set; }
+    public required string[] Configuration { get; set; }
+    public required string[] Libraries { get; set; }
+    public string Path { get; set; } = "";
+		
+    public override string ToString() {
+        return $"Version: {Version}\nCompiler: {Compiler}\nConfiguration: {string.Join(' ', Configuration)}\nLibraries: {string.Join("; ", Libraries)}";
+    }
 }
 
 public class Settings {
@@ -37,8 +77,9 @@ public class Settings {
 
     // Language ?
     // Style  ?
-
-    public string AfterEffectsPath { get; set; } = "";
+    public AfterFx? AfterEffects { get; set; } = null;
+    public FFmpeg? FFmpeg { get; set; } = null;
+    
     public string DefaultProjectsPath { get; set; } = "";
     public string DefaultOutputPath { get; set; } = "";
 
@@ -66,7 +107,6 @@ public class Settings {
     public string RenderSettings { get; set; } = "Best Settings";
 
     public List<string> RecentProjects { get; set; } = [];
-
     public RenderingMode ThreadsRenderMode { get; set; } = RenderingMode.Tiled;
 
     private void InitOutputModules() {
@@ -74,7 +114,7 @@ public class Settings {
     }
 
     public void Init() {
-        AfterEffectsPath = "C:\\Program Files\\Adobe\\Adobe After Effects 2023\\Support Files\\aerender.exe";
+        AfterEffects = null;
         DefaultProjectsPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         DefaultOutputPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         OnRenderStart = -1;
@@ -91,6 +131,7 @@ public class Settings {
         OutputModuleIndex = 0;
         RenderSettings = "Best Settings";
         ThreadsRenderMode = RenderingMode.Tiled;
+        FFmpeg = null;
         InitOutputModules();
     }
 
@@ -103,7 +144,7 @@ public class Settings {
         XmlNode rootNode = document.DocumentElement!;
 
         Settings result = new Settings {
-            AfterEffectsPath = rootNode["aerender"]?.InnerText ?? "",
+            AfterEffects = null,
             DefaultProjectsPath = rootNode["defprgpath"]?.InnerText ??
                 Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
             DefaultOutputPath = rootNode["defoutpath"]?.InnerText ??
@@ -121,7 +162,8 @@ public class Settings {
             CacheLimit = float.Parse(rootNode["cacheLimit"]?.InnerText ?? "100", CultureInfo.InvariantCulture),
             OutputModuleIndex = int.Parse(rootNode["outputModule"]?.Attributes["selected"]?.InnerText ?? "-1"),
             RenderSettings = "Best Settings",
-            ThreadsRenderMode = RenderingMode.Tiled
+            ThreadsRenderMode = RenderingMode.Tiled,
+            FFmpeg = null
         };
 
         result.DefaultProjectsPath = result.DefaultProjectsPath == ""
@@ -178,28 +220,53 @@ public class Settings {
 
         foreach (string path in Directory.GetDirectories(adobeFolder)) {
             if (path.Contains("Adobe After Effects")) {
-                string afterFx;
-
-                if (Helpers.Platform == OS.macOS) {
-                    var aeName = Helpers.GetCurrentDirectoryName(path);
-
-                    afterFx = Path.Combine(path, $"{aeName}.app", "Contents", "aerendercore.app");
-                    result.Add(new() {
-                        Path = Path.Combine(afterFx, "Contents", "MacOS", "aerendercore"),
-                        Version = Helpers.GetPackageVersionStringDarwin(afterFx) ?? "Unknown",
-                        Name = Helpers.GetCurrentDirectoryName(path)
-                    });
-                } else {
-                    afterFx = Path.Combine(path, "Support Files", "AfterFX.com");
-                    result.Add(new() {
-                        Path = afterFx,
-                        Version = FileVersionInfo.GetVersionInfo(afterFx).FileVersion ?? "Unknown",
-                        Name = Helpers.GetCurrentDirectoryName(path)
-                    });
-                }
-                //result.Add(FileVersionInfo.GetVersionInfo(aerender).FileVersion);
+                result.Add(new(path));
             }
         }
+
+        return result;
+    }
+	
+    private static FFmpeg? ParseFFmpegOutput(string path, string output) {
+        try {
+            var parts = output.Split(Environment.NewLine);
+
+            var version = parts[0].Split(' ')[2];
+
+            var compiler = string.Join(' ', parts[1].Split(' ').Skip(2));
+
+            var config = parts[2].Replace("configuration: ", "").Split(' ');
+
+            var libs = parts.Skip(3).ToArray();
+
+            return new FFmpeg {
+                Path = path,
+                Version = version,
+                Compiler = compiler,
+                Configuration = config,
+                Libraries = libs
+            };
+        } catch (Exception) {
+            return null;
+        }
+    }
+
+    public static async Task<FFmpeg?> CheckFFmpegVersion(string? path) {
+        if (path is null) return null;
+        StringBuilder output = new();
+        var cmd = await Cli.Wrap(path)
+            .WithArguments("-version")
+            .WithValidation(CommandResultValidation.None)
+            .WithStandardOutputPipe(PipeTarget.ToStringBuilder(output))
+            .ExecuteAsync();
+        
+        return cmd.ExitCode == 0 ? ParseFFmpegOutput(path, output.ToString()) : null;
+    }    
+    public static async Task<FFmpeg?> DetectFFmpeg() {
+        var result = await CheckFFmpegVersion("ffmpeg");
+        
+        var pathVar = Environment.GetEnvironmentVariable("FFMPEG_PATH");
+        result ??= await CheckFFmpegVersion(pathVar);
 
         return result;
     }

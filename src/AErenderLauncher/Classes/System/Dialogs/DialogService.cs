@@ -52,6 +52,19 @@ public static class DialogService {
 #endif
     }
 
+    public static async Task ShowAlertAsync(this Window window, string title, string message) {
+        var @params = new DialogParams {
+            Title = title,
+            Body = message,
+            Buttons = [DialogButton.Cancel]
+        };
+#if MACOS
+        await MacApi.NSAlert.ShowDialogAsync(@params);
+#else
+        await window.ShowDialogAsync(@params);
+#endif
+    }
+
     public static async Task<IReadOnlyList<IStorageFile>?> ShowOpenFileDialogAsync(this Window ownerWindow,
         List<Tuple<string, string>> filters, string startingPath = "", bool allowMultiple = false) {
         var provider = TopLevel.GetTopLevel(ownerWindow)?.StorageProvider;

@@ -3,7 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:AErenderLauncher.Controls"
-        xmlns:viewModels="clr-namespace:AErenderLauncher.ViewModels"
+        xmlns:vm="clr-namespace:AErenderLauncher.ViewModels"
         xmlns:converters="clr-namespace:AErenderLauncher.Classes.Converters"
         xmlns:rendering="clr-namespace:AErenderLauncher.Classes.Rendering"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
@@ -13,96 +13,133 @@
         Width="540" Height="480"
         Title="AErender Launcher Settings"
         x:Class="AErenderLauncher.Views.SettingsWindow"
-        x:DataType="viewModels:SettingsViewModel"
+        x:DataType="vm:SettingsViewModel"
         Closed="SettingsWindow_OnClosed">
-    
+
     <Design.DataContext>
-        <viewModels:SettingsViewModel />
+        <vm:SettingsViewModel />
     </Design.DataContext>
-    
+
     <Window.Resources>
         <ResourceDictionary>
             <converters:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
             <converters:IntStringConverter x:Key="IntStringConverter" />
         </ResourceDictionary>
     </Window.Resources>
-    
+
     <Grid x:Name="Root" RowDefinitions="32,32,*,32">
         <controls:IsPlatform Grid.Row="0">
             <controls:IsPlatform.Windows>
                 <controls:TitleBar VerticalAlignment="Top" Title="AErender Launcher Settings" />
             </controls:IsPlatform.Windows>
         </controls:IsPlatform>
-        
+
         <Border Grid.Row="1" Classes="Toolbar">
-            <Label Content="Settings" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="16 0 0 0"/>
+            <Label Content="Settings" FontWeight="Bold" FontSize="16" VerticalAlignment="Center"
+                   HorizontalAlignment="Left" Margin="16 0 0 0" />
         </Border>
-        
+
         <StackPanel Grid.Row="2" Spacing="8" Margin="8">
+            <Grid ColumnDefinitions="144,*,Auto,Auto,Auto">
+                <Label Grid.Column="0" Content="After Effects" FontWeight="Bold" />
+                    
+                <TextBlock Grid.Column="1" x:Name="AerenderPath" VerticalAlignment="Center" 
+                           Text="{Binding AfterFx.Name, 
+                                        FallbackValue='Not found'}" />
+                        
+                <TextBlock Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center"
+                           Text="{Binding AfterFx.Version, FallbackValue=''}"/>
+                        
+                <Button Grid.Column="3" x:Name="AerenderPathSelectButton"
+                        Click="AerenderPathSelectButton_OnClick" Content="..." Width="24" 
+                        Margin="4,0,0,0" />
+                <Button Grid.Column="4" x:Name="AerenderDetectButton" Click="AerenderDetectButton_OnClick"
+                        Content="Detect" Margin="4,0,0,0" />
+            </Grid>
+            <Grid ColumnDefinitions="144,*,Auto,Auto">
+                <Label Grid.Column="0" Content="FFmpeg" FontWeight="Bold" />
+                <Label Grid.Column="1" Content="{Binding FFmpegInfo}"/>
+                <Button Grid.Column="2" Click="FFmpegPathButton_OnClick" Content="..." Width="24" 
+                        Margin="4,0,0,0" />
+                <Button Grid.Column="3" Content="Detect" Click="FFmpegDetectButton_OnClick"
+                        Margin="4,0,0,0"/>
+            </Grid>
             <Expander Header="General" HorizontalContentAlignment="Stretch">
                 <StackPanel HorizontalAlignment="Stretch" Spacing="4">
-                    <Label Content="After Effects Render Engine" HorizontalAlignment="Center" FontWeight="Bold" />
-                    <Grid ColumnDefinitions="*,28,28">
-                        <TextBox Grid.Column="0" x:Name="AerenderPath" HorizontalAlignment="Stretch" Text="{Binding AErenderPath}" />
-                        <Button Grid.Column="1" x:Name="AerenderPathSelectButton" Click="AerenderPathSelectButton_OnClick" Content="..." Width="24" Margin="4,0,0,0" />
-                        <Button Grid.Column="2" x:Name="AerenderDetectButton" Click="AerenderDetectButton_OnClick" Content="R" Width="24" Margin="4,0,0,0" />
-                    </Grid>
                     <Grid ColumnDefinitions="144,*,28">
-                        <Label Grid.Column="0" Content="Default output directory" VerticalAlignment="Center" Margin="0,0,4,0" />
+                        <Label Grid.Column="0" Content="Default output directory" VerticalAlignment="Center"
+                               Margin="0,0,4,0" />
                         <TextBox Grid.Column="1" Text="{Binding DefaultOutputPath}" />
-                        <Button Grid.Column="2" Content="..." Width="24" Margin="4,0,0,0" Click="OutputDirectorySelectButton_OnClick" />
+                        <Button Grid.Column="2" Content="..." Width="24" Margin="4,0,0,0"
+                                Click="OutputDirectorySelectButton_OnClick" />
                     </Grid>
                     <Grid ColumnDefinitions="144,*,28">
-                        <Label Grid.Column="0" Content="Default projects directory" VerticalAlignment="Center" Margin="0,0,4,0" />
+                        <Label Grid.Column="0" Content="Default projects directory" VerticalAlignment="Center"
+                               Margin="0,0,4,0" />
                         <TextBox Grid.Column="1" Text="{Binding DefaultProjectsPath}" />
-                        <Button Grid.Column="2" Content="..." Width="24" Margin="4,0,0,0" Click="ProjectsDirectorySelectButton_OnClick" />
+                        <Button Grid.Column="2" Content="..." Width="24" Margin="4,0,0,0"
+                                Click="ProjectsDirectorySelectButton_OnClick" />
                     </Grid>
-                </StackPanel> 
+                </StackPanel>
             </Expander>
             <Expander Header="Rendering" HorizontalContentAlignment="Stretch">
                 <StackPanel Spacing="4">
                     <Grid ColumnDefinitions="144,*" RowDefinitions="Auto, Auto">
                         <Label Grid.Row="0" Grid.Column="0" Content="Split rendering mode" />
                         <Grid Grid.Row="0" Grid.Column="1" ColumnDefinitions="*,*,*">
-                            <RadioButton Grid.Column="0" x:Name="QueueRadioBtn" Content="Queue" GroupName="RenderingModeGroup" 
+                            <RadioButton Grid.Column="0" x:Name="QueueRadioBtn" Content="Queue"
+                                         GroupName="RenderingModeGroup"
                                          IsChecked="{Binding RenderingMode, 
                                          Converter={StaticResource EnumToBooleanConverter},
                                          ConverterParameter={x:Static rendering:RenderingMode.Queue}}" />
-                            <RadioButton Grid.Column="1" x:Name="TiledRadioBtn" Content="Tiled" GroupName="RenderingModeGroup" 
+                            <RadioButton Grid.Column="1" x:Name="TiledRadioBtn" Content="Tiled"
+                                         GroupName="RenderingModeGroup"
                                          IsChecked="{Binding RenderingMode, 
                                          Converter={StaticResource EnumToBooleanConverter},
                                          ConverterParameter={x:Static rendering:RenderingMode.Tiled}}" />
-                            <RadioButton Grid.Column="2" x:Name="AtOnceRadioBtn" Content="All at once" GroupName="RenderingModeGroup"
+                            <RadioButton Grid.Column="2" x:Name="AtOnceRadioBtn" Content="All at once"
+                                         GroupName="RenderingModeGroup"
                                          IsChecked="{Binding RenderingMode, 
                                          Converter={StaticResource EnumToBooleanConverter},
                                          ConverterParameter={x:Static rendering:RenderingMode.AllAtOnce}}" />
                         </Grid>
-                        <TextBlock Grid.Row="1" Grid.Column="1" IsVisible="{Binding ElementName=QueueRadioBtn, Path=IsChecked}" FontStyle="Italic" TextWrapping="Wrap"
+                        <TextBlock Grid.Row="1" Grid.Column="1"
+                                   IsVisible="{Binding ElementName=QueueRadioBtn, Path=IsChecked}" 
+                                   FontStyle="Italic" TextWrapping="Wrap"
                                    Text="All parts are rendered one after another in a queue. Standard Media Encoder/After Effects behavior." />
-                        <TextBlock Grid.Row="1" Grid.Column="1" IsVisible="{Binding ElementName=TiledRadioBtn, Path=IsChecked}" FontStyle="Italic" TextWrapping="Wrap"
-                                   Text="Only a specified number of parts can be rendered simultaneously. Fastest for very long or complicated compositions." />                    
-                        <TextBlock Grid.Row="1" Grid.Column="1" IsVisible="{Binding ElementName=AtOnceRadioBtn, Path=IsChecked}" FontStyle="Italic" TextWrapping="Wrap"
+                        <TextBlock Grid.Row="1" Grid.Column="1"
+                                   IsVisible="{Binding ElementName=TiledRadioBtn, Path=IsChecked}" 
+                                   FontStyle="Italic" TextWrapping="Wrap"
+                                   Text="Only a specified number of parts can be rendered simultaneously. Fastest for very long or complicated compositions." />
+                        <TextBlock Grid.Row="1" Grid.Column="1"
+                                   IsVisible="{Binding ElementName=AtOnceRadioBtn, Path=IsChecked}" 
+                                   FontStyle="Italic" TextWrapping="Wrap"
                                    Text="Everything is being rendered at the same time. Use only with small number of splits as things can escalate very quickly." />
                     </Grid>
-                    <Grid ColumnDefinitions="144,*" IsVisible="{Binding ElementName=TiledRadioBtn, Path=IsChecked}">
-                        <TextBlock Grid.Column="0" Text="Limit of simultaneously rendering threads" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,4,0" />
-                        <controls:ComboEdit Grid.Column="1" HorizontalAlignment="Stretch" ItemsSource="{Binding ThreadsLimits}" 
-                                            Text="{Binding ThreadsLimit, Mode=TwoWay, Converter={StaticResource IntStringConverter}}"/>
+                    <Grid ColumnDefinitions="144,*" 
+                          IsVisible="{Binding ElementName=TiledRadioBtn, Path=IsChecked}">
+                        <TextBlock Grid.Column="0" Text="Limit of simultaneously rendering threads" TextWrapping="Wrap"
+                                   VerticalAlignment="Center" Margin="0,0,4,0" />
+                        <controls:ComboEdit Grid.Column="1" HorizontalAlignment="Stretch"
+                                            ItemsSource="{Binding ThreadsLimits}"
+                                            Text="{Binding ThreadsLimit, Mode=TwoWay, 
+                                                Converter={StaticResource IntStringConverter}}" />
                     </Grid>
-                </StackPanel> 
-                
+                </StackPanel>
+
             </Expander>
-            <Expander Header="User Interface" HorizontalContentAlignment="Stretch"> 
+            <Expander Header="User Interface" HorizontalContentAlignment="Stretch">
                 <Grid ColumnDefinitions="144,*">
                     <Label Grid.Column="0" Content="Language" VerticalAlignment="Center" Margin="0,0,4,0" />
-                    <ComboBox Grid.Column="1" HorizontalAlignment="Stretch"/>
+                    <ComboBox Grid.Column="1" HorizontalAlignment="Stretch" />
                 </Grid>
             </Expander>
         </StackPanel>
-        
+
         <Border Grid.Row="3" Classes="Statusbar">
             <Grid>
-                <Button x:Name="CloseButton" Content="OK" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Click="CloseButton_OnClick"/>
+                <Button x:Name="CloseButton" Content="OK" HorizontalAlignment="Center" VerticalAlignment="Center"
+                        Width="80" Click="CloseButton_OnClick" />
             </Grid>
         </Border>
     </Grid>

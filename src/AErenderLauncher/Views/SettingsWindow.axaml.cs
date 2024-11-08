@@ -34,7 +34,7 @@ public partial class SettingsWindow : Window {
 
     private async void AerenderPathSelectButton_OnClick(object? sender, RoutedEventArgs e) {
         var result = await this.ShowOpenFileDialogAsync(
-            [ new ("After Effects", Helpers.Platform == OS.Windows ? "AfterFX.com" : "aerendercore") ],
+            [ new ("After Effects Application", Helpers.Platform == OS.Windows ? "AfterFX.com" : "*.app") ],
             startingPath: Environment.GetFolderPath(Environment.SpecialFolder.Programs)
         );
 
@@ -42,7 +42,7 @@ public partial class SettingsWindow : Window {
         if (result.Count == 0) return;
         if (result.First().TryGetLocalPath() is not { } path) return;
 
-        ViewModel.AErenderPath = Settings.Current.AfterEffectsPath = path;
+        ViewModel.AfterFx = Settings.Current.AfterEffects = new(path);
     }
 
     private async void AerenderDetectButton_OnClick(object? sender, RoutedEventArgs e) {
@@ -57,7 +57,7 @@ public partial class SettingsWindow : Window {
         }
 
         if (result != null) {
-            ViewModel.AErenderPath = Settings.Current.AfterEffectsPath = result.Value.Path;
+            ViewModel.AfterFx = Settings.Current.AfterEffects = result;
         }
     }
 
@@ -81,5 +81,25 @@ public partial class SettingsWindow : Window {
         if (list[0].TryGetLocalPath() is not { } path) return;
         
         ViewModel.DefaultProjectsPath = Settings.Current.DefaultProjectsPath = path;
+    }
+
+    private async void FFmpegDetectButton_OnClick(object? sender, RoutedEventArgs e) {
+        var ffmpeg = await Settings.DetectFFmpeg();
+        if (ffmpeg is not null) {
+            ViewModel.FFmpeg = ffmpeg;
+        }
+    }
+
+    private async void FFmpegPathButton_OnClick(object? sender, RoutedEventArgs e) {
+        var result = await this.ShowOpenFileDialogAsync(
+            [ new ("FFmpeg Executable", Helpers.Platform == OS.Windows ? "ffmpeg.exe" : "ffmpeg") ],
+            startingPath: Environment.GetFolderPath(Environment.SpecialFolder.Programs)
+        );
+        
+        if (result == null) return;
+        if (result.Count == 0) return;
+        if (result.First().TryGetLocalPath() is not { } path) return;
+
+        ViewModel.FFmpeg = await Settings.CheckFFmpegVersion(path) ?? ViewModel.FFmpeg;
     }
 }

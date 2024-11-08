@@ -16,7 +16,7 @@
             <DataTemplate x:Key="AerenderListTemplate" x:DataType="classes:AfterFx">
                 <Grid ColumnDefinitions="192,*,64">
                     <TextBlock Grid.Column="0" Text="{Binding Name}"/>
-                    <TextBlock Grid.Column="1" Text="{Binding Path}"/>
+                    <TextBlock Grid.Column="1" Text="{Binding AfterFxPath}"/>
                     <TextBlock Grid.Column="2" Text="{Binding Version}"/>
                 </Grid>
             </DataTemplate>

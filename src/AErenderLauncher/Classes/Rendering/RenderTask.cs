@@ -91,6 +91,9 @@ public class RenderTask : ICloneable<RenderTask> {
     }
 
     public List<RenderThread> Enqueue() {
+        if (Settings.Current.AfterEffects is null)
+            throw new MissingAeException("After Effects is not installed on this system or it's path wasn't specified.");
+        
         // string exec = "";
         List<string> exec = [];
         List<RenderThread> result = new List<RenderThread>();
@@ -98,10 +101,10 @@ public class RenderTask : ICloneable<RenderTask> {
         foreach (Composition comp in Compositions) {
             for (int i = 0; i < comp.Split; i++) {
                 // Create directory for project if there isn't one
-                string AdjustedOutput = ProcessFolder();
+                string adjustedOutput = ProcessFolder();
 
                 if (comp.Split > 1)
-                    AdjustedOutput = ProcessSplit(AdjustedOutput, i);
+                    adjustedOutput = ProcessSplit(adjustedOutput, i);
 
                 // exec = $"-project \"{Project}\" " +
                 //        $"-output \"{AdjustedOutput}\" " +
@@ -117,7 +120,7 @@ public class RenderTask : ICloneable<RenderTask> {
                 
                 exec.AddMany(
                     "-project", Project.Replace("\\", "\\\\"),
-                    "-output", AdjustedOutput.Replace("\\", "\\\\"),
+                    "-output", adjustedOutput.Replace("\\", "\\\\"),
                     Sound ? "-sound" : null, Sound ? "ON" : null,
                     Multiprocessing ? "-mp" : null,
                     MissingFiles ? "-continueOnMissingFootage" : null,
@@ -133,9 +136,7 @@ public class RenderTask : ICloneable<RenderTask> {
                 if (comp.SplitFrameSpans[i].StartFrame == 0 && comp.SplitFrameSpans[i].EndFrame == 0)
                     exec.RemoveRange(exec.Count - 2, 2);
                 
-                // exec = exec.Replace("\\", "\\\\");
-
-                result.Add(new (Settings.Current.AfterEffectsPath, exec) {
+                result.Add(new (Settings.Current.AfterEffects.AerenderPath, exec) {
                     Id = _random.Next(0, 999999),
                     Name = comp.CompositionName
                 });
