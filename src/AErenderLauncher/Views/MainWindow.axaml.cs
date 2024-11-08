@@ -103,17 +103,21 @@ public partial class MainWindow : Window {
     }
 
     private async void Launch_OnClick(object sender, RoutedEventArgs e) {
-        var aggregatedTasks = ViewModel.Tasks.Aggregate(new List<RenderThread>(), (threads, task) => {
-            threads.AddRange(task.Enqueue());
-            return threads;
-        });
-        
-        _renderingWindow = new(aggregatedTasks);
+        try {
+            var aggregatedTasks = ViewModel.Tasks.Aggregate(new List<RenderThread>(), (threads, task) => {
+                threads.AddRange(task.Enqueue());
+                return threads;
+            });
 
-        await Task.WhenAll([
-            _renderingWindow.Start(Settings.Current.ThreadsRenderMode, Settings.Current.ThreadsLimit),
-            _renderingWindow.ShowDialog(this)
-        ]);
+            _renderingWindow = new(aggregatedTasks);
+
+            await Task.WhenAll([
+                _renderingWindow.Start(Settings.Current.ThreadsRenderMode, Settings.Current.ThreadsLimit),
+                _renderingWindow.ShowDialog(this)
+            ]);
+        } catch (Exception ex) {
+            await this.ShowAlertAsync("Can't start rendering", ex.Message);
+        }
     }
 
     private async void SettingsButton_OnClick(object sender, RoutedEventArgs e) {

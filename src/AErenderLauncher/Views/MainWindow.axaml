@@ -117,18 +117,21 @@
                         <DataTemplate x:DataType="rendering:RenderTask">
                             <Expander Margin="4">
                                 <Expander.Header>
-                                    <Grid ColumnDefinitions="*,Auto">
+                                    <Grid ColumnDefinitions="*,Auto,Auto">
                                         <Label Grid.Column="0" Content="{Binding ProjectName}" VerticalAlignment="Center"/>
-                                        <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                            <Button Tag="{Binding ID}" Content="Edit" Click="EditTask_OnClick" />
-                                            <Button Tag="{Binding ID}" Content="Duplicate" Click="DuplicateTask_OnClick" />
-                                            <Button Tag="{Binding ID}" Content="Remove" Click="RemoveTask_OnClick" />
-                                            <Button Tag="{Binding ID}" Content="Up" Click="MoveTaskUp_OnClick" />
-                                            <Button Tag="{Binding ID}" Content="Down" Click="MoveTaskDown_OnClick" />
+                                        <TextBlock Grid.Column="1" VerticalAlignment="Center" 
+                                                   Text="Output path is empty!" Margin="0 0 8 0"
+                                                   IsVisible="{Binding IsOutputEmpty}" />
+                                        <StackPanel Grid.Column="2" Orientation="Horizontal">
+                                            <Button Tag="{Binding Id}" Content="Edit" Click="EditTask_OnClick" />
+                                            <Button Tag="{Binding Id}" Content="Duplicate" Click="DuplicateTask_OnClick" />
+                                            <Button Tag="{Binding Id}" Content="Remove" Click="RemoveTask_OnClick" />
+                                            <Button Tag="{Binding Id}" Content="Up" Click="MoveTaskUp_OnClick" />
+                                            <Button Tag="{Binding Id}" Content="Down" Click="MoveTaskDown_OnClick" />
                                         </StackPanel>
                                     </Grid>
                                 </Expander.Header>
-                                <ListBox ItemsSource="{Binding Compositions}" Margin="0" Padding="0" Tag="{Binding ID}">
+                                <ListBox ItemsSource="{Binding Compositions}" Margin="0" Padding="0" Tag="{Binding Id}">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate x:DataType="rendering:Composition">
                                             <ListBoxItem DoubleTapped="Composition_OnDoubleTapped" Focusable="False">

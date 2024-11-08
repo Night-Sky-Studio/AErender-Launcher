@@ -12,7 +12,7 @@ public class MainWindowViewModel : ReactiveObject {
 
     public ObservableCollection<RenderThread> Threads { get; set; } = [];
     
-    public RenderTask GetTaskById(int id) => Tasks.First(x => x.ID == id);
+    public RenderTask GetTaskById(int id) => Tasks.First(x => x.Id == id);
 
     public void MoveTaskUp(RenderTask task) {
         int index = Tasks.IndexOf(task);

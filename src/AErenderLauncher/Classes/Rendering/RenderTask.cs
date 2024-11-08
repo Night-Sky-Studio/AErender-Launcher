@@ -40,10 +40,11 @@ public class RenderTask : ICloneable<RenderTask> {
         Waiting, Rendering, Finished, Stopped, Error, Suspended
     }
 
-    public int ID { get; init; } = _random.Next(0, 999999);
+    public int Id { get; init; } = _random.Next(0, 999999);
     public required string Project { get; set; }
     public string ProjectName => Path.GetFileNameWithoutExtension(Project);
     public required string Output { get; set; }
+    public bool IsOutputEmpty => string.IsNullOrEmpty(Output);
     public string OutputModule { get; set; } = "Lossless";
     public string RenderSettings { get; set; } = "Best Settings";
 
@@ -92,7 +93,7 @@ public class RenderTask : ICloneable<RenderTask> {
 
     public List<RenderThread> Enqueue() {
         if (Settings.Current.AfterEffects is null)
-            throw new MissingAeException("After Effects is not installed on this system or it's path wasn't specified.");
+            throw new MissingAeException();
         
         // string exec = "";
         List<string> exec = [];
@@ -102,6 +103,9 @@ public class RenderTask : ICloneable<RenderTask> {
             for (int i = 0; i < comp.Split; i++) {
                 // Create directory for project if there isn't one
                 string adjustedOutput = ProcessFolder();
+
+                if (adjustedOutput == "")
+                    throw new EmptyOutputException(Path.GetFileNameWithoutExtension(Project));
 
                 if (comp.Split > 1)
                     adjustedOutput = ProcessSplit(adjustedOutput, i);
