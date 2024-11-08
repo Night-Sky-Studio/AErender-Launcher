@@ -54,7 +54,7 @@
                         FallbackValue='Not found, check settings'}"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="FFMPEG: "/>
+                    <TextBlock Text="FFmpeg: "/>
                     <TextBlock Text="{Binding FFmpegInfo, 
                         FallbackValue='Not found, check settings'}"/>
                 </StackPanel>

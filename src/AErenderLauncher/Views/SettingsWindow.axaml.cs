@@ -17,7 +17,7 @@ using static AErenderLauncher.App;
 namespace AErenderLauncher.Views;
 
 public partial class SettingsWindow : Window {
-    public SettingsViewModel ViewModel { get; set; } = new();
+    private SettingsViewModel ViewModel { get; } = new();
     
     public SettingsWindow() {
         InitializeComponent();
