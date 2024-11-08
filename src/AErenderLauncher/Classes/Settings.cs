@@ -29,12 +29,16 @@ public record AfterFx {
         AfterFxPath = path;
         
         if (Helpers.Platform == OS.macOS) {
-            var app = path.Contains(".app") ? path : Path.Combine(AfterFxPath, $"{name}.app");
+            var app = path.Contains(".app") 
+                ? path 
+                : Path.Combine(AfterFxPath, $"{name}.app");
             AerenderPath = Path.Combine(app, "Contents", "aerendercore.app", 
                 "Contents", "MacOS", "aerendercore");
             Version = Helpers.GetPackageVersionStringDarwin(app) ?? "Unknown";
         } else {
-            var supportFiles = Path.GetDirectoryName(path) ?? Path.Combine(AfterFxPath, "Support Files");
+            var supportFiles = path.Contains("AfterFX.exe") 
+                ? Path.GetDirectoryName(path)! 
+                : Path.Combine(AfterFxPath, "Support Files");
             AerenderPath = Path.Combine(supportFiles, "AfterFX.com");
             Version = FileVersionInfo.GetVersionInfo(AerenderPath).FileVersion ?? "Unknown";
         }
