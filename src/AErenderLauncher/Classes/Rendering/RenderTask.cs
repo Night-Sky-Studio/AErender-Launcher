@@ -33,14 +33,13 @@ public static class RenderTaskExtensions {
 }
 
 public class RenderTask : ICloneable<RenderTask> {
-    // private int _id;
-    private static Random _random { get; set; } = new Random();
+    private static Random Random { get; } = new();
 
     public enum RenderState {
         Waiting, Rendering, Finished, Stopped, Error, Suspended
     }
 
-    public int Id { get; init; } = _random.Next(0, 999999);
+    public int Id { get; init; } = Random.Next(0, 999999);
     public required string Project { get; set; }
     public string ProjectName => Path.GetFileNameWithoutExtension(Project);
     public required string Output { get; set; }
@@ -82,13 +81,13 @@ public class RenderTask : ICloneable<RenderTask> {
 
 
         // Strip full path of the file extension
-        string ProcessedPath = GetFilePathWithoutExtension(path);
+        string processedPath = GetFilePathWithoutExtension(path);
         // Append an index to the file name
-        ProcessedPath += $"_{index}";
+        processedPath += $"_{index}";
         // Finally, append extension back to path
-        ProcessedPath += Path.GetExtension(path);
+        processedPath += Path.GetExtension(path);
 
-        return ProcessedPath;
+        return processedPath;
     }
 
     public List<RenderThread> Enqueue() {
@@ -105,23 +104,11 @@ public class RenderTask : ICloneable<RenderTask> {
                 string adjustedOutput = ProcessFolder();
 
                 if (adjustedOutput == "")
-                    throw new EmptyOutputException(Path.GetFileNameWithoutExtension(Project));
+                    throw new EmptyOutputException(ProjectName);
 
                 if (comp.Split > 1)
                     adjustedOutput = ProcessSplit(adjustedOutput, i);
 
-                // exec = $"-project \"{Project}\" " +
-                //        $"-output \"{AdjustedOutput}\" " +
-                //        (Sound ? "-sound ON " : "") +
-                //        (Multiprocessing ? "-mp " : "") +
-                //        (MissingFiles ? "-continueOnMissingFootage " : "") +
-                //        $"-comp \"{comp.CompositionName}\" " +
-                //        $"-OMtemplate \"{OutputModule}\" " +
-                //        $"-RStemplate \"{RenderSettings}\" " +
-                //        $"-mem_usage \"{Math.Truncate(MemoryLimit)}\" \"{Math.Truncate(CacheLimit)}\" " +
-                //        (CustomProperties != "" ? CustomProperties.Trim() + " " : "") +
-                //        $"-s {comp.SplitFrameSpans[i].StartFrame} -e {comp.SplitFrameSpans[i].EndFrame}";
-                
                 exec.AddMany(
                     "-project", Project.Replace("\\", "\\\\"),
                     "-output", adjustedOutput.Replace("\\", "\\\\"),
@@ -141,7 +128,7 @@ public class RenderTask : ICloneable<RenderTask> {
                     exec.RemoveRange(exec.Count - 2, 2);
                 
                 result.Add(new (Settings.Current.AfterEffects.AerenderPath, exec) {
-                    Id = _random.Next(0, 999999),
+                    Id = Random.Next(0, 999999),
                     Name = comp.CompositionName
                 });
             }
