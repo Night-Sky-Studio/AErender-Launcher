@@ -59,14 +59,15 @@ public record FFmpeg {
 }
 
 public class Settings {
+    [JsonIgnore]
     public static readonly string SettingsPath = Helpers.Platform == OS.macOS
         ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents",
             "AErender Launcher", "Settings.json")
         : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AErender Launcher",
             "Settings.json");
-
+    [JsonIgnore]
     public string SettingsFolder => Helpers.GetCurrentDirectory(SettingsPath);
-
+    [JsonIgnore]
     public static readonly string LegacySettingsPath = Helpers.Platform == OS.macOS
         ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents", "AErender",
             "AErenderConfiguration.xml")
@@ -78,7 +79,18 @@ public class Settings {
     // Language ?
     // Style  ?
     public AfterFx? AfterEffects { get; set; } = null;
-    public FFmpeg? FFmpeg { get; set; } = null;
+    private FFmpeg? _ffmpeg = null;
+
+    public FFmpeg? FFmpeg {
+        get => _ffmpeg;
+        set {
+            _ffmpeg = value;
+            if (_ffmpeg is not null && Helpers.GetCurrentDirectory(_ffmpeg.Path) is { } path)
+                GlobalFFOptions.Configure(new FFOptions {
+                    BinaryFolder = path
+                });
+        }
+    }
     
     public string DefaultProjectsPath { get; set; } = "";
     public string DefaultOutputPath { get; set; } = "";
