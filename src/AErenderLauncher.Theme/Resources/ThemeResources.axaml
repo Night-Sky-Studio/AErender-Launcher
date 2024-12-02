@@ -4,4 +4,7 @@
 
     <system:Double x:Key="ThemeDisabledOpacity">0.5</system:Double>
     <CornerRadius x:Key="ThemeCornerRadius">0</CornerRadius>
+    
+    <system:Double x:Key="IconElementThemeHeight">20</system:Double>
+    <system:Double x:Key="IconElementThemeWidth">20</system:Double>
 </ResourceDictionary>

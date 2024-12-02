@@ -23,6 +23,7 @@
         <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/Carousel.axaml" />
         <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/ComboBox.axaml" />
         <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/ComboBoxItem.axaml" />
+        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/PathIcon.axaml" />
         
         <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/Border.axaml" />
     </ResourceDictionary.MergedDictionaries>
