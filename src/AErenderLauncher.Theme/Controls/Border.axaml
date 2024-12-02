@@ -1,0 +1,16 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ControlTheme x:Key="{x:Type Border}" TargetType="Border">
+        <Style Selector="^.Toolbar">
+            <Setter Property="Background" Value="{DynamicResource ControlHighBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}" />
+            <Setter Property="BorderThickness" Value="0 0 0 1"/>
+        </Style>
+        
+        <Style Selector="^.Statusbar">
+            <Setter Property="Background" Value="{DynamicResource ControlHighBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}" />
+            <Setter Property="BorderThickness" Value="0 1 0 0"/>
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>
