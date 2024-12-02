@@ -4,6 +4,7 @@
         <ResourceDictionary x:Key="Dark">
             <Color x:Key="BackgroundColor">#FF2D2D2D</Color>
             <Color x:Key="ControlBackgroundColor">#FF202020</Color>
+            <Color x:Key="ControlHighBackgroundColor">#FF252525</Color>
             <Color x:Key="ControlBackgroundMouseOverColor">#FF404040</Color>
             <Color x:Key="ControlForegroundColor">#FFFFFFFF</Color>
             <Color x:Key="ControlBorderColor">#FF151515</Color>
@@ -15,6 +16,7 @@
 
             <SolidColorBrush x:Key="BackgroundBrush" Color="{DynamicResource BackgroundColor}" />
             <SolidColorBrush x:Key="ControlBackgroundBrush" Color="{DynamicResource ControlBackgroundColor}" />
+            <SolidColorBrush x:Key="ControlHighBackgroundBrush" Color="{DynamicResource ControlHighBackgroundColor}" />
             <SolidColorBrush x:Key="ControlBackgroundMouseOverBrush" Color="{DynamicResource ControlBackgroundMouseOverColor}" />
             <SolidColorBrush x:Key="ControlForegroundBrush" Color="{DynamicResource ControlForegroundColor}" />
             <SolidColorBrush x:Key="ControlBorderBrush" Color="{DynamicResource ControlBorderColor}" />
