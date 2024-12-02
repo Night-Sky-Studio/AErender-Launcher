@@ -1,0 +1,131 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    x:ClassModifier="internal">
+    
+    <MenuFlyout x:Key="SimpleTextBoxContextFlyout" Placement="Bottom">
+        <MenuItem Header="{DynamicResource StringTextFlyoutCutText}" Command="{Binding $parent[TextBox].Cut}"
+                  IsEnabled="{Binding $parent[TextBox].CanCut}" InputGesture="{x:Static TextBox.CutGesture}" />
+        <MenuItem Header="{DynamicResource StringTextFlyoutCopyText}" Command="{Binding $parent[TextBox].Copy}"
+                  IsEnabled="{Binding $parent[TextBox].CanCopy}" InputGesture="{x:Static TextBox.CopyGesture}" />
+        <MenuItem Header="{DynamicResource StringTextFlyoutPasteText}" Command="{Binding $parent[TextBox].Paste}"
+                  IsEnabled="{Binding $parent[TextBox].CanPaste}" InputGesture="{x:Static TextBox.PasteGesture}" />
+    </MenuFlyout>
+    
+    <ControlTheme x:Key="{x:Type TextBox}" TargetType="TextBox">
+        <Setter Property="CaretBrush" Value="{DynamicResource ControlForegroundBrush}" />
+        <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ControlForegroundBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource HighlightBrush}" />
+        <Setter Property="SelectionForegroundBrush" Value="{DynamicResource ControlForegroundBrush}" />
+        <Setter Property="Padding" Value="4" />
+        <Setter Property="ContextFlyout" Value="{StaticResource SimpleTextBoxContextFlyout}" />
+        <Setter Property="ScrollViewer.IsScrollChainingEnabled" Value="True" />
+        <Setter Property="CornerRadius" Value="{DynamicResource ThemeCornerRadius}"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Name="border"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}">
+                    <DockPanel Margin="{TemplateBinding Padding}"
+                               HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+
+                        <TextBlock Name="floatingWatermark"
+                                   DockPanel.Dock="Top"
+                                   FontSize="{DynamicResource FontSizeSmall}"
+                                   Foreground="{DynamicResource ThemeAccentBrush}"
+                                   Text="{TemplateBinding Watermark}">
+                            <TextBlock.IsVisible>
+                                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                    <Binding Path="UseFloatingWatermark"
+                                             RelativeSource="{RelativeSource TemplatedParent}" />
+                                    <Binding Converter="{x:Static StringConverters.IsNotNullOrEmpty}"
+                                             Path="Text"
+                                             RelativeSource="{RelativeSource TemplatedParent}" />
+                                </MultiBinding>
+                            </TextBlock.IsVisible>
+                        </TextBlock>
+
+                        <DataValidationErrors>
+
+                            <Grid ColumnDefinitions="Auto,*">
+                                <ContentPresenter Grid.Column="0"
+                                                  Content="{TemplateBinding InnerLeftContent}" />
+                                <ScrollViewer Name="PART_ScrollViewer"
+                                              Grid.Column="1"
+                                              AllowAutoHide="{TemplateBinding (ScrollViewer.AllowAutoHide)}"
+                                              BringIntoViewOnFocusChange="{TemplateBinding (ScrollViewer.BringIntoViewOnFocusChange)}"
+                                              HorizontalScrollBarVisibility="{TemplateBinding (ScrollViewer.HorizontalScrollBarVisibility)}"
+                                              IsScrollChainingEnabled="{TemplateBinding (ScrollViewer.IsScrollChainingEnabled)}"
+                                              VerticalScrollBarVisibility="{TemplateBinding (ScrollViewer.VerticalScrollBarVisibility)}">
+                                    <Panel>
+                                        <TextBlock Name="watermark"
+                                                   HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                   Opacity="0.5"
+                                                   Text="{TemplateBinding Watermark}"
+                                                   TextAlignment="{TemplateBinding TextAlignment}"
+                                                   TextWrapping="{TemplateBinding TextWrapping}">
+                                            <TextBlock.IsVisible>
+                                                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                                    <Binding ElementName="PART_TextPresenter" Path="PreeditText"
+                                                             Converter="{x:Static StringConverters.IsNullOrEmpty}" />
+                                                    <Binding RelativeSource="{RelativeSource TemplatedParent}"
+                                                             Path="Text"
+                                                             Converter="{x:Static StringConverters.IsNullOrEmpty}" />
+                                                </MultiBinding>
+                                            </TextBlock.IsVisible>
+                                        </TextBlock>
+                                        <TextPresenter Name="PART_TextPresenter"
+                                                       CaretBlinkInterval="{TemplateBinding CaretBlinkInterval}"
+                                                       CaretBrush="{TemplateBinding CaretBrush}"
+                                                       CaretIndex="{TemplateBinding CaretIndex}"
+                                                       LineHeight="{TemplateBinding LineHeight}"
+                                                       LetterSpacing="{TemplateBinding LetterSpacing}"
+                                                       PasswordChar="{TemplateBinding PasswordChar}"
+                                                       RevealPassword="{TemplateBinding RevealPassword}"
+                                                       SelectionBrush="{TemplateBinding SelectionBrush}"
+                                                       SelectionEnd="{TemplateBinding SelectionEnd}"
+                                                       SelectionForegroundBrush="{TemplateBinding SelectionForegroundBrush}"
+                                                       SelectionStart="{TemplateBinding SelectionStart}"
+                                                       Text="{TemplateBinding Text,Mode=TwoWay}"
+                                                       TextAlignment="{TemplateBinding TextAlignment}"
+                                                       TextWrapping="{TemplateBinding TextWrapping}" />
+                                    </Panel>
+                                    <ScrollViewer.Styles>
+                                        <Style Selector="ScrollContentPresenter#PART_ContentPresenter">
+                                            <Setter Property="Cursor" Value="IBeam" />
+                                        </Style>
+                                    </ScrollViewer.Styles>
+                                </ScrollViewer>
+                            </Grid>
+                        </DataValidationErrors>
+                    </DockPanel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^:pointerover /template/ Border#border">
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlBorderMouseOverBrush}" />
+        </Style>
+        <Style Selector="^:focus /template/ Border#border">
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlAccentBrush}" />
+        </Style>
+        <Style Selector="^:error /template/ Border#border">
+            <Setter Property="BorderBrush" Value="{DynamicResource ErrorBrush}" />
+        </Style>
+        <Style Selector="^ /template/ DockPanel">
+            <Setter Property="Cursor" Value="IBeam" />
+        </Style>
+        <Style Selector="^:disabled /template/ Border#border">
+            <Setter Property="Opacity" Value="{DynamicResource ThemeDisabledOpacity}" />
+        </Style>
+        <Style Selector="^ /template/ TextBlock#floatingWatermark">
+            <Setter Property="Cursor" Value="IBeam" />
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

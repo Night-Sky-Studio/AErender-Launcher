@@ -1,0 +1,71 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+
+        x:Class="AErenderLauncher.Theme.Preview.MainWindow"
+        Title="AErenderLauncher.Theme.Preview">
+
+    <Grid ColumnDefinitions="*,*,*">
+        <StackPanel Grid.Column="0" Spacing="8" Margin="8">
+            <Label Content="Label" />
+            <TextBlock Text="Text Block" />
+
+            <Separator />
+
+            <Button HorizontalAlignment="Stretch" Content="Hello, world" />
+            <Button HorizontalAlignment="Stretch" Content="Disabled" IsEnabled="False" />
+
+            <Separator />
+
+            <TextBox HorizontalAlignment="Stretch" />
+            <TextBox Text="Text Box Content" HorizontalAlignment="Stretch" />
+            <TextBox Watermark="Placeholder text" />
+            <TextBox Text="Disabled" IsEnabled="False" />
+
+            <Separator />
+
+            <Grid ColumnDefinitions="*, *">
+                <StackPanel Spacing="4">
+                    <CheckBox Content="Checkbox" />
+                    <CheckBox IsEnabled="False" Content="Disabled" />
+                    <CheckBox IsThreeState="True" Content="Tri-state" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Spacing="4">
+                    <CheckBox Content="Checked" IsChecked="True" />
+                    <CheckBox IsEnabled="False" Content="Disabled" IsChecked="True" />
+                    <CheckBox IsThreeState="True" Content="Tri-state" IsChecked="{x:Null}" />
+                </StackPanel>
+            </Grid>
+            
+            <Separator />
+            
+            <Expander Header="Expander">
+                <Label Content="Expander Content" Margin="8"/>
+            </Expander>
+            <Expander Header="Expanded" IsExpanded="True">
+                <Label Content="Expander Content" Margin="8"/>
+            </Expander>
+        </StackPanel>
+        
+        <StackPanel Grid.Column="1" Spacing="8" Margin="8">
+            <ProgressBar IsIndeterminate="True" Value="0" Height="16"/>
+            <ProgressBar IsIndeterminate="False" Value="{Binding Value, ElementName=hSlider}" Height="16"/>
+            
+            <Separator />
+            
+            <Slider x:Name="hSlider" Value="50" />
+            <Slider Value="{Binding Value, ElementName=hSlider}" IsEnabled="False" />
+            
+            <Separator />
+            
+            <ListBox>
+                <ListBoxItem Content="Item 1"/>
+                <ListBoxItem Content="Item 2"/>
+                <ListBoxItem Content="Item 3"/>
+                <ListBoxItem Content="Item 4"/>
+            </ListBox>
+        </StackPanel>
+    </Grid>
+</Window>

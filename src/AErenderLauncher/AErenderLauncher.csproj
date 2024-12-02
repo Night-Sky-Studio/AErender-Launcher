@@ -32,4 +32,7 @@
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AErenderLauncher.Theme\AErenderLauncher.Theme.csproj" />
+  </ItemGroup>
 </Project>
