@@ -6,21 +6,23 @@
              x:Name="RenderThreadProgressControl"
              x:Class="AErenderLauncher.Controls.RenderThreadProgress">
     
-    <Grid x:Name="Root" RowDefinitions="48,*" ColumnDefinitions="*,48" Height="48" HorizontalAlignment="Stretch">
-        <StackPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="16,0">
-            <Grid ColumnDefinitions="*,*">
-                <TextBlock Grid.Column="0" x:Name="CompName" VerticalAlignment="Center" Text="{Binding ElementName=RenderThreadProgressControl, Path=Composition}" />
-                <TextBlock Grid.Column="1" x:Name="StatusText" Text="Status/Frames" HorizontalAlignment="Right" />
-            </Grid>
+    <Border Classes="Filled">
+        <Grid x:Name="Root" RowDefinitions="48,*" ColumnDefinitions="*,48" Height="48" HorizontalAlignment="Stretch">
+            <StackPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="16,0">
+                <Grid ColumnDefinitions="*,*">
+                    <TextBlock Grid.Column="0" x:Name="CompName" VerticalAlignment="Center" Text="{Binding ElementName=RenderThreadProgressControl, Path=Composition}" />
+                    <TextBlock Grid.Column="1" x:Name="StatusText" Text="Status/Frames" HorizontalAlignment="Right" />
+                </Grid>
 
-            <!-- <ProgressBar x:Name="RenderProgressBar" Height="4" Minimum="0" IsIndeterminate="{Binding ElementName=RenderThreadProgressControl, Path=WaitingForAerender, FallbackValue=False}" /> -->
-            <ProgressBar x:Name="RenderProgressBar" Height="4" Minimum="0"
-                         Maximum="{Binding ElementName=RenderThreadProgressControl, Path=EndFrame, FallbackValue=1}"
-                         Value="{Binding ElementName=RenderThreadProgressControl, Path=CurrentFrame, FallbackValue=0}"
-                         ValueChanged="RenderProgressBar_OnValueChanged"/>
-        </StackPanel>
-        <ToggleButton Grid.Row="0" Grid.Column="1" x:Name="LogBtn" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Content="Log" IsCheckedChanged="LogBtn_IsCheckedChanged"/>
-        
-        <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="LogBox" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Text="{Binding ElementName=RenderThreadProgressControl, Path=Log}" TextChanged="LogBox_OnTextChanged" />
-    </Grid>
+                <!-- <ProgressBar x:Name="RenderProgressBar" Height="4" Minimum="0" IsIndeterminate="{Binding ElementName=RenderThreadProgressControl, Path=WaitingForAerender, FallbackValue=False}" /> -->
+                <ProgressBar x:Name="RenderProgressBar" Height="4" Minimum="0"
+                             Maximum="{Binding ElementName=RenderThreadProgressControl, Path=EndFrame, FallbackValue=1}"
+                             Value="{Binding ElementName=RenderThreadProgressControl, Path=CurrentFrame, FallbackValue=0}"
+                             ValueChanged="RenderProgressBar_OnValueChanged"/>
+            </StackPanel>
+            <ToggleButton Grid.Row="0" Grid.Column="1" x:Name="LogBtn" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Content="Log" IsCheckedChanged="LogBtn_IsCheckedChanged"/>
+            
+            <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="LogBox" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Text="{Binding ElementName=RenderThreadProgressControl, Path=Log}" TextChanged="LogBox_OnTextChanged" />
+        </Grid>
+    </Border>
 </UserControl>

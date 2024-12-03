@@ -1,0 +1,42 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Dark">
+            <Color x:Key="BackgroundColor">#FF2D2D2D</Color>
+            <Color x:Key="ControlBackgroundColor">#FF202020</Color>
+            <Color x:Key="ControlHighBackgroundColor">#FF252525</Color>
+            <Color x:Key="ControlBackgroundMouseOverColor">#FF404040</Color>
+            <Color x:Key="ControlForegroundColor">#FFFFFFFF</Color>
+            <Color x:Key="ControlBorderColor">#FF151515</Color>
+            <Color x:Key="ControlBorderMouseOverColor">#FF4C4C4C</Color>
+            <Color x:Key="ControlAccentColor">#FF2A82E2</Color>
+            <Color x:Key="ControlAccentPressedColor">#FF194F88</Color>
+            <Color x:Key="ControlAccentMouseOverColor">#FF329DFF</Color>
+            <Color x:Key="HighlightColor">#962A82E2</Color>
+
+            <SolidColorBrush x:Key="BackgroundBrush" Color="{DynamicResource BackgroundColor}" />
+            <SolidColorBrush x:Key="ControlBackgroundBrush" Color="{DynamicResource ControlBackgroundColor}" />
+            <SolidColorBrush x:Key="ControlHighBackgroundBrush" Color="{DynamicResource ControlHighBackgroundColor}" />
+            <SolidColorBrush x:Key="ControlBackgroundMouseOverBrush" Color="{DynamicResource ControlBackgroundMouseOverColor}" />
+            <SolidColorBrush x:Key="ControlForegroundBrush" Color="{DynamicResource ControlForegroundColor}" />
+            <SolidColorBrush x:Key="ControlBorderBrush" Color="{DynamicResource ControlBorderColor}" />
+            <SolidColorBrush x:Key="ControlBorderMouseOverBrush" Color="{DynamicResource ControlBorderMouseOverColor}" />
+            <SolidColorBrush x:Key="ControlAccentBrush" Color="{DynamicResource ControlAccentColor}" />
+            <SolidColorBrush x:Key="ControlAccentPressedBrush" Color="{DynamicResource ControlAccentPressedColor}" />
+            <SolidColorBrush x:Key="ControlAccentMouseOverBrush" Color="{DynamicResource ControlAccentMouseOverColor}" />
+            <SolidColorBrush x:Key="HighlightBrush" Color="{DynamicResource HighlightColor}" />
+
+            <LinearGradientBrush x:Key="IndeterminateHorizontalProgressBarThumbBrush" StartPoint="0%, 50%" EndPoint="100%, 50%">
+                <GradientStop Color="{DynamicResource ControlBackgroundColor}" Offset="0.0" />
+                <GradientStop Color="{DynamicResource ControlAccentColor}" Offset="0.5" />
+                <GradientStop Color="{DynamicResource ControlBackgroundColor}" Offset="1.0" />
+            </LinearGradientBrush>
+            
+            <LinearGradientBrush x:Key="IndeterminateVerticalProgressBarThumbBrush" StartPoint="50%, 0%" EndPoint="50%, 100%">
+                <GradientStop Color="{DynamicResource ControlBackgroundColor}" Offset="0.0" />
+                <GradientStop Color="{DynamicResource ControlAccentColor}" Offset="0.5" />
+                <GradientStop Color="{DynamicResource ControlBackgroundColor}" Offset="1.0" />
+            </LinearGradientBrush>
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+</ResourceDictionary>

@@ -1,0 +1,32 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ResourceDictionary.MergedDictionaries>
+        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Resources/ThemeResources.axaml" />
+        
+        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/EmbedableControlRoot.axaml" />
+        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/AdornerLayer.axaml" />
+        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/Window.axaml" />
+        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/Label.axaml" />
+        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/Button.axaml" />
+        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/TextBox.axaml" />
+        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/Separator.axaml" />
+        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/ScrollViewer.axaml" />
+        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/ContextMenu.axaml" />
+        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/MenuFlyoutPresenter.axaml" />
+        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/MenuItem.axaml" />
+        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/CheckBox.axaml" />
+        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/Expander.axaml" />
+        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/ProgressBar.axaml" />
+        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/Slider.axaml" />
+        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/ListBox.axaml" />
+        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/ListBoxItem.axaml" />
+        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/Carousel.axaml" />
+        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/ComboBox.axaml" />
+        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/ComboBoxItem.axaml" />
+        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/PathIcon.axaml" />
+        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/RadioButton.axaml" />
+        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/ToggleButton.axaml" />
+        
+        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/Border.axaml" />
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

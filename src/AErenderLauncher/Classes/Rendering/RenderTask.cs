@@ -72,6 +72,10 @@ public class RenderTask : ICloneable<RenderTask> {
             return result;
         }
 
+        if (!Directory.Exists(Path.GetDirectoryName(Output))) {
+            Directory.CreateDirectory(Path.GetDirectoryName(Output)!);
+        }
+
         return Output;
     }
 
