@@ -128,7 +128,12 @@
                                         </Grid>
                                     </Expander.Header>
                                     <ListBox ItemsSource="{Binding Compositions}" Margin="-1"
-                                             Tag="{Binding Id}">
+                                             Tag="{Binding Id}" VerticalAlignment="Stretch">
+                                        <ListBox.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel />
+                                            </ItemsPanelTemplate>
+                                        </ListBox.ItemsPanel>
                                         <ListBox.ItemTemplate>
                                             <DataTemplate x:DataType="rendering:Composition">
                                                 <ListBoxItem DoubleTapped="Composition_OnDoubleTapped">
