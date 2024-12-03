@@ -86,7 +86,7 @@
                 <StackPanel Spacing="4" Margin="4">
                     <Grid ColumnDefinitions="144,*" RowDefinitions="Auto, Auto">
                         <Label Grid.Row="0" Grid.Column="0" Content="Split rendering mode" />
-                        <Grid Grid.Row="0" Grid.Column="1" ColumnDefinitions="*,*,*">
+                        <Grid Grid.Row="0" Grid.Column="1" ColumnDefinitions="*,*,*" Margin="0 0 0 4">
                             <RadioButton Grid.Column="0" x:Name="QueueRadioBtn" Content="Queue"
                                          GroupName="RenderingModeGroup"
                                          IsChecked="{Binding RenderingMode, 

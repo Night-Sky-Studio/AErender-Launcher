@@ -66,6 +66,21 @@
                 <ListBoxItem Content="Item 3"/>
                 <ListBoxItem Content="Item 4"/>
             </ListBox>
+            
+            <Separator />
+            
+            <Grid ColumnDefinitions="*, *">
+                <StackPanel Spacing="4">
+                    <RadioButton Content="Radio Button" GroupName="1" />
+                    <RadioButton IsEnabled="False" Content="Radio Button" GroupName="1" />
+                    <RadioButton IsThreeState="True" Content="Disabled" GroupName="1" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Spacing="4">
+                    <RadioButton Content="Checked" IsChecked="True" GroupName="1" />
+                    <RadioButton IsEnabled="False" Content="Disabled" IsChecked="False" GroupName="1" />
+                    <RadioButton IsThreeState="True" Content="Tri-state" IsChecked="{x:Null}" GroupName="1" />
+                </StackPanel>
+            </Grid>
         </StackPanel>
     </Grid>
 </Window>
