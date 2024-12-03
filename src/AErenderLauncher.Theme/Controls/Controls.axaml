@@ -7,7 +7,7 @@
         <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/AdornerLayer.axaml" />
         <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/Window.axaml" />
         <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/Label.axaml" />
-        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/Button/Button.axaml" />
+        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/Button.axaml" />
         <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/TextBox.axaml" />
         <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/Separator.axaml" />
         <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/ScrollViewer.axaml" />
@@ -25,6 +25,7 @@
         <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/ComboBoxItem.axaml" />
         <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/PathIcon.axaml" />
         <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/RadioButton.axaml" />
+        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/ToggleButton.axaml" />
         
         <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/Border.axaml" />
     </ResourceDictionary.MergedDictionaries>

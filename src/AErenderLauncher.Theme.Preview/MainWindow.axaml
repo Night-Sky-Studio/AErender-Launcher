@@ -81,6 +81,12 @@
                     <RadioButton IsThreeState="True" Content="Tri-state" IsChecked="{x:Null}" GroupName="1" />
                 </StackPanel>
             </Grid>
+            
+            <Separator />
+            
+            <ToggleButton HorizontalAlignment="Stretch" Content="Hello, world" />
+            <ToggleButton HorizontalAlignment="Stretch" IsChecked="True" Content="Checked" />
+            <ToggleButton HorizontalAlignment="Stretch" Content="Disabled" IsEnabled="False" />
         </StackPanel>
     </Grid>
 </Window>
