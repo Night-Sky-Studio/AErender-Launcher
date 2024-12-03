@@ -13,18 +13,19 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Alba.Avalonia.FlexPanel" Version="0.5.3" />
-    <PackageReference Include="Avalonia" Version="11.2.0" />
-    <PackageReference Include="Avalonia.Controls.ItemsRepeater" Version="11.1.4" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.0" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.0" />
+    <PackageReference Include="Avalonia" Version="11.2.2" />
+    <PackageReference Include="Avalonia.Controls.ItemsRepeater" Version="11.1.5" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.2" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.2" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.0" />
-    <PackageReference Include="Avalonia.Themes.Simple" Version="11.2.0" />
-    <PackageReference Include="CliWrap" Version="3.6.6" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.2" />
+    <PackageReference Include="Avalonia.Themes.Simple" Version="11.2.2" />
+    <PackageReference Include="CliWrap" Version="3.6.7" />
     <PackageReference Include="FFMpegCore" Version="5.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="NUnit" Version="4.0.1" />
-    <PackageReference Include="Semver" Version="3.0.0-beta.2" />
+    <PackageReference Include="NUnit" Version="4.2.2" />
+    <PackageReference Include="Semver" Version="3.0.0" />
+    <PackageReference Include="System.Text.Json" Version="9.0.0" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Classes\System\Dialogs\Windows\GenericDialogWindow.axaml.cs">
