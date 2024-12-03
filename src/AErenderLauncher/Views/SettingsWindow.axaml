@@ -86,7 +86,7 @@
                 <StackPanel Spacing="4" Margin="4">
                     <Grid ColumnDefinitions="144,*" RowDefinitions="Auto, Auto">
                         <Label Grid.Row="0" Grid.Column="0" Content="Split rendering mode" />
-                        <Grid Grid.Row="0" Grid.Column="1" ColumnDefinitions="*,*,*" Margin="0 0 0 4">
+                        <Grid Grid.Row="0" Grid.Column="1" ColumnDefinitions="*,*,*">
                             <RadioButton Grid.Column="0" x:Name="QueueRadioBtn" Content="Queue"
                                          GroupName="RenderingModeGroup"
                                          IsChecked="{Binding RenderingMode, 
@@ -129,7 +129,7 @@
 
             </Expander>
             <Expander Header="User Interface" HorizontalContentAlignment="Stretch">
-                <Grid ColumnDefinitions="144,*" Margin="4">
+                <Grid ColumnDefinitions="144,*">
                     <Label Grid.Column="0" Content="Language" VerticalAlignment="Center" Margin="0,0,4,0" />
                     <ComboBox Grid.Column="1" HorizontalAlignment="Stretch" />
                 </Grid>

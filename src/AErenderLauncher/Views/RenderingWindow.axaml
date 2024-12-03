@@ -36,7 +36,7 @@
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate x:DataType="rendering:RenderThread">
                         <controls:RenderThreadProgress CurrentFrame="{Binding CurrentFrame}" EndFrame="{Binding EndFrame}" 
-                                                       Log="{Binding Log}" 
+                                                       Log="{Binding Log}" Margin="4 4 4 0"
                                                        Composition="{Binding Name}"/>
                     </DataTemplate>
                 </ItemsRepeater.ItemTemplate>
@@ -44,7 +44,7 @@
         </ScrollViewer>
         
         <Border Grid.Row="3" Classes="Statusbar" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <Grid RowDefinitions="*,40" ColumnDefinitions="*,192">
+            <Grid RowDefinitions="*,Auto,42" ColumnDefinitions="*,192">
                 <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="16, 16, 16, 0">
                     <Grid ColumnDefinitions="*,*">
                         <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="Total progress" FontWeight="Bold" FontSize="16" />
@@ -58,17 +58,19 @@
                     <TextBlock VerticalAlignment="Center" HorizontalAlignment="Right" Text="{Binding ProgressString}" FontWeight="Bold" FontSize="16" />
                 </StackPanel>
                 
-                <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Margin="16,0,0,0">
+                <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" />
+                
+                <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" Margin="16,0,0,0">
                     <TextBlock Text="Time Elapsed: " VerticalAlignment="Center" />
                     <TextBlock Text="{Binding SW.ElapsedTime}" VerticalAlignment="Center" />
                 </StackPanel>
                 
-                <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Margin="16,0,0,0" HorizontalAlignment="Center">
+                <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" Margin="16,0,0,0" HorizontalAlignment="Center">
                     <TextBlock Text="Remaining threads: " VerticalAlignment="Center" />
                     <TextBlock Text="{Binding Queue.Count}" VerticalAlignment="Center" />
                 </StackPanel>
                 
-                <Button Grid.Row="1" Grid.Column="1" Content="Abort Rendering" Margin="16, 4" VerticalAlignment="Center" Click="AbortRendering_OnClick" />
+                <Button Grid.Row="2" Grid.Column="1" Content="Abort Rendering" Margin="16, 4" VerticalAlignment="Center" Click="AbortRendering_OnClick" />
             </Grid>
         </Border>
     </Grid>
