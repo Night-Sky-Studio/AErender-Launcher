@@ -2,10 +2,20 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     x:ClassModifier="internal">
     <Design.PreviewWith>
-        <Border Padding="20">
-            <Menu>
-                <MenuItem Header="_Standard" />
-                <MenuItem Header="Selected" IsSelected="True" />
+        <Border Padding="4" Width="384" Height="128">
+            <Menu VerticalAlignment="Top">
+                <MenuItem Header="_Standard">
+                    <MenuItem Header="Nested Item 1" />
+                    <MenuItem Header="Nested Item 2" />
+                    <Separator />
+                    <MenuItem Header="Nested Item 3" />
+                </MenuItem>
+                <MenuItem Header="Selected" IsSelected="True">
+                    <MenuItem Header="Nested Item 1" />
+                    <MenuItem Header="Nested Item 2" />
+                    <Separator />
+                    <MenuItem Header="Nested Item 3" />
+                </MenuItem>
                 <MenuItem Header="Disabled" IsEnabled="False" />
             </Menu>
         </Border>
@@ -67,7 +77,7 @@
 
         <!--  Listen for PART_LayoutRoot:pointerover, so it will not be triggered when subitem is pressed  -->
         <Style Selector="^:pressed /template/ Border#PART_LayoutRoot:pointerover">
-            <Setter Property="Background" Value="{DynamicResource ControlAccentPressedBrush}" />
+            <Setter Property="Background" Value="{DynamicResource ControlBackgroundPressedBrush}" />
         </Style>
 
         <Style Selector="^:disabled">
