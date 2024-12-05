@@ -20,18 +20,14 @@
         <viewModels:RenderingViewModel />
     </Design.DataContext>
     
-    <Grid x:Name="Root" RowDefinitions="32,32,*,144">
-        <controls:IsPlatform Grid.Row="0">
-            <controls:IsPlatform.Windows>
-                <controls:TitleBar VerticalAlignment="Top" Title="Rendering Progress" CloseBtnHidesWindow="True" />
-            </controls:IsPlatform.Windows>
-        </controls:IsPlatform>
+    <Grid x:Name="Root" RowDefinitions="Auto,*,144">
+        <controls:TitleBar Grid.Row="0" VerticalAlignment="Top" Title="Rendering Progress" CloseBtnHidesWindow="True">
+            <controls:TitleBar.Toolbar>
+                <Label Content="Rendering Progress" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="16 0 0 0"/>
+            </controls:TitleBar.Toolbar>
+        </controls:TitleBar>
         
-        <Border Grid.Row="1" Classes="Toolbar" BorderThickness="1">
-            <Label Content="Rendering Progress" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="16 0 0 0"/>
-        </Border>
-        
-        <ScrollViewer Grid.Row="2">
+        <ScrollViewer Grid.Row="1">
             <ItemsRepeater ItemsSource="{Binding Threads}">
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate x:DataType="rendering:RenderThread">
@@ -43,7 +39,7 @@
             </ItemsRepeater>
         </ScrollViewer>
         
-        <Border Grid.Row="3" Classes="Statusbar" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Border Grid.Row="2" Classes="Statusbar" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid RowDefinitions="*,Auto,42" ColumnDefinitions="*,192">
                 <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="16, 16, 16, 0">
                     <Grid ColumnDefinitions="*,*">

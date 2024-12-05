@@ -35,19 +35,15 @@
         <vm:OutputModuleEditorViewModel />
     </Design.DataContext>
     
-    <Grid x:Name="Root" RowDefinitions="32,32,*">
-        <controls:IsPlatform Grid.Row="0">
-            <controls:IsPlatform.Windows>
-                <controls:TitleBar VerticalAlignment="Top" Title="Output module presets configurator" CloseBtnHidesWindow="False" />
-            </controls:IsPlatform.Windows>
-        </controls:IsPlatform>
+    <Grid x:Name="Root" RowDefinitions="Auto,*">
+        <controls:TitleBar Grid.Row="0" VerticalAlignment="Top" Title="Output module presets configurator" CloseBtnHidesWindow="False">
+            <controls:TitleBar.Toolbar>
+                <Label Content="Output module presets configurator" FontWeight="Bold" FontSize="16" 
+                       VerticalAlignment="Center" HorizontalAlignment="Left" Margin="16 0 0 0"/>
+            </controls:TitleBar.Toolbar>    
+        </controls:TitleBar>
         
-        <Border Grid.Row="1" Classes="Toolbar" BorderThickness="1">
-            <Label Content="Output module presets configurator" FontWeight="Bold" FontSize="16" 
-                   VerticalAlignment="Center" HorizontalAlignment="Left" Margin="16 0 0 0"/>
-        </Border>
-        
-        <Grid Grid.Row="2" ColumnDefinitions="240, 4, *" RowDefinitions="*,32">
+        <Grid Grid.Row="1" ColumnDefinitions="240, 4, *" RowDefinitions="*,32">
             <ListBox Grid.Column="0" x:DataType="vm:OutputModuleEditorViewModel" 
                      ItemsSource="{Binding OutputModules}" Padding="0" 
                      SelectionMode="AlwaysSelected"

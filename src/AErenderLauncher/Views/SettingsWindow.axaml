@@ -27,19 +27,15 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <Grid x:Name="Root" RowDefinitions="32,32,*,32">
-        <controls:IsPlatform Grid.Row="0">
-            <controls:IsPlatform.Windows>
-                <controls:TitleBar VerticalAlignment="Top" Title="AErender Launcher Settings" />
-            </controls:IsPlatform.Windows>
-        </controls:IsPlatform>
+    <Grid x:Name="Root" RowDefinitions="Auto,*,32">
+        <controls:TitleBar Grid.Row="0" VerticalAlignment="Top" Title="AErender Launcher Settings">
+            <controls:TitleBar.Toolbar>
+                <Label Content="Settings" FontWeight="Bold" FontSize="16" VerticalAlignment="Center"
+                       HorizontalAlignment="Left" Margin="16 0 0 0" />
+            </controls:TitleBar.Toolbar>
+        </controls:TitleBar>
 
-        <Border Grid.Row="1" Classes="Toolbar">
-            <Label Content="Settings" FontWeight="Bold" FontSize="16" VerticalAlignment="Center"
-                   HorizontalAlignment="Left" Margin="16 0 0 0" />
-        </Border>
-
-        <StackPanel Grid.Row="2" Spacing="8" Margin="8">
+        <StackPanel Grid.Row="1" Spacing="8" Margin="8">
             <Grid ColumnDefinitions="144,*,Auto,Auto,Auto">
                 <Label Grid.Column="0" Content="After Effects" FontWeight="Bold" />
                     
@@ -136,7 +132,7 @@
             </Expander>
         </StackPanel>
 
-        <Border Grid.Row="3" Classes="Statusbar">
+        <Border Grid.Row="2" Classes="Statusbar">
             <Grid>
                 <Button x:Name="CloseButton" Content="OK" HorizontalAlignment="Center" VerticalAlignment="Center"
                         Width="80" Click="CloseButton_OnClick" />

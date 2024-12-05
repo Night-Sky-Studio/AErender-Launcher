@@ -63,7 +63,6 @@ public partial class MainWindow : Window {
 #endif
 
         ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
-        Root.RowDefinitions = Helpers.Platform == OS.macOS ? new RowDefinitions("0,32,*,48") : new RowDefinitions("32,32,*,48");
     }
 
     private async void NewTaskButton_OnClick(object sender, RoutedEventArgs e) {

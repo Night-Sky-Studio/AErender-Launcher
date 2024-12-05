@@ -26,8 +26,6 @@ public partial class OutputModuleEditorWindow : Window {
         InitializeComponent();
 
         ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
-        Root.RowDefinitions =
-            Helpers.Platform == OS.macOS ? new RowDefinitions("0,32,*") : new RowDefinitions("32,32,*");
         
         MaskTextBox.AddHandler(DragDrop.DragOverEvent, MaskTextBox_OnDragOver);
         MaskTextBox.AddHandler(DragDrop.DropEvent, MaskTextBox_OnDrop);

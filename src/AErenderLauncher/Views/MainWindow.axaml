@@ -82,40 +82,30 @@
                 </StackPanel>
             </Border>
         </Border>
-        <Grid x:Name="Root" RowDefinitions="24,32,*,48">
-            <controls:IsPlatform Grid.Row="0">
-                <controls:IsPlatform.Windows>
-                    <controls:TitleBar VerticalAlignment="Top" Icon="/Assets/icon_32.png" />
-                    <!-- <Border Classes="Toolbar" IsHitTestVisible="False" Margin="0 0 96 0"> -->
-                    <!--     <Panel> -->
-                    <!--         <Image HorizontalAlignment="Left" Margin="6"/> -->
-                    <!--         <Label Content="AErender Launcher" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="32, 0"/> @1@ -->
-                    <!--     </Panel> -->
-                    <!-- </Border> -->
-                </controls:IsPlatform.Windows>
-            </controls:IsPlatform>
+        <Grid x:Name="Root" RowDefinitions="Auto,*,48">
+            <controls:TitleBar Grid.Row="0" VerticalAlignment="Top" Icon="/Assets/icon_32.png">
+                <controls:TitleBar.Toolbar>
+                    <Grid>
+                        <Label Content="Tasks" FontWeight="Bold" FontSize="16" VerticalAlignment="Center"
+                               HorizontalAlignment="Left" Margin="16 0 0 0" />
 
-            <Border Grid.Row="1" Classes="Toolbar">
-                <Grid>
-                    <Label Content="Tasks" FontWeight="Bold" FontSize="16" VerticalAlignment="Center"
-                           HorizontalAlignment="Left" Margin="16 0 0 0" />
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                    Spacing="4" Margin="4">
+                            <Button x:Name="NewTaskButton" Content="New Task" Width="96" Click="NewTaskButton_OnClick">
+                                <Button.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Parse project (default)" Click="NewTaskButton_OnClick" />
+                                        <MenuItem Header="Enter manually" Click="NewTaskEmpty_OnClick" />
+                                    </ContextMenu>
+                                </Button.ContextMenu>
+                            </Button>
+                            <Button Content="Remove Task" Width="96" />
+                        </StackPanel>
+                    </Grid>
+                </controls:TitleBar.Toolbar>
+            </controls:TitleBar>
 
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center"
-                                Spacing="4" Margin="4">
-                        <Button x:Name="NewTaskButton" Content="New Task" Width="96" Click="NewTaskButton_OnClick">
-                            <Button.ContextMenu>
-                                <ContextMenu>
-                                    <MenuItem Header="Parse project (default)" Click="NewTaskButton_OnClick" />
-                                    <MenuItem Header="Enter manually" Click="NewTaskEmpty_OnClick" />
-                                </ContextMenu>
-                            </Button.ContextMenu>
-                        </Button>
-                        <Button Content="Remove Task" Width="96" />
-                    </StackPanel>
-                </Grid>
-            </Border>
-
-            <ScrollViewer Grid.Row="2">
+            <ScrollViewer Grid.Row="1">
                 <ItemsRepeater ItemsSource="{Binding Tasks}">
                     <ItemsRepeater.ItemTemplate>
                         <DataTemplate x:DataType="rendering:RenderTask">
@@ -167,7 +157,7 @@
                 </ItemsRepeater>
             </ScrollViewer>
 
-            <Border Grid.Row="3" Classes="Statusbar">
+            <Border Grid.Row="2" Classes="Statusbar">
                 <Grid ColumnDefinitions="*, Auto, *">
                     <StackPanel Orientation="Horizontal" Grid.Column="1" Spacing="4">
                         <Button x:Name="SettingsButton" Height="30" Width="30" Click="SettingsButton_OnClick">
