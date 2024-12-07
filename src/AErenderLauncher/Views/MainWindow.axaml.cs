@@ -21,7 +21,7 @@ namespace AErenderLauncher.Views;
 public partial class MainWindow : Window {
     private RenderingWindow? _renderingWindow;
 
-    private MainWindowViewModel ViewModel { get; } = new(App.Version.WithoutMetadata());
+    private MainWindowViewModel ViewModel { get; } = new(); //{ Version = App.Version.WithoutMetadata() };
 
     public MainWindow() {
         InitializeComponent();
