@@ -6,44 +6,61 @@
              x:Name="TitleBarControl"
              x:Class="AErenderLauncher.Controls.TitleBar"
              PropertyChanged="AvaloniaObject_OnPropertyChanged">
-    
+
     <UserControl.Styles>
         <Style Selector="Menu /template/ ContentPresenter#PART_HeaderPresenter">
-            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
         <Style Selector="MenuItem /template/ ContentPresenter#PART_HeaderPresenter">
-            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
         <!-- First menu item - app item -->
-        <Style Selector="MenuItem:not(MenuItem > MenuItem):nth-child(1) /template/ ContentPresenter#PART_HeaderPresenter">
-            <Setter Property="FontWeight" Value="Bold"/>
+        <Style
+            Selector="MenuItem:not(MenuItem > MenuItem):nth-child(1) /template/ ContentPresenter#PART_HeaderPresenter">
+            <Setter Property="FontWeight" Value="Bold" />
         </Style>
     </UserControl.Styles>
-    
-    <Grid x:Name="Root" RowDefinitions="32, 32">
-        <Grid ColumnDefinitions="Auto,Auto,*,Auto" Grid.Row="0"
+
+    <Grid x:Name="Root" RowDefinitions="Auto, 32">
+        <Grid ColumnDefinitions="Auto,Auto,*,Auto" Grid.Row="0" Height="32"
               Background="{DynamicResource ControlHighBackgroundColor}"
-              IsVisible="{OnPlatform macOS='False', Windows='True'}">
-            <Image Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Height="24" Width="24" Margin="4" Source="{Binding ElementName=TitleBarControl, Path=Icon}"/>
+              IsVisible="{OnPlatform Windows='True', macOS='False'}">
+            <Image Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center"
+                   Height="24" Width="24" Margin="4"
+                   Source="{Binding ElementName=TitleBarControl, Path=Icon}" />
             <NativeMenuBar Grid.Column="1" VerticalAlignment="Stretch" FontSize="12" />
-            <Border Grid.Column="2" IsHitTestVisible="True" Background="Transparent" PointerPressed="InputElement_OnPointerPressed" PointerMoved="InputElement_OnPointerMoved" PointerReleased="InputElement_OnPointerReleased">
-                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding ElementName=TitleBarControl, Path=Title}" />
+            <Border Grid.Column="2" IsHitTestVisible="True" Background="Transparent"
+                    PointerPressed="InputElement_OnPointerPressed"
+                    PointerMoved="InputElement_OnPointerMoved"
+                    PointerReleased="InputElement_OnPointerReleased">
+                <Grid>
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" 
+                               IsVisible="{Binding IsTitleVisible, ElementName=TitleBarControl}"
+                               Text="{Binding ElementName=TitleBarControl, Path=Title}" />
+                    
+                    <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0 0 16 0" 
+                               Opacity="{DynamicResource ThemeDisabledOpacity}" 
+                               FontFamily="{StaticResource JetBrainsMono}"
+                               Text="{Binding Path=SubTitle, ElementName=TitleBarControl, FallbackValue=''}" />
+                </Grid>
             </Border>
-            <StackPanel Grid.Column="3" Orientation="Horizontal"> 
+            <StackPanel Grid.Column="3" Orientation="Horizontal">
                 <Button Classes="MinMaxBtn" Width="32" Click="Minimize_OnClick">
-                    <PathIcon Width="12" Data="m600 225 0 150-600 0 0-150z"/> 
+                    <PathIcon Width="12" Data="m600 225 0 150-600 0 0-150z" />
                 </Button>
                 <Button Classes="MinMaxBtn" Width="32" Click="MaximizeBtn_OnClick">
-                    <PathIcon x:Name="MaximizeIcon" Height="12" Data="m0 0 600 0 0 600-150-150 0-300-300 0z"/>
+                    <PathIcon x:Name="MaximizeIcon" Height="12" Data="m0 0 600 0 0 600-150-150 0-300-300 0z" />
                 </Button>
                 <Button Classes="CloseBtn" Width="48" Click="CloseBtn_OnClick">
-                    <PathIcon Height="12" Data="m9 26.5 20-20 35 35 35-35 20 20-35 35 35 40-20 20c-39.782-39.782-21.667-21.667-35-35l-35 35-20-20 35-35-35-40z"/>
+                    <PathIcon Height="12"
+                              Data="m9 26.5 20-20 35 35 35-35 20 20-35 35 35 40-20 20c-39.782-39.782-21.667-21.667-35-35l-35 35-20-20 35-35-35-40z" />
                 </Button>
             </StackPanel>
         </Grid>
         <Border x:Name="ToolbarRoot" Classes="Toolbar" Grid.Row="1"
-                PointerPressed="InputElement_OnPointerPressed" 
+                PointerPressed="InputElement_OnPointerPressed"
                 PointerMoved="InputElement_OnPointerMoved"
-                PointerReleased="InputElement_OnPointerReleased" />
+                PointerReleased="InputElement_OnPointerReleased"
+                Padding="{OnPlatform Windows='0', macOS='56 0 0 0'}" />
     </Grid>
 </UserControl>

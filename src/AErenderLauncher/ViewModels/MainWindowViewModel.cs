@@ -7,7 +7,13 @@ using Semver;
 
 namespace AErenderLauncher.ViewModels;
 
-public class MainWindowViewModel : ReactiveObject {
+public class MainWindowViewModel(SemVersion version) : ReactiveObject {
+    private SemVersion _version = version;
+    public SemVersion Version {
+        get => _version;
+        set => RaiseAndSetIfChanged(ref _version, value);
+    }
+    
     public ObservableCollection<RenderTask> Tasks { get; set; } = [];
 
     public ObservableCollection<RenderThread> Threads { get; set; } = [];

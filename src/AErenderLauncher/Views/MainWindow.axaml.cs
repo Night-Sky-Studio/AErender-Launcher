@@ -21,14 +21,14 @@ namespace AErenderLauncher.Views;
 public partial class MainWindow : Window {
     private RenderingWindow? _renderingWindow;
 
-    private MainWindowViewModel ViewModel { get; } = new();
+    private MainWindowViewModel ViewModel { get; } = new(App.Version.WithoutMetadata());
 
     public MainWindow() {
         InitializeComponent();
         
         DataContext = ViewModel;
         
-        Title = $"AErender Launcher (v{App.Version.WithoutMetadata()})";
+        Title = $"AErender Launcher (v{ViewModel.Version})";
 #if DEBUG
         // ViewModel.Tasks.Add(new RenderTask {
         //     Project = "C:\\YandexDisk\\Acer\\Footages (AE)\\AErender Launcher Benchmark Projects\\Deneb - Mograph Icons\\Mograph Icons.aep",
@@ -62,7 +62,7 @@ public partial class MainWindow : Window {
         });
 #endif
 
-        ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
+        // ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
     }
 
     private async void NewTaskButton_OnClick(object sender, RoutedEventArgs e) {

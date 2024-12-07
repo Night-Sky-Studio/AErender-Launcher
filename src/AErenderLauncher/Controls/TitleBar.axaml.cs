@@ -30,6 +30,17 @@ public partial class TitleBar : UserControl {
             o => o.Title, 
             (o, v) => o.Title = v
         );
+    
+    private string? _subTitle;
+    public string? SubTitle {
+        get => _subTitle;
+        set => SetAndRaise(SubTitleProperty, ref _subTitle, value);
+    }
+    public static readonly DirectProperty<TitleBar, string?> SubTitleProperty = 
+        AvaloniaProperty.RegisterDirect<TitleBar, string?>(nameof(SubTitle), 
+            o => o.SubTitle, 
+            (o, v) => o.SubTitle = v
+        );
 
     private bool _closeBtnHidesWindow = false;
     public bool CloseBtnHidesWindow {
@@ -40,6 +51,17 @@ public partial class TitleBar : UserControl {
         AvaloniaProperty.RegisterDirect<TitleBar, bool>(nameof(CloseBtnHidesWindow), 
             o => o.CloseBtnHidesWindow, 
             (o, v) => o.CloseBtnHidesWindow = v
+        );
+    
+    private bool _isTitleVisible = true;
+    public bool IsTitleVisible {
+        get => _isTitleVisible;
+        set => SetAndRaise(IsTitleVisibleProperty, ref _isTitleVisible, value);
+    }
+    public static readonly DirectProperty<TitleBar, bool> IsTitleVisibleProperty = 
+        AvaloniaProperty.RegisterDirect<TitleBar, bool>(nameof(IsTitleVisible), 
+            o => o.IsTitleVisible, 
+            (o, v) => o.IsTitleVisible = v
         );
     
     public Control? Toolbar {
@@ -107,6 +129,8 @@ public partial class TitleBar : UserControl {
     }
 
     private void AvaloniaObject_OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e) {
+        _parentWindow ??= TopLevel.GetTopLevel(this) as Window;
+        Title ??= _parentWindow?.Title;
         if (e.Property.Name == nameof(Toolbar)) {
             ToolbarRoot.IsVisible = Toolbar is not null;
             ToolbarRoot.Child = Toolbar;

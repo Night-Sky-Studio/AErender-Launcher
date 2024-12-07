@@ -22,7 +22,11 @@
             </StackPanel>
             <ToggleButton Grid.Row="0" Grid.Column="1" x:Name="LogBtn" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Content="Log" IsCheckedChanged="LogBtn_IsCheckedChanged"/>
             
-            <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="LogBox" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Text="{Binding ElementName=RenderThreadProgressControl, Path=Log}" TextChanged="LogBox_OnTextChanged" />
+            <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="LogBox" 
+                     VerticalAlignment="Stretch" HorizontalAlignment="Stretch" 
+                     Text="{Binding ElementName=RenderThreadProgressControl, Path=Log}" 
+                     TextChanged="LogBox_OnTextChanged"
+                     FontFamily="{StaticResource JetBrainsMono}" />
         </Grid>
     </Border>
 </UserControl>
