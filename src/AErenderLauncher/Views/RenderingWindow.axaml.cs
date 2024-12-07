@@ -24,8 +24,6 @@ public partial class RenderingWindow : Window {
         InitializeComponent();
         
         DataContext = ViewModel;
-                
-        ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
         
         ViewModel.SW.Reset();
         ViewModel.ResetProgress();

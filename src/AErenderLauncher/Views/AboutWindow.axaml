@@ -9,7 +9,9 @@
         Title="About AErender Launcher"
         WindowStartupLocation="CenterOwner"
         SystemDecorations="Full"
-        ExtendClientAreaChromeHints="NoChrome"
+        ExtendClientAreaChromeHints="{OnPlatform macOS='PreferSystemChrome', Windows='NoChrome'}"
+        ExtendClientAreaTitleBarHeightHint="-1"
+        ExtendClientAreaToDecorationsHint="True"
         Width="720" Height="320"
         x:DataType="vm:AboutWindowViewModel">
     
@@ -17,7 +19,7 @@
         <vm:AboutWindowViewModel />
     </Design.DataContext>
     
-    <Grid x:Name="Root" RowDefinitions="32,*">
+    <Grid x:Name="Root" RowDefinitions="{OnPlatform Windows='32,*', macOS='0,*'}">
         <controls:IsPlatform Grid.Row="0">
             <controls:IsPlatform.Windows>
                 <controls:TitleBar VerticalAlignment="Top" CloseBtnHidesWindow="False" />

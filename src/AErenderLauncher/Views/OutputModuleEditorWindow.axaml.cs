@@ -24,8 +24,6 @@ public partial class OutputModuleEditorWindow : Window {
         ViewModel.OutputModules.ItemPropertyChanged += OutputModulesOnItemPropertyChanged;
 
         InitializeComponent();
-
-        ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
         
         MaskTextBox.AddHandler(DragDrop.DragOverEvent, MaskTextBox_OnDragOver);
         MaskTextBox.AddHandler(DragDrop.DropEvent, MaskTextBox_OnDrop);

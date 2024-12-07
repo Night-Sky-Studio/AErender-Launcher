@@ -12,7 +12,9 @@
         x:DataType="viewModels:RenderingViewModel"
         WindowStartupLocation="CenterOwner"
         SystemDecorations="Full"
-        ExtendClientAreaChromeHints="NoChrome"
+        ExtendClientAreaChromeHints="{OnPlatform macOS='PreferSystemChrome', Windows='NoChrome'}"
+        ExtendClientAreaTitleBarHeightHint="-1"
+        ExtendClientAreaToDecorationsHint="True"
         Width="800" Height="450"
         Title="Rendering Progress">
     
@@ -21,9 +23,11 @@
     </Design.DataContext>
     
     <Grid x:Name="Root" RowDefinitions="Auto,*,144">
-        <controls:TitleBar Grid.Row="0" VerticalAlignment="Top" Title="Rendering Progress" CloseBtnHidesWindow="True">
+        <controls:TitleBar Grid.Row="0" VerticalAlignment="Top" Title="Rendering Progress" 
+                           CloseBtnHidesWindow="True" IsTitleVisible="False">
             <controls:TitleBar.Toolbar>
-                <Label Content="Rendering Progress" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="16 0 0 0"/>
+                <Label Content="Rendering Progress" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" 
+                       HorizontalAlignment="Left" Margin="16 0 0 0"/>
             </controls:TitleBar.Toolbar>
         </controls:TitleBar>
         
@@ -31,7 +35,8 @@
             <ItemsRepeater ItemsSource="{Binding Threads}">
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate x:DataType="rendering:RenderThread">
-                        <controls:RenderThreadProgress CurrentFrame="{Binding CurrentFrame}" EndFrame="{Binding EndFrame}" 
+                        <controls:RenderThreadProgress CurrentFrame="{Binding CurrentFrame}" 
+                                                       EndFrame="{Binding EndFrame}" 
                                                        Log="{Binding Log}" Margin="4 4 4 0"
                                                        Composition="{Binding Name}"/>
                     </DataTemplate>

@@ -23,8 +23,6 @@ public partial class SettingsWindow : Window {
         InitializeComponent();
         
         DataContext = ViewModel;
-        
-        ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
     }
 
     private void CloseButton_OnClick(object sender, RoutedEventArgs e) {

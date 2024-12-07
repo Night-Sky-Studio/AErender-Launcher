@@ -16,18 +16,12 @@ namespace AErenderLauncher.Views.Dialogs;
 public partial class ProjectImportDialog : Window {
     public ObservableCollection<ProjectItem> Items { get; set; } = [];
 
-    private void Init() {
-        InitializeComponent();
-        ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
-        Root.RowDefinitions = Helpers.Platform == OS.macOS ? new ("0,32,*,32") : new ("32,32,*,32");
-    }
-
     public ProjectImportDialog() {
-        Init();
+        InitializeComponent();
     }
 
     public ProjectImportDialog(ProjectItem[] items, string projectPath) {
-        Init();
+        InitializeComponent();
         
         Items.AddRange(items);
         ProjectPath.Text = projectPath;

@@ -8,11 +8,11 @@
         xmlns:alba="urn:alba:avalonia"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="AErenderLauncher.Views.OutputModuleEditorWindow"
-        WindowStartupLocation="CenterScreen"
+        WindowStartupLocation="CenterOwner"
         SystemDecorations="Full"
-        ExtendClientAreaChromeHints="NoChrome"
+        ExtendClientAreaChromeHints="{OnPlatform macOS='PreferSystemChrome', Windows='NoChrome'}"
         ExtendClientAreaTitleBarHeightHint="-1"
-        ExtendClientAreaToDecorationsHint="False"
+        ExtendClientAreaToDecorationsHint="True"
         Height="384" Width="680"
         Title="Output module presets configurator"
         Closing="OMEditorWindow_OnClosing">
@@ -36,7 +36,8 @@
     </Design.DataContext>
     
     <Grid x:Name="Root" RowDefinitions="Auto,*">
-        <controls:TitleBar Grid.Row="0" VerticalAlignment="Top" Title="Output module presets configurator" CloseBtnHidesWindow="False">
+        <controls:TitleBar Grid.Row="0" VerticalAlignment="Top" Title="Output module presets configurator" 
+                           CloseBtnHidesWindow="False" IsTitleVisible="False">
             <controls:TitleBar.Toolbar>
                 <Label Content="Output module presets configurator" FontWeight="Bold" FontSize="16" 
                        VerticalAlignment="Center" HorizontalAlignment="Left" Margin="16 0 0 0"/>

@@ -11,9 +11,9 @@
         x:Name="MainWindowView"
         WindowStartupLocation="CenterScreen"
         SystemDecorations="Full"
-        ExtendClientAreaChromeHints="NoChrome"
+        ExtendClientAreaChromeHints="{OnPlatform macOS='PreferSystemChrome', Windows='NoChrome'}"
         ExtendClientAreaTitleBarHeightHint="-1"
-        ExtendClientAreaToDecorationsHint="False"
+        ExtendClientAreaToDecorationsHint="True"
         Width="960" Height="540"
         Icon="/Assets/avalonia-logo.ico"
         Title="AErender Launcher"
@@ -83,7 +83,8 @@
             </Border>
         </Border>
         <Grid x:Name="Root" RowDefinitions="Auto,*,48">
-            <controls:TitleBar Grid.Row="0" VerticalAlignment="Top" Icon="/Assets/icon_32.png">
+            <controls:TitleBar Grid.Row="0" VerticalAlignment="Top" Icon="/Assets/icon_32.png"
+                               IsTitleVisible="False" SubTitle="{Binding Version}">
                 <controls:TitleBar.Toolbar>
                     <Grid>
                         <Label Content="Tasks" FontWeight="Bold" FontSize="16" VerticalAlignment="Center"

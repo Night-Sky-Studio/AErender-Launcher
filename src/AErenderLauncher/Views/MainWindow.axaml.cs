@@ -61,8 +61,6 @@ public partial class MainWindow : Window {
             ]
         });
 #endif
-
-        // ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
     }
 
     private async void NewTaskButton_OnClick(object sender, RoutedEventArgs e) {
