@@ -61,6 +61,11 @@
                 PointerPressed="InputElement_OnPointerPressed"
                 PointerMoved="InputElement_OnPointerMoved"
                 PointerReleased="InputElement_OnPointerReleased"
-                Padding="{OnPlatform Windows='0', macOS='56 0 0 0'}" />
+                Padding="{OnPlatform Windows='0', macOS='56 0 96 0'}" />
+        <TextBlock Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0 0 8 0" 
+                   Opacity="{DynamicResource ThemeDisabledOpacity}" 
+                   FontFamily="{StaticResource JetBrainsMono}" 
+                   IsVisible="{OnPlatform macOS='True', Windows='False'}"
+                   Text="{Binding Path=SubTitle, ElementName=TitleBarControl, FallbackValue=''}" />
     </Grid>
 </UserControl>

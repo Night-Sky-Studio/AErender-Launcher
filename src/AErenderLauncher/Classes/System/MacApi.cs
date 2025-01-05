@@ -52,6 +52,7 @@ public static class MacApi {
     public abstract class NSObject {
         private IntPtr Class { get; set; }
         private IntPtr Handle { get; set; }
+        public bool IsReleased => Handle != IntPtr.Zero;
 
         private void Alloc() {
             if (Class == IntPtr.Zero)

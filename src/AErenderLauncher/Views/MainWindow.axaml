@@ -113,7 +113,7 @@
                             <Grid>
                                 <Expander Margin="4">
                                     <Expander.Header>
-                                        <Grid ColumnDefinitions="*,Auto,Auto">
+                                        <Grid ColumnDefinitions="*,Auto,Auto" Height="24">
                                             <Label Grid.Column="0" Content="{Binding ProjectName}"
                                                    VerticalAlignment="Center" />
                                         </Grid>
@@ -144,7 +144,7 @@
                                     <TextBlock VerticalAlignment="Center"
                                                Text="Output path is empty!" Margin="0 0 8 0"
                                                IsVisible="{Binding IsOutputEmpty}" />
-                                    <StackPanel Orientation="Horizontal">
+                                    <StackPanel Orientation="Horizontal" Height="24">
                                         <Button Tag="{Binding Id}" Content="Edit" Click="EditTask_OnClick" />
                                         <Button Tag="{Binding Id}" Content="Duplicate" Click="DuplicateTask_OnClick" />
                                         <Button Tag="{Binding Id}" Content="Remove" Click="RemoveTask_OnClick" />
