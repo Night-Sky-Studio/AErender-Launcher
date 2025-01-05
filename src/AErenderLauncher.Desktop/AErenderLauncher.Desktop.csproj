@@ -14,7 +14,7 @@
     <EntitlementsFilePath>$(ProjectDir)Resources/Entitlements.plist</EntitlementsFilePath>
     <IconFilePath>$(ProjectDir)Resources/Launcher2020.icns</IconFilePath>
     <MacOSAppBundlePath>$(OutputDir)bundle/AErender Launcher.app</MacOSAppBundlePath>
-    <Version>0.3.0-alpha</Version>
+    <Version>0.3.1-alpha</Version>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
