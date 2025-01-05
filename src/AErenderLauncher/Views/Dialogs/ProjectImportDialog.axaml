@@ -8,7 +8,9 @@
         x:Class="AErenderLauncher.Views.Dialogs.ProjectImportDialog"
         WindowStartupLocation="CenterOwner"
         SystemDecorations="Full"
-        ExtendClientAreaChromeHints="NoChrome"
+        ExtendClientAreaChromeHints="{OnPlatform macOS='PreferSystemChrome', Windows='NoChrome'}"
+        ExtendClientAreaTitleBarHeightHint="-1"
+        ExtendClientAreaToDecorationsHint="True"
         Width="640" Height="480"
         x:Name="ProjectImportView"
         Closed="TopLevel_OnClosed"
@@ -21,23 +23,20 @@
         </ResourceDictionary> 
     </Window.Resources>
     
-    <Grid x:Name="Root" RowDefinitions="32,32,*,32">
-        <controls:IsPlatform Grid.Row="0">
-            <controls:IsPlatform.Windows>
-                <controls:TitleBar VerticalAlignment="Top" Title="Import project" />
-            </controls:IsPlatform.Windows>
-        </controls:IsPlatform>
+    <Grid x:Name="Root" RowDefinitions="Auto,*,32">
+        <controls:TitleBar Grid.Row="0" VerticalAlignment="Top" Title="Import project">
+            <controls:TitleBar.Toolbar>
+                <Grid ColumnDefinitions="*,Auto,384">
+                    <Label Content="Import project" FontWeight="Bold" FontSize="16" 
+                           VerticalAlignment="Center" HorizontalAlignment="Left" Margin="16 0 0 0" />
+                    <Label Grid.Column="1" Content="Project path:" VerticalAlignment="Center" />
+                    <TextBox Grid.Column="2" x:Name="ProjectPath" Margin="4,0" VerticalAlignment="Center" 
+                             VerticalContentAlignment="Center"/>
+                </Grid>
+            </controls:TitleBar.Toolbar>
+        </controls:TitleBar>
         
-        <Border Grid.Row="1" Classes="Toolbar">
-            <Grid ColumnDefinitions="*,Auto,384">
-                <Label Content="Import project" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="16 0 0 0" />
-                <Label Grid.Column="1" Content="Project path:" VerticalAlignment="Center" />
-                <TextBox Grid.Column="2" x:Name="ProjectPath" Margin="4,0" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
-            </Grid>
-        </Border>
-        
-        <Grid Grid.Row="2" ColumnDefinitions="*,Auto,*" HorizontalAlignment="Stretch">
-        
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto,*" HorizontalAlignment="Stretch">
             <Grid RowDefinitions="Auto, *,Auto" Margin="8">
                 <Label Grid.Row="0" Content="Compositions" Margin="0,0,0,4"/>
                 <ListBox Grid.Row="1" x:Name="CompositionsList" 
@@ -65,10 +64,9 @@
             </Grid>
         </Grid>
         
-        <Border Grid.Row="3" Classes="Statusbar">
-            <Grid>
-                <Button x:Name="CloseButton" Content="OK" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Click="CloseButton_OnClick" />
-            </Grid>
+        <Border Grid.Row="2" Classes="Statusbar">
+            <Button x:Name="CloseButton" Content="OK" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                    Width="80" Click="CloseButton_OnClick" />
         </Border>
     </Grid>
 </Window>

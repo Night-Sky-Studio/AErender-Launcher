@@ -28,7 +28,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AErenderLauncher\AErenderLauncher.csproj" />
   </ItemGroup>
-  <Target Name="Create macOS App Bundle" AfterTargets="Publish" Condition="$([MSBuild]::IsOSPlatform('OSX'))">
+  <Target Name="Create macOS App Bundle" AfterTargets="Publish" Condition="$(RuntimeIdentifier.StartsWith('osx'))">
     <Exec Command="mkdir -p $(MacOSAppBundlePath)/Contents/MacOS" />
     <Exec Command="mkdir -p $(MacOSAppBundlePath)/Contents/Resources" />
     <ItemGroup>

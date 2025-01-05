@@ -12,20 +12,13 @@ namespace AErenderLauncher.Views.Dialogs;
 public partial class AErenderDetectDialog : Window {
     public ObservableCollection<AfterFx> Paths { get; set; } = new();
     public AfterFx? Result { get; private set; }
-
-    private void Init() {
-        InitializeComponent();
-        
-        ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
-        Root.RowDefinitions = Helpers.Platform == OS.macOS ? new RowDefinitions("0,32,*,32") : new RowDefinitions("32,32,*,32");
-    }
     
     public AErenderDetectDialog() {
-        Init();
+        InitializeComponent();
     }
 
     public AErenderDetectDialog(List<AfterFx> paths) {
-        Init();
+        InitializeComponent();
         Paths.AddRange(paths);
     }
     

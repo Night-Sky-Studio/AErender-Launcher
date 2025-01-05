@@ -36,4 +36,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AErenderLauncher.Theme\AErenderLauncher.Theme.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Assets\Fonts\" />
+  </ItemGroup>
 </Project>

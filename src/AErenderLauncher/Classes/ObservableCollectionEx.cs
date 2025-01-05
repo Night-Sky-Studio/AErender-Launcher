@@ -16,8 +16,6 @@ public class ItemPropertyChangedEventArgs<T>(T item, string propertyName) : Even
 public class ObservableCollectionEx<T> : ObservableCollection<T> where T : INotifyPropertyChanged {
     // Define an event that will notify subscribers when any item's property changes
     public event EventHandler<ItemPropertyChangedEventArgs<T>>? ItemPropertyChanged;
-    
-    public ObservableCollectionEx() : base() { }
 
     public ObservableCollectionEx(IList<T> collection) : base(collection) {
         SubscribeToItems(collection);

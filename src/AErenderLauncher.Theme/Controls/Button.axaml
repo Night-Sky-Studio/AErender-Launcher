@@ -39,5 +39,23 @@
         <Style Selector="^:disabled">
             <Setter Property="Opacity" Value="{DynamicResource ThemeDisabledOpacity}" />
         </Style>
+        
+        <Style Selector="^.CloseBtn, ^.MinMaxBtn">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+        <Style Selector="^.CloseBtn:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#FF6157"/>
+        </Style>
+        <Style Selector="^.CloseBtn:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#E24F45"/>
+        </Style>
+        <Style Selector="^.MinMaxBtn:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#2A82E2"/>
+        </Style>
+        <Style Selector="^.MinMaxBtn:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#17579C"/>
+        </Style>
     </ControlTheme>
 </ResourceDictionary>

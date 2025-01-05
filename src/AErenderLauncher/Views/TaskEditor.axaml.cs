@@ -49,10 +49,7 @@ public partial class TaskEditor : Window {
     
     public TaskEditor() {
         InitializeComponent();
-        // _initialTask = new RenderTask();
         Task = RenderTask.Empty();
-        ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
-        Root.RowDefinitions = Helpers.Platform == OS.macOS ? new RowDefinitions("0,32,*,32") : new RowDefinitions("32,32,*,32");
     }
 
     public TaskEditor(RenderTask task, bool isEditing = false) {
@@ -61,9 +58,6 @@ public partial class TaskEditor : Window {
         
         InitializeComponent();
         
-        ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
-        Root.RowDefinitions = Helpers.Platform == OS.macOS ? new ("0,*") : new ("32,*");
-
         // TODO:    Make bindings work
         ProjectPath.Text = task.Project;
         OutputPath.Text = task.Output;

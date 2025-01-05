@@ -26,6 +26,7 @@
         <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/PathIcon.axaml" />
         <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/RadioButton.axaml" />
         <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/ToggleButton.axaml" />
+        <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/Menu.axaml" />
         
         <MergeResourceInclude Source="avares://AErenderLauncher.Theme/Controls/Border.axaml" />
     </ResourceDictionary.MergedDictionaries>

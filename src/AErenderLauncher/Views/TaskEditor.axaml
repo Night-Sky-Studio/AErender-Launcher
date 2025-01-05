@@ -9,28 +9,41 @@
         x:Name="TaskEditorView"
         WindowStartupLocation="CenterOwner"
         SystemDecorations="Full"
-        ExtendClientAreaChromeHints="NoChrome"
+        ExtendClientAreaChromeHints="{OnPlatform macOS='PreferSystemChrome', Windows='NoChrome'}"
+        ExtendClientAreaTitleBarHeightHint="-1"
+        ExtendClientAreaToDecorationsHint="True"
         Width="640" Height="450"
         Title="Task Editor"
         Loaded="Control_OnLoaded">
-    <Grid x:Name="Root" RowDefinitions="32,*">
-        <controls:IsPlatform Grid.Row="0">
-            <controls:IsPlatform.Windows>
-                <controls:TitleBar Title="Edit task" />
-            </controls:IsPlatform.Windows>
-        </controls:IsPlatform>
+    <Grid x:Name="Root" RowDefinitions="Auto,*">
+        <controls:TitleBar Grid.Row="0" Title="Edit task">
+            <controls:TitleBar.Toolbar>
+                <Carousel Grid.Column="1" 
+                          SelectedIndex="{Binding SelectedIndex, ElementName=EditorCarousel}" 
+                          AutoScrollToSelectedItem="False">
+                    <Grid ColumnDefinitions="Auto,Auto,*">
+                        <Label Grid.Column="0" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" 
+                               HorizontalAlignment="Center" Content="Project setup" Margin="16 0 0 0" />
+                        <Label Grid.Column="1" Content="Project file path" VerticalAlignment="Center" 
+                               Margin="64 0 0 0" />
+                        <TextBox Grid.Column="2" x:Name="ProjectPath" HorizontalAlignment="Stretch" 
+                                 Margin="4 4 8 4" IsReadOnly="True" 
+                                 Text="{Binding ElementName=TaskEditorView, Path=Task.Project, FallbackValue=''}" />
+                    </Grid>
+                    
+                    <Grid ColumnDefinitions="Auto,*,Auto,128">
+                        <Label Grid.Column="0" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" 
+                               HorizontalAlignment="Center" Content="Compositions" 
+                               Margin="16 0 0 0" />
+                    </Grid>
+                </Carousel>
+            </controls:TitleBar.Toolbar>    
+        </controls:TitleBar>
         
         <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto">
             <Carousel Grid.Column="1" x:Name="EditorCarousel" SelectedIndex="0" AutoScrollToSelectedItem="False">
-                <Grid RowDefinitions="32,*,32">
-                    <Border Grid.Row="0" Classes="Toolbar">
-                        <Grid ColumnDefinitions="Auto,Auto,*">
-                            <Label Grid.Column="0" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Project setup" Margin="16 0 0 0" />
-                            <Label Grid.Column="1" Content="Project file path" VerticalAlignment="Center" Margin="64 0 0 0" />
-                            <TextBox Grid.Column="2" x:Name="ProjectPath" HorizontalAlignment="Stretch" Margin="4 4 8 4" IsReadOnly="True" Text="{Binding ElementName=TaskEditorView, Path=Task.Project, FallbackValue=Hui}" />
-                        </Grid>
-                    </Border>
-                    <StackPanel Grid.Row="1" Margin="8 0">
+                <Grid RowDefinitions="*,32">
+                    <StackPanel Grid.Row="0" Margin="8 0">
                         <Grid ColumnDefinitions="128,*,96" Height="32">
                             <Label Grid.Column="0" Content="Output file path:" VerticalAlignment="Center" />
                             <TextBox Grid.Column="1" x:Name="OutputPath" HorizontalAlignment="Stretch" Margin="16 4 0 4" Text="{Binding ElementName=TaskEditorView, Path=Task.Output}" />
@@ -87,7 +100,7 @@
                         </Grid>
                     </StackPanel>
                     
-                    <Border Grid.Row="2" Classes="Statusbar">
+                    <Border Grid.Row="1" Classes="Statusbar">
                         <Grid Margin="4">
                             <Button Content="Cancel" HorizontalAlignment="Left" Click="CancelButton_OnClick"/>
                             <Button Content="Compositions &gt;&gt;" HorizontalAlignment="Right" Click="CompositionsButton_OnClick"/>
@@ -95,17 +108,12 @@
                     </Border>
                 </Grid>
                 
-                <Grid RowDefinitions="32,*,32">
-                    <Border Grid.Row="0" Classes="Toolbar">
-                        <Grid ColumnDefinitions="Auto,*,Auto,128">
-                            <Label Grid.Column="0" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Compositions" Margin="16 0 0 0" />
-                        </Grid>
-                    </Border>
-                    
-                    <Grid Grid.Row="1" RowDefinitions="*,32">
-                        <ListBox Grid.Row="0" x:Name="CompList" SelectionMode="Single" ItemsSource="{Binding ElementName=TaskEditorView, Path=Task.Compositions}" 
-                                 Classes="Filled"
-                                 SelectionChanged="CompList_SelectionChanged" Margin="4 4 4 0">
+                <Grid RowDefinitions="*,32">
+                    <Grid Grid.Row="0" RowDefinitions="*,32">
+                        <ListBox Grid.Row="0" x:Name="CompList" SelectionMode="Single" 
+                                 ItemsSource="{Binding ElementName=TaskEditorView, Path=Task.Compositions}" 
+                                 Classes="Filled" SelectionChanged="CompList_SelectionChanged" 
+                                 Margin="4 4 4 0">
                             <ListBox.ItemTemplate>
                                 <DataTemplate x:DataType="rendering:Composition">
                                     <Grid ColumnDefinitions="*,96,96,96">
@@ -127,7 +135,7 @@
                         </Grid>
                     </Grid>
                     
-                    <Border Grid.Row="2" Classes="Statusbar">
+                    <Border Grid.Row="1" Classes="Statusbar">
                         <Grid>
                             <StackPanel Orientation="Horizontal" Spacing="4" Margin="4 0 0 0" HorizontalAlignment="Left">
                                 <Button Content="Cancel" Margin="0 4" Width="64" Click="CancelButton_OnClick" />
@@ -140,6 +148,5 @@
                 </Grid>
             </Carousel>    
         </Grid>
-        
     </Grid>
 </Window>

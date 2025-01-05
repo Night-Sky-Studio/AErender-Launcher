@@ -6,6 +6,7 @@
             <Color x:Key="ControlBackgroundColor">#FF202020</Color>
             <Color x:Key="ControlHighBackgroundColor">#FF252525</Color>
             <Color x:Key="ControlBackgroundMouseOverColor">#FF404040</Color>
+            <Color x:Key="ControlBackgroundPressedColor">#FF1F1F1F</Color>
             <Color x:Key="ControlForegroundColor">#FFFFFFFF</Color>
             <Color x:Key="ControlBorderColor">#FF151515</Color>
             <Color x:Key="ControlBorderMouseOverColor">#FF4C4C4C</Color>
@@ -13,11 +14,14 @@
             <Color x:Key="ControlAccentPressedColor">#FF194F88</Color>
             <Color x:Key="ControlAccentMouseOverColor">#FF329DFF</Color>
             <Color x:Key="HighlightColor">#962A82E2</Color>
+            <Color x:Key="ErrorColor">#FFFF6157</Color>
+            <Color x:Key="ErrorPressedColor">#FFE24F45</Color>
 
             <SolidColorBrush x:Key="BackgroundBrush" Color="{DynamicResource BackgroundColor}" />
             <SolidColorBrush x:Key="ControlBackgroundBrush" Color="{DynamicResource ControlBackgroundColor}" />
             <SolidColorBrush x:Key="ControlHighBackgroundBrush" Color="{DynamicResource ControlHighBackgroundColor}" />
             <SolidColorBrush x:Key="ControlBackgroundMouseOverBrush" Color="{DynamicResource ControlBackgroundMouseOverColor}" />
+            <SolidColorBrush x:Key="ControlBackgroundPressedBrush" Color="{DynamicResource ControlBackgroundPressedColor}" />
             <SolidColorBrush x:Key="ControlForegroundBrush" Color="{DynamicResource ControlForegroundColor}" />
             <SolidColorBrush x:Key="ControlBorderBrush" Color="{DynamicResource ControlBorderColor}" />
             <SolidColorBrush x:Key="ControlBorderMouseOverBrush" Color="{DynamicResource ControlBorderMouseOverColor}" />

@@ -1,4 +1,5 @@
-﻿using Avalonia;
+﻿using AErenderLauncher.Classes.Extensions;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -29,6 +30,17 @@ public partial class TitleBar : UserControl {
             o => o.Title, 
             (o, v) => o.Title = v
         );
+    
+    private string? _subTitle;
+    public string? SubTitle {
+        get => _subTitle;
+        set => SetAndRaise(SubTitleProperty, ref _subTitle, value);
+    }
+    public static readonly DirectProperty<TitleBar, string?> SubTitleProperty = 
+        AvaloniaProperty.RegisterDirect<TitleBar, string?>(nameof(SubTitle), 
+            o => o.SubTitle, 
+            (o, v) => o.SubTitle = v
+        );
 
     private bool _closeBtnHidesWindow = false;
     public bool CloseBtnHidesWindow {
@@ -41,6 +53,23 @@ public partial class TitleBar : UserControl {
             (o, v) => o.CloseBtnHidesWindow = v
         );
     
+    private bool _isTitleVisible = true;
+    public bool IsTitleVisible {
+        get => _isTitleVisible;
+        set => SetAndRaise(IsTitleVisibleProperty, ref _isTitleVisible, value);
+    }
+    public static readonly DirectProperty<TitleBar, bool> IsTitleVisibleProperty = 
+        AvaloniaProperty.RegisterDirect<TitleBar, bool>(nameof(IsTitleVisible), 
+            o => o.IsTitleVisible, 
+            (o, v) => o.IsTitleVisible = v
+        );
+    
+    public Control? Toolbar {
+        get => GetValue(ToolbarProperty); 
+        set => SetValue(ToolbarProperty, value); 
+    }
+    public static readonly StyledProperty<Control?> ToolbarProperty = 
+        AvaloniaProperty.Register<TitleBar, Control?>(nameof(Toolbar));
     
     private Window? _parentWindow;
 
@@ -50,24 +79,22 @@ public partial class TitleBar : UserControl {
     public TitleBar() {
         InitializeComponent();
         _parentWindow = TopLevel.GetTopLevel(this) as Window;
-        // Title ??= _parentWindow?.Title;
+        Title ??= _parentWindow?.Title;
     }
 
     private bool _mouseDownForWindowMoving = false;
     private PointerPoint _originalPoint;
 
-    private void InputElement_OnPointerMoved(object? sender, PointerEventArgs e)
-    {
+    private void InputElement_OnPointerMoved(object? sender, PointerEventArgs e) {
         if (!_mouseDownForWindowMoving) return;
 
+        if (_parentWindow is null) return;
         PointerPoint currentPoint = e.GetCurrentPoint(this);
-        if (_parentWindow != null)
-            _parentWindow.Position = new PixelPoint(_parentWindow.Position.X + (int)(currentPoint.Position.X - _originalPoint.Position.X),
-                _parentWindow.Position.Y + (int)(currentPoint.Position.Y - _originalPoint.Position.Y));
+        _parentWindow.Position = new (_parentWindow.Position.X + (int)(currentPoint.Position.X - _originalPoint.Position.X),
+            _parentWindow.Position.Y + (int)(currentPoint.Position.Y - _originalPoint.Position.Y));
     }
 
-    private void InputElement_OnPointerPressed(object? sender, PointerPressedEventArgs e)
-    {
+    private void InputElement_OnPointerPressed(object? sender, PointerPressedEventArgs e) {
         if (_parentWindow is { WindowState: WindowState.Maximized or WindowState.FullScreen }) return;
 
         _parentWindow ??= TopLevel.GetTopLevel(this) as Window;
@@ -76,8 +103,7 @@ public partial class TitleBar : UserControl {
         _originalPoint = e.GetCurrentPoint(this);
     }
 
-    private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
-    {
+    private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e) {
         _mouseDownForWindowMoving = false;
     }
 
@@ -91,15 +117,23 @@ public partial class TitleBar : UserControl {
 
     private void MaximizeBtn_OnClick(object? sender, RoutedEventArgs e) {
         _parentWindow ??= TopLevel.GetTopLevel(this) as Window;
-        if (_parentWindow != null) {
-            _parentWindow.WindowState = _parentWindow.WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
-            MaximizeIcon.Data = _parentWindow.WindowState == WindowState.Maximized ? CollapseIconData : ExpandIconData;
-        }
+        if (_parentWindow is null) return;
+        _parentWindow.WindowState = _parentWindow.WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+        MaximizeIcon.Data = _parentWindow.WindowState == WindowState.Maximized ? CollapseIconData : ExpandIconData;
     }
 
     private void Minimize_OnClick(object? sender, RoutedEventArgs e) {
         _parentWindow ??= TopLevel.GetTopLevel(this) as Window;
-        if (_parentWindow != null)
-            _parentWindow.WindowState = WindowState.Minimized;
+        if (_parentWindow is null) return;
+        _parentWindow.WindowState = WindowState.Minimized;
+    }
+
+    private void AvaloniaObject_OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e) {
+        _parentWindow ??= TopLevel.GetTopLevel(this) as Window;
+        Title ??= _parentWindow?.Title;
+        if (e.Property.Name == nameof(Toolbar)) {
+            ToolbarRoot.IsVisible = Toolbar is not null;
+            ToolbarRoot.Child = Toolbar;
+        }
     }
 }

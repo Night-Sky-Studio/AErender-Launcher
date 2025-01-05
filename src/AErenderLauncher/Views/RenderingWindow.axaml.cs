@@ -24,9 +24,6 @@ public partial class RenderingWindow : Window {
         InitializeComponent();
         
         DataContext = ViewModel;
-                
-        ExtendClientAreaToDecorationsHint = Helpers.Platform != OS.macOS;
-        Root.RowDefinitions = Helpers.Platform == OS.macOS ? new RowDefinitions("0,32,*,144") : new RowDefinitions("32,32,*,144");
         
         ViewModel.SW.Reset();
         ViewModel.ResetProgress();

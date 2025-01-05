@@ -21,4 +21,8 @@
         <!-- <SimpleTheme /> -->
         <theme:AErenderLauncherTheme />
     </Application.Styles>
+             
+    <Application.Resources>
+        <FontFamily x:Key="JetBrainsMono">avares://AErenderLauncher/Assets/Fonts#JetBrains Mono</FontFamily>
+    </Application.Resources>
 </Application>

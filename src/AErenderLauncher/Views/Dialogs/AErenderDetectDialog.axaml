@@ -8,7 +8,9 @@
         x:Name="AerenderDetectView"
         WindowStartupLocation="CenterOwner"
         SystemDecorations="Full"
-        ExtendClientAreaChromeHints="NoChrome"
+        ExtendClientAreaChromeHints="{OnPlatform macOS='PreferSystemChrome', Windows='NoChrome'}"
+        ExtendClientAreaTitleBarHeightHint="-1"
+        ExtendClientAreaToDecorationsHint="True"
         x:Class="AErenderLauncher.Views.Dialogs.AErenderDetectDialog"
         Title="Select aerender version">
     <Window.Resources>
@@ -23,21 +25,18 @@
         </ResourceDictionary>
     </Window.Resources>
     
-    <Grid x:Name="Root" RowDefinitions="32,32,*,32">
-        <controls:IsPlatform Grid.Row="0">
-            <controls:IsPlatform.Windows>
-                <controls:TitleBar VerticalAlignment="Top" Title="Select aerender version" />
-            </controls:IsPlatform.Windows>
-        </controls:IsPlatform>
+    <Grid x:Name="Root" RowDefinitions="Auto,*,32">
+        <controls:TitleBar VerticalAlignment="Top" Title="Select aerender version">
+            <controls:TitleBar.Toolbar>
+                <Label Content="Select aerender version" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" 
+                       HorizontalAlignment="Left" Margin="16 0 0 0"/>
+            </controls:TitleBar.Toolbar>
+        </controls:TitleBar>
         
-        <Border Grid.Row="1" Classes="Toolbar">
-            <Label Content="Select aerender version" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="16 0 0 0"/>
-        </Border>
-        
-        <ListBox Grid.Row="2" ItemsSource="{Binding ElementName=AerenderDetectView, Path=Paths}" 
+        <ListBox Grid.Row="1" ItemsSource="{Binding ElementName=AerenderDetectView, Path=Paths}" 
                  ItemTemplate="{StaticResource AerenderListTemplate}" SelectionMode="Single" SelectionChanged="AerenderListBox_OnSelectionChanged"/>
         
-        <Border Grid.Row="3">
+        <Border Grid.Row="2">
             <Button x:Name="CloseButton" Content="OK" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Click="CloseButton_OnClick"/>
         </Border>
     </Grid>
