@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using AErenderLauncher.Classes.Extensions;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace AErenderLauncher.Classes.Rendering;
 
-public class OutputModule(string module, string mask, bool isImported = false) : ReactiveObject, 
-    IEquatable<OutputModule> {
+public partial class OutputModule(string module, string mask, bool isImported = false)
+    : ObservableObject, IEquatable<OutputModule> {
+    [ObservableProperty]
     private string _module = module;
+    [ObservableProperty]
     private string _mask = mask;
     
-    public string Module { get => _module; set => RaiseAndSetIfChanged(ref _module, value); }
-    public string Mask { get => _mask; set => RaiseAndSetIfChanged(ref _mask, value); }
     public bool IsImported { get; set; } = isImported;
     
     public static readonly List<OutputModule> DefaultModules = [

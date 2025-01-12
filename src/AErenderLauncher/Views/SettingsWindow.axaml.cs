@@ -83,7 +83,7 @@ public partial class SettingsWindow : Window {
     private async void FFmpegDetectButton_OnClick(object? sender, RoutedEventArgs e) {
         var ffmpeg = await Settings.DetectFFmpeg();
         if (ffmpeg is not null) {
-            ViewModel.FFmpeg = ffmpeg;
+            ViewModel.Ffmpeg = ffmpeg;
         }
     }
 
@@ -97,6 +97,6 @@ public partial class SettingsWindow : Window {
         if (result.Count == 0) return;
         if (result.First().TryGetLocalPath() is not { } path) return;
 
-        ViewModel.FFmpeg = await Settings.CheckFFmpegVersion(path) ?? ViewModel.FFmpeg;
+        ViewModel.Ffmpeg = await Settings.CheckFFmpegVersion(path) ?? ViewModel.Ffmpeg;
     }
 }

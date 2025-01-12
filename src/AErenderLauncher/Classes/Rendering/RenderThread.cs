@@ -4,30 +4,26 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using AErenderLauncher.Classes.System;
+using CommunityToolkit.Mvvm.ComponentModel;
 using ThreadState = AErenderLauncher.Enums.ThreadState;
 
 namespace AErenderLauncher.Classes.Rendering;
 
-public class RenderThread(string executable, List<string> args) : NetworkThread(executable, args) {
+public partial class RenderThread(string executable, List<string> args) : NetworkThread(executable, args) {
     public int Id { get; set; }
     public string Name { get; set; } = "";
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(GotError), nameof(WaitingForAerender), nameof(Finished))]
     private uint _currentFrame = 0;
-    public uint CurrentFrame { 
-        get => _currentFrame;
-        set => RaiseAndSetIfChanged(ref _currentFrame, value);
-    }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(GotError), nameof(WaitingForAerender), nameof(Finished))]
     private uint _endFrame = 0;
-    public uint EndFrame {
-        get => _endFrame; 
-        set => RaiseAndSetIfChanged(ref _endFrame, value);
-    }
     
+    [ObservableProperty]
     private string _log = "";
-    public string Log {
-        get => _log;
-        set => RaiseAndSetIfChanged(ref _log, value);
-    }
+
     public bool GotError => CurrentFrame == uint.MaxValue && EndFrame == uint.MaxValue;
     public bool WaitingForAerender => CurrentFrame == 0 && EndFrame == 0;
     public bool Finished => CurrentFrame == EndFrame;

@@ -1,23 +1,21 @@
 ﻿using System;
 using AErenderLauncher.Interfaces;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace AErenderLauncher.Classes.Rendering;
 
-public class Composition : ReactiveObject, ICloneable<Composition> {
+public partial class Composition : ObservableObject, ICloneable<Composition> {
+    [ObservableProperty]
     private string _compositionName = "";
-    public string CompositionName {
-        get => _compositionName; 
-        set => RaiseAndSetIfChanged(ref _compositionName, value);
-    }
+
+    [ObservableProperty, NotifyPropertyChangedFor(nameof(SplitFrameSpans))]
     private FrameSpan _frames = new(0, 0);
-    public FrameSpan Frames {
-        get => _frames; 
-        set => RaiseAndSetIfChanged(ref _frames, value);
-    }
+    
+    // No workarounds for custom value setter has been found, yet...
     private uint _split = 1;
     public uint Split { 
         get => _split; 
-        set => RaiseAndSetIfChanged(ref _split, value < 1 ? 1 : value);
+        set => SetProperty(ref _split, value < 1 ? 1 : value);
     }
     public FrameSpan[] SplitFrameSpans => Frames.Split(Split);
 

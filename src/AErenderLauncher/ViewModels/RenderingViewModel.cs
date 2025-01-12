@@ -5,33 +5,22 @@ using System.ComponentModel;
 using System.Linq;
 using AErenderLauncher.Classes;
 using AErenderLauncher.Classes.Rendering;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace AErenderLauncher.ViewModels;
 
-public class RenderingViewModel : ReactiveObject {
+public partial class RenderingViewModel : ObservableObject {
+    [ObservableProperty]
     private long _totalFrames = 0;
-    public long TotalFrames {
-        get => _totalFrames;
-        set => RaiseAndSetIfChanged(ref _totalFrames, value);
-    }
     
+    [ObservableProperty]
     private long _currentFrames = 0;
-    public long CurrentFrames {
-        get => _currentFrames;
-        set => RaiseAndSetIfChanged(ref _currentFrames, value);
-    }
-    
+
+    [ObservableProperty]
     private string _progressString = "Waiting for aerender...";
-    public string ProgressString {
-        get => _progressString;
-        set => RaiseAndSetIfChanged(ref _progressString, value);
-    }
     
+    [ObservableProperty]
     private double _progressValue = 0;
-    public double ProgressValue {
-        get => _progressValue;
-        set => RaiseAndSetIfChanged(ref _progressValue, value);
-    }
 
     public void ResetProgress() {
         TotalFrames = 1;

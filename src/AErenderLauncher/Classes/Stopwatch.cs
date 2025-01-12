@@ -1,27 +1,21 @@
 ﻿using System;
 using Avalonia.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace AErenderLauncher.Classes;
 
-public class Stopwatch : ReactiveObject {
+public partial class Stopwatch : ObservableObject {
+    [ObservableProperty]
     private TimeSpan _elapsedTime;
+    
+    [ObservableProperty]
     private bool _isRunning;
-    private DispatcherTimer _timer;
+    
+    private readonly DispatcherTimer _timer = new ();
 
     public Stopwatch() {
-        _timer = new DispatcherTimer();
         _timer.Interval = TimeSpan.FromSeconds(1);
         _timer.Tick += Timer_Tick;
-    }
-
-    public TimeSpan ElapsedTime {
-        get => _elapsedTime;
-        private set => RaiseAndSetIfChanged(ref _elapsedTime, value);
-    }
-
-    public bool IsRunning {
-        get => _isRunning;
-        private set => RaiseAndSetIfChanged(ref _isRunning, value);
     }
 
     public void Start() {

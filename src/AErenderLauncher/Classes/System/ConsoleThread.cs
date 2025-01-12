@@ -3,24 +3,25 @@ using System.Threading;
 using System.Threading.Tasks;
 using CliWrap;
 using CliWrap.Exceptions;
+using CommunityToolkit.Mvvm.ComponentModel;
 using ThreadState = AErenderLauncher.Enums.ThreadState;
 
 namespace AErenderLauncher.Classes.System;
 
 [Obsolete("Use NetworkThread instead")]
-public class ConsoleThread : ReactiveObject {
-    private string _executable { get; }
-    private string _command { get; set; }
-    private Command _process { get; set; }
-    private CancellationTokenSource _cts = new ();
-    private CancellationToken _cancellationToken => _cts.Token;
+public class ConsoleThread : ObservableObject {
+    private string Executable { get; }
+    private string Command { get; set; }
+    private Command Process { get; set; }
+    private readonly CancellationTokenSource _cts = new ();
+    private CancellationToken CancellationToken => _cts.Token;
 
     // private Action<string>? _outputReceived;
     // private Action<string>? _errorReceived;
 
     private event Action<ConsoleThread?, ThreadState>? StateChanged;
 
-    public string FullCommand => $"\"{_executable}\" {_command}";
+    public string FullCommand => $"\"{Executable}\" {Command}";
 
     private ThreadState _state = ThreadState.Stopped;
     public ThreadState State {
@@ -40,9 +41,9 @@ public class ConsoleThread : ReactiveObject {
     public event Action<ConsoleThread?, string>? ErrorReceived;
     
     public ConsoleThread(string executable, string command = "") {
-        _executable = executable;
-        _command = command;
-        _process = CreateProcess();
+        Executable = executable;
+        Command = command;
+        Process = CreateProcess();
         OutputReceived += OnOutputReceived;
         ErrorReceived += OnErrorReceived;
         StateChanged += OnStateChanged;
@@ -61,8 +62,8 @@ public class ConsoleThread : ReactiveObject {
     }
     
     private Command CreateProcess() {
-        Command process = Cli.Wrap(_executable)
-            .WithArguments(_command)
+        Command process = Cli.Wrap(Executable)
+            .WithArguments(Command)
             .WithStandardOutputPipe(PipeTarget.ToDelegate(data => {
                 // Dispatcher.UIThread.Post(() => {
                     OutputReceived?.Invoke(this, $"{data}");
@@ -81,7 +82,7 @@ public class ConsoleThread : ReactiveObject {
     public async Task StartAsync() {
         try {
             State = ThreadState.Running;
-            await _process.ExecuteAsync(_cancellationToken);
+            await Process.ExecuteAsync(CancellationToken);
         } catch (CommandExecutionException) {
             State = ThreadState.Error;
         } catch (OperationCanceledException) {
