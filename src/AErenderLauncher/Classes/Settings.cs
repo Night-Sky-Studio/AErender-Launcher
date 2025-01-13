@@ -22,6 +22,11 @@ public record AfterFx {
         AerenderPath = "";
         Version = "";
     }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="path">AE folder path. On macOS has <c>.app</c> extension.</param>
+    /// <exception cref="FileNotFoundException">Throws, if CC left some AE leftovers in Adobe folder</exception>
     public AfterFx(string path) {
         var name = Helpers.GetCurrentDirectoryName(path);
 
@@ -238,7 +243,14 @@ public class Settings {
         
         foreach (string path in Directory.GetDirectories(adobeFolder)) {
             if (path.Contains("Adobe After Effects")) {
-                result.Add(new(path));
+                try {
+                    result.Add(new(path));
+                } catch (FileNotFoundException) {
+                    // When Creative Cloud deletes After Effects from computer,
+                    // it leaves its folder with plugins and presets
+                    // even when you tell it to remove it completely from the system...
+                    continue;
+                }
             }
         }
 
