@@ -44,6 +44,8 @@ public partial class SettingsWindow : Window {
 
     private async void AerenderDetectButton_OnClick(object? sender, RoutedEventArgs e) {
         List<AfterFx> paths = Settings.DetectAfterEffects();
+        if (paths.Count == 0) return;
+        
         AfterFx? result;
         
         if (paths.Count == 1)

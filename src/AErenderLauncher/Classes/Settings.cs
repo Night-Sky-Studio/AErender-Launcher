@@ -234,6 +234,8 @@ public class Settings {
             ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)
             : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Adobe");
 
+        if (!Directory.Exists(adobeFolder)) return result;
+        
         foreach (string path in Directory.GetDirectories(adobeFolder)) {
             if (path.Contains("Adobe After Effects")) {
                 result.Add(new(path));
