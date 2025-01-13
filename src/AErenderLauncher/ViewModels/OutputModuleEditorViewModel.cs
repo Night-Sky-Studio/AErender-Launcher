@@ -6,12 +6,13 @@ using System.Linq;
 using AErenderLauncher.Classes;
 using AErenderLauncher.Classes.Extensions;
 using AErenderLauncher.Classes.Rendering;
+using CommunityToolkit.Mvvm.ComponentModel;
 using DynamicData;
 using DynamicData.Binding;
 
 namespace AErenderLauncher.ViewModels;
 
-public class OutputModuleEditorViewModel : ReactiveObject {
+public partial class OutputModuleEditorViewModel : ObservableObject {
     private List<OutputModule> InitialState { get; set; } = Settings.Current.OutputModules.Clone();
     public ObservableCollectionEx<OutputModule> OutputModules { get; } = new(Settings.Current.OutputModules);
 
@@ -35,14 +36,8 @@ public class OutputModuleEditorViewModel : ReactiveObject {
         "[dateYear]", "[dateMonth]", "[dateDay]", "[timeHour]", "[timeMins]", "[timeSecs]", "[timeZone]"
     ];
     
+    [ObservableProperty]
     private int _selectedIndex = 0;
-    public int SelectedIndex {
-        get => _selectedIndex;
-        set {
-            RaiseAndSetIfChanged(ref _selectedIndex, value); 
-            RaisePropertyChanged(new (nameof(SelectedModule)));
-        }
-    }
     
     public OutputModule? SelectedModule => OutputModules.Get(SelectedIndex);
 

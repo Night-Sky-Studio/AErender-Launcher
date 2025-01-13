@@ -54,7 +54,7 @@ public class RenderTask : ICloneable<RenderTask> {
     public double CacheLimit { get; set; } = 100.0;
     public double MemoryLimit { get; set; } = 100.0;
 
-    public ObservableCollection<Composition> Compositions { get; set; } = new();
+    public List<Composition> Compositions { get; set; } = new();
     public RenderState State { get; set; } = RenderState.Waiting;
 
     /// <summary>

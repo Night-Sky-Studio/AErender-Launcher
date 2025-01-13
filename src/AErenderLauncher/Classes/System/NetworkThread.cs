@@ -12,11 +12,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using CliWrap;
 using CliWrap.Exceptions;
+using CommunityToolkit.Mvvm.ComponentModel;
 using ThreadState = AErenderLauncher.Enums.ThreadState;
 
 namespace AErenderLauncher.Classes.System;
 
-public class NetworkThread : ReactiveObject, IDisposable {
+public class NetworkThread : ObservableObject, IDisposable {
     protected Process Process { get; set; }
     public string Executable { get; }
     public List<string> Args { get; set; }
@@ -31,7 +32,7 @@ public class NetworkThread : ReactiveObject, IDisposable {
     private ThreadState _state = ThreadState.Stopped;
     public ThreadState State {
         get => _state;
-        protected set {
+        private set {
             _state = value;
             StateChanged?.Invoke(this, value);
         }

@@ -6,6 +6,7 @@ using AErenderLauncher.Classes;
 using AErenderLauncher.Classes.Extensions;
 using AErenderLauncher.Classes.Rendering;
 using AErenderLauncher.Classes.System.Dialogs;
+using AErenderLauncher.ViewModels;
 using Avalonia;
 using Avalonia.Animation;
 using Avalonia.Animation.Easings;
@@ -20,70 +21,29 @@ using static AErenderLauncher.App;
 namespace AErenderLauncher.Views;
 
 public partial class TaskEditor : Window {
-    // private RenderTask _initialTask;
-    public RenderTask Task { get; init; }
-    public ObservableCollection<OutputModule> OutputModules { get; set; } = new(Settings.Current.OutputModules);
-    public ObservableCollection<string> renderSettings { get; set; } = new() {
-        "Best Settings",
-        "Current Settings",
-        "DV Settings",
-        "Draft Settings",
-        "Multi-Machine Settings"
-    };
-
-    public bool IsEditing { get; set; } = false;
-    
-    private long _totalMemory = Helpers.GetPlatformMemory();
-    
-    private static List<double> CalculateMemoryMarks() {
-        var memory = Helpers.GetPlatformMemory();
-
-        return Enumerable.Range(0, (int)Math.Log2(memory) + 1)
-            .Select(i => Math.Pow(2, i))
-            .Where(i => i >= 1024)
-            .Select(i => i / memory)
-            .ToList();
-    }
-
-    public AvaloniaList<double> MemoryTickMarks { get; set; } = new(CalculateMemoryMarks());
+    private TaskEditorViewModel ViewModel { get; } = new ();
     
     public TaskEditor() {
         InitializeComponent();
-        Task = RenderTask.Empty();
+        DataContext = ViewModel;
     }
 
     public TaskEditor(RenderTask task, bool isEditing = false) {
-        IsEditing = isEditing;
-        Task = task.Clone();
+        ViewModel = new TaskEditorViewModel(task, isEditing);
         
         InitializeComponent();
         
-        // TODO:    Make bindings work
-        ProjectPath.Text = task.Project;
-        OutputPath.Text = task.Output;
-        OutputModuleBox.SelectedIndex = OutputModules.IndexOf(OutputModules.First(x => x.Module == task.OutputModule));
-        RenderSettings.Text = task.RenderSettings;
-        
-        MissingCheckbox.IsChecked = task.MissingFiles;
-        SoundCheckbox.IsChecked = task.Sound;
-        ThreadedCheckbox.IsChecked = task.Multiprocessing;
-        
-        CustomCheckbox.IsChecked = task.CustomProperties != "";
-        CustomProperties.Text = task.CustomProperties;
-        
-        CacheSlider.Value = task.CacheLimit;
-        MemorySlider.Value = task.MemoryLimit;
-
+        DataContext = ViewModel;
     }
     private void CompositionsButton_OnClick(object? sender, RoutedEventArgs e) => EditorCarousel.Next();
     private void CancelButton_OnClick(object? sender, RoutedEventArgs e) => Close(null);
     private void ProjectSetupButton_OnClick(object? sender, RoutedEventArgs e) => EditorCarousel.Previous();
-    private void SaveTaskButton_OnClick(object? sender, RoutedEventArgs e) => Close(Task);
+    private void SaveTaskButton_OnClick(object? sender, RoutedEventArgs e) => Close(ViewModel.ToRenderTask());
     
     private async void OutputPathButton_OnClick(object? sender, RoutedEventArgs e) {
         IStorageFile? file = await this.ShowSaveFileDialogAsync(
             [],// [ new ("[fileExtension]", "*.[fileExtension]") ],
-            suggestedFileName: OutputModules[OutputModuleBox.SelectedIndex].Mask,
+            suggestedFileName: ViewModel.OutputModules[ViewModel.SelectedOutputModule].Mask,
             startingPath: Settings.Current.DefaultOutputPath
         );
 
@@ -91,17 +51,8 @@ public partial class TaskEditor : Window {
 
         if (file.TryGetLocalPath() is { } path) {
             OutputPath.Text = path;
-            Task.Output = path;
+            ViewModel.OutputPath = path;
         }
-    }
-    
-    private void MemorySlider_OnValueChanged(object? sender, RangeBaseValueChangedEventArgs e) {
-        MemoryTextBlock.Text = MemorySlider.Maximum - e.NewValue < 0.0000001 ? "Unlimited" : $"{Math.Truncate(e.NewValue / 100 * _totalMemory)} MB";
-        Task.MemoryLimit = e.NewValue;
-    }
-    private void CacheSlider_OnValueChanged(object? sender, RangeBaseValueChangedEventArgs e) {
-        CacheTextBlock.Text = CacheSlider.Maximum - e.NewValue < 0.0000001 ? "Unlimited" : $"{Math.Truncate(e.NewValue)}%";
-        Task.CacheLimit = e.NewValue;
     }
 
     private bool TryParseCache(string input, out double result) {
@@ -120,21 +71,21 @@ public partial class TaskEditor : Window {
         return false;
     }
     private void CacheTextBlock_OnSubmit(object? sender, RoutedEventArgs e) {
-        if (CacheTextBlock.Text.ToLower().StartsWith("unl"))
-            CacheSlider.Value = CacheSlider.Maximum;
+        if (CacheTextBlock.Text.StartsWith("unl", StringComparison.InvariantCultureIgnoreCase))
+            ViewModel.CacheLimit = TaskEditorViewModel.MaxCacheAndMemoryLimit;
         
         if (TryParseCache(CacheTextBlock.Text, out var r))
-            CacheSlider.Value = r;
+            ViewModel.CacheLimit = r;
     }
     private bool TryParseMemory(string input, out double result) {
         if (input.EndsWith("MB")) {
             if (double.TryParse(input.Delete("MB"), out result)) { // mb -> %
-                result = Math.Clamp(result, 0, _totalMemory) / _totalMemory * 100;
+                result = Math.Clamp(result, 0, TaskEditorViewModel.TotalMemory) / TaskEditorViewModel.TotalMemory * 100;
                 return true;
             }
         } else if (input.EndsWith("GB")) {
             if (double.TryParse(input.Delete("GB"), out result)) { // gb -> %
-                result = Math.Clamp(result, 0, _totalMemory) / _totalMemory * 1024 * 100;
+                result = Math.Clamp(result, 0, TaskEditorViewModel.TotalMemory) / TaskEditorViewModel.TotalMemory * 1024 * 100;
                 return true;
             }
         } else if (input.EndsWith("%")) {
@@ -143,7 +94,7 @@ public partial class TaskEditor : Window {
                 return true;
             }
         } else if (double.TryParse(input, out result)) { // default (mb) -> %
-            result = Math.Clamp(result, 0, _totalMemory) / _totalMemory * 100;
+            result = Math.Clamp(result, 0, TaskEditorViewModel.TotalMemory) / TaskEditorViewModel.TotalMemory * 100;
             return true;
         }
 
@@ -151,34 +102,21 @@ public partial class TaskEditor : Window {
         return false;
     }
     private void MemoryTextBlock_OnSubmit(object? sender, RoutedEventArgs e) {
-        if (MemoryTextBlock.Text.ToLower().StartsWith("unl"))
-            MemorySlider.Value = MemorySlider.Maximum;
+        if (MemoryTextBlock.Text.StartsWith("unl", StringComparison.InvariantCultureIgnoreCase))
+            ViewModel.MemoryLimit = TaskEditorViewModel.MaxCacheAndMemoryLimit;
         
         if (TryParseMemory(MemoryTextBlock.Text, out var r))
-            MemorySlider.Value = r;
-    }
-    private void MissingCheckbox_OnIsCheckedChanged(object? sender, RoutedEventArgs e) => Task.MissingFiles = MissingCheckbox.IsChecked ?? false;
-    private void SoundCheckbox_OnIsCheckedChanged(object? sender, RoutedEventArgs e) => Task.Sound = SoundCheckbox.IsChecked ?? false;
-    private void ThreadedCheckbox_OnIsCheckedChanged(object? sender, RoutedEventArgs e) => Task.Multiprocessing = ThreadedCheckbox.IsChecked ?? false;
-    private void CustomProperties_OnTextChanged(object? sender, TextChangedEventArgs e) => Task.CustomProperties = CustomProperties.Text ?? "";
-
-    private void OutputModuleBox_OnSelectionChanged(object? sender, SelectionChangedEventArgs e) {
-        // if (e.AddedItems[0] is OutputModule module && module.Module != Task.OutputModule)
-        // Task.OutputModule = module.Module;
-        Task.OutputModule = OutputModules[OutputModuleBox.SelectedIndex].Module;
+            ViewModel.MemoryLimit = r;
     }
 
-    private void RenderSettings_OnTextChanged(object? sender, TextChangedEventArgs e) {
-        Task.RenderSettings = RenderSettings.Text;
-    }
     private void RemoveComp_OnClick(object? sender, RoutedEventArgs e) {
         if (CompList.SelectedItem is Composition comp) {
             CompList.SelectedIndex -= 1;
-            Task.Compositions.Remove(comp);
+            ViewModel.Compositions.Remove(comp);
         }
     }
     private void AddComp_OnClick(object? sender, RoutedEventArgs e) {
-        Task.Compositions.Add(new Composition("", new FrameSpan(0, 1), 1));
+        ViewModel.Compositions.Add(new Composition("", new FrameSpan(0, 1), 1));
         CompList.SelectedIndex = CompList.Items.Count - 1;
     }
     private void CompList_SelectionChanged(object? sender, SelectionChangedEventArgs e) {

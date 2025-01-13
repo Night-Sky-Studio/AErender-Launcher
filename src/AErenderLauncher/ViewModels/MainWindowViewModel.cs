@@ -3,16 +3,14 @@ using System.Linq;
 using AErenderLauncher.Classes;
 using AErenderLauncher.Classes.Extensions;
 using AErenderLauncher.Classes.Rendering;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Semver;
 
 namespace AErenderLauncher.ViewModels;
 
-public class MainWindowViewModel : ReactiveObject {
+public partial class MainWindowViewModel : ObservableObject {
+    [ObservableProperty]
     private SemVersion _version = App.Version.WithoutMetadata();
-    public SemVersion Version {
-        get => _version;
-        set => RaiseAndSetIfChanged(ref _version, value);
-    }
     
     public ObservableCollection<RenderTask> Tasks { get; set; } = [];
 
@@ -33,13 +31,8 @@ public class MainWindowViewModel : ReactiveObject {
         }
     }
 
-    public bool HasUpdates => _update is not null;
+    public bool HasUpdates => Update is not null;
+    
+    [ObservableProperty]
     private SemVersion? _update = null;
-    public SemVersion? Update {
-        get => _update;
-        set {
-            RaiseAndSetIfChanged(ref _update, value);
-            RaisePropertyChanged(new (nameof(HasUpdates)));
-        }
-    }
 }

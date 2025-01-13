@@ -4,6 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:AErenderLauncher.Controls"
         xmlns:rendering="clr-namespace:AErenderLauncher.Classes.Rendering"
+        xmlns:vm="clr-namespace:AErenderLauncher.ViewModels"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="AErenderLauncher.Views.TaskEditor"
         x:Name="TaskEditorView"
@@ -14,7 +15,12 @@
         ExtendClientAreaToDecorationsHint="True"
         Width="640" Height="450"
         Title="Task Editor"
+        x:DataType="vm:TaskEditorViewModel"
         Loaded="Control_OnLoaded">
+    <Design.DataContext>
+        <vm:TaskEditorViewModel />
+    </Design.DataContext>
+    
     <Grid x:Name="Root" RowDefinitions="Auto,*">
         <controls:TitleBar Grid.Row="0" Title="Edit task">
             <controls:TitleBar.Toolbar>
@@ -28,7 +34,7 @@
                                Margin="64 0 0 0" />
                         <TextBox Grid.Column="2" x:Name="ProjectPath" HorizontalAlignment="Stretch" 
                                  Margin="4 4 8 4" IsReadOnly="True" 
-                                 Text="{Binding ElementName=TaskEditorView, Path=Task.Project, FallbackValue=''}" />
+                                 Text="{Binding ProjectPath}" />
                     </Grid>
                     
                     <Grid ColumnDefinitions="Auto,*,Auto,128">
@@ -46,14 +52,17 @@
                     <StackPanel Grid.Row="0" Margin="8 0">
                         <Grid ColumnDefinitions="128,*,96" Height="32">
                             <Label Grid.Column="0" Content="Output file path:" VerticalAlignment="Center" />
-                            <TextBox Grid.Column="1" x:Name="OutputPath" HorizontalAlignment="Stretch" Margin="16 4 0 4" Text="{Binding ElementName=TaskEditorView, Path=Task.Output}" />
-                            <Button Grid.Column="2" x:Name="OutputPathButton" Content="Select file..." Margin="4 4 0 4" HorizontalAlignment="Stretch" Click="OutputPathButton_OnClick"/>
+                            <TextBox Grid.Column="1" x:Name="OutputPath" HorizontalAlignment="Stretch" Margin="16 4 0 4" 
+                                     Text="{Binding OutputPath}" />
+                            <Button Grid.Column="2" x:Name="OutputPathButton" Content="Select file..." Margin="4 4 0 4" 
+                                    HorizontalAlignment="Stretch" Click="OutputPathButton_OnClick"/>
                         </Grid>
                         
                         <Grid ColumnDefinitions="128,*" Height="32">
                              <Label Grid.Column="0" Content="Output Module Preset:" VerticalAlignment="Center" />
                              <ComboBox Grid.Column="1" x:Name="OutputModuleBox"  HorizontalAlignment="Stretch" Margin="16 4 0 4" 
-                                       ItemsSource="{Binding ElementName=TaskEditorView, Path=OutputModules}" SelectedIndex="-1" SelectionChanged="OutputModuleBox_OnSelectionChanged">
+                                       ItemsSource="{Binding OutputModules}" 
+                                       SelectedIndex="{Binding SelectedOutputModule}">
                                  <ComboBox.ItemTemplate>
                                      <DataTemplate x:DataType="rendering:OutputModule">
                                          <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"/>
@@ -65,7 +74,8 @@
                         <Grid ColumnDefinitions="128,*" Height="32">
                             <Label Grid.Column="0" Content="Render Settings:" VerticalAlignment="Center" />
                             <controls:ComboEdit Grid.Column="1" x:Name="RenderSettings"  HorizontalAlignment="Stretch" Margin="16 4 0 4" 
-                                      ItemsSource="{Binding ElementName=TaskEditorView, Path=renderSettings}" Text="Best Settings" TextChanged="RenderSettings_OnTextChanged" />
+                                      ItemsSource="{Binding RenderSettingsPresets}" 
+                                      Text="{Binding RenderSettings}" />
                         </Grid>
                         
                         <Border BorderThickness="1" BorderBrush="#151515">
@@ -74,29 +84,43 @@
                                 <Rectangle Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Bottom" Height="1" Margin="0" Fill="#151515"/>
                                 
                                 <StackPanel Grid.Row="1" Grid.Column="0" Spacing="4" Margin="4">
-                                    <CheckBox x:Name="MissingCheckbox" Content="Render with missing files" IsCheckedChanged="MissingCheckbox_OnIsCheckedChanged" />
-                                    <CheckBox x:Name="SoundCheckbox" Content="Play sound when render finishes" IsCheckedChanged="SoundCheckbox_OnIsCheckedChanged" />
-                                    <CheckBox x:Name="ThreadedCheckbox" Content="Enable CPU Multithreading" IsCheckedChanged="ThreadedCheckbox_OnIsCheckedChanged" />
+                                    <CheckBox x:Name="MissingCheckbox" Content="Render with missing files" 
+                                              IsChecked="{Binding MissingFiles}" />
+                                    <CheckBox x:Name="SoundCheckbox" Content="Play sound when render finishes" 
+                                              IsChecked="{Binding Sound}" />
+                                    <CheckBox x:Name="ThreadedCheckbox" Content="Enable CPU Multithreading" 
+                                              IsChecked="{Binding Multiprocessing}" />
                                 </StackPanel>
                                 
                                 <StackPanel Grid.Row="1" Grid.Column="1" Margin="4" Spacing="4">
-                                    <CheckBox x:Name="CustomCheckbox" Content="Custom properties" />
-                                    <TextBox x:Name="CustomProperties" IsEnabled="{Binding ElementName=CustomCheckbox, Path=IsChecked}" TextChanged="CustomProperties_OnTextChanged"/>
+                                    <CheckBox x:Name="CustomCheckbox" Content="Custom properties" 
+                                              IsChecked="{Binding CustomPropertiesEnabled}" />
+                                    <TextBox x:Name="CustomProperties" 
+                                             IsEnabled="{Binding ElementName=CustomCheckbox, Path=IsChecked}" 
+                                             Text="{Binding CustomProperties}" />
                                 </StackPanel>
                             </Grid>
                         </Border>
                         
                         <Grid ColumnDefinitions="128,*,128" Margin="0 4 0 0">
                             <Label Grid.Column="0" Content="Cache usage limit" VerticalAlignment="Center" />
-                            <Slider x:Name="CacheSlider" Grid.Column="1" Minimum="1" Maximum="100" Value="100" Ticks="0,25,50,75,100" ValueChanged="CacheSlider_OnValueChanged" />
-                            <controls:EditTextBlock x:Name="CacheTextBlock" Grid.Column="2" Text="Unlimited" TextAlignment="Right" Submit="CacheTextBlock_OnSubmit"/>
+                            <Slider x:Name="CacheSlider" Grid.Column="1" Minimum="1" Maximum="100" 
+                                    Value="{Binding CacheLimit}" 
+                                    Ticks="0,25,50,75,100" TickPlacement="None" />
+                            <controls:EditTextBlock x:Name="CacheTextBlock" Grid.Column="2" TextAlignment="Right"
+                                                    Text="{Binding CacheLimitString}" 
+                                                    Submit="CacheTextBlock_OnSubmit"/>
                         </Grid>
                         
                         <Grid ColumnDefinitions="128,*,128" Margin="0 4 0 0">
                             <Label Grid.Column="0" Content="Memory usage limit" VerticalAlignment="Center" />
-                            <!-- TODO: Add tickmarks -->
-                            <Slider x:Name="MemorySlider" Grid.Column="1" Minimum="1" Maximum="100" Value="100" Ticks="{Binding ElementName=TaskEditorView, Path=MemoryTickMarks}" ValueChanged="MemorySlider_OnValueChanged" />
-                            <controls:EditTextBlock x:Name="MemoryTextBlock" Grid.Column="2" Text="Unlimited" TextAlignment="Right" Submit="MemoryTextBlock_OnSubmit"/>
+                            <Slider x:Name="MemorySlider" Grid.Column="1" Minimum="1" Maximum="100" 
+                                    Value="{Binding MemoryLimit}" 
+                                    Ticks="{Binding MemoryTickMarks}"
+                                    TickPlacement="None"/>
+                            <controls:EditTextBlock x:Name="MemoryTextBlock" Grid.Column="2" TextAlignment="Right" 
+                                                    Text="{Binding MemoryLimitString}" 
+                                                    Submit="MemoryTextBlock_OnSubmit"/>
                         </Grid>
                     </StackPanel>
                     
@@ -111,7 +135,7 @@
                 <Grid RowDefinitions="*,32">
                     <Grid Grid.Row="0" RowDefinitions="*,32">
                         <ListBox Grid.Row="0" x:Name="CompList" SelectionMode="Single" 
-                                 ItemsSource="{Binding ElementName=TaskEditorView, Path=Task.Compositions}" 
+                                 ItemsSource="{Binding Compositions}" 
                                  Classes="Filled" SelectionChanged="CompList_SelectionChanged" 
                                  Margin="4 4 4 0">
                             <ListBox.ItemTemplate>
@@ -141,8 +165,10 @@
                                 <Button Content="Cancel" Margin="0 4" Width="64" Click="CancelButton_OnClick" />
                                 <Button Content="&lt;&lt; Project setup" Margin="0 4" Click="ProjectSetupButton_OnClick" />
                             </StackPanel>
-                            <Button Content="Save task" Margin="0 0 4 4" Width="96" HorizontalAlignment="Right" Click="SaveTaskButton_OnClick" IsVisible="{Binding ElementName=TaskEditorView, Path=IsEditing}"/>
-                            <Button Content="Create task" Margin="0 0 4 4" Width="96" HorizontalAlignment="Right" Click="SaveTaskButton_OnClick" IsVisible="{Binding ElementName=TaskEditorView, Path=!IsEditing}"/>
+                            <Button Content="Save task" Margin="0 4 4 4" Width="96" HorizontalAlignment="Right" Click="SaveTaskButton_OnClick" 
+                                    IsVisible="{Binding IsEditing}"/>
+                            <Button Content="Create task" Margin="0 4 4 4" Width="96" HorizontalAlignment="Right" Click="SaveTaskButton_OnClick" 
+                                    IsVisible="{Binding !IsEditing}"/>
                         </Grid>
                     </Border>
                 </Grid>

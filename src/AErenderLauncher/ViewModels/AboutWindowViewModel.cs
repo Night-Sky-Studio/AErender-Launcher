@@ -1,39 +1,22 @@
 using System;
 using AErenderLauncher.Classes;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Semver;
 
 namespace AErenderLauncher.ViewModels;
 
-public class AboutWindowViewModel : ReactiveObject {
+public partial class AboutWindowViewModel : ObservableObject {
+    [ObservableProperty, NotifyPropertyChangedFor(nameof(VersionText))]
     private SemVersion _version = App.Version;
-    public SemVersion Version {
-        get => _version;
-        set {
-            RaiseAndSetIfChanged(ref _version, value);
-            RaisePropertyChanged(new (nameof(VersionText)));
-        }
-    }
 
-    public string VersionText => _version.WithoutMetadata().ToString();
+    public string VersionText => Version.WithoutMetadata().ToString();
 
+    [ObservableProperty, NotifyPropertyChangedFor(nameof(FFmpegInfo))]
     private FFmpeg? _ffmpeg = Settings.Current.FFmpeg;
-    public FFmpeg? FFmpeg {
-        get => _ffmpeg;
-        set {
-            RaiseAndSetIfChanged(ref _ffmpeg, value);
-            RaisePropertyChanged(new(nameof(FFmpegInfo)));
-        }
-    }
 
+    [ObservableProperty, NotifyPropertyChangedFor(nameof(AfterFxInfo))]
     private AfterFx? _afterFx = Settings.Current.AfterEffects;
-    public AfterFx? AfterFx {
-        get => _afterFx;
-        set {
-            RaiseAndSetIfChanged(ref _afterFx, value);
-            RaisePropertyChanged(new(nameof(AfterFxInfo)));
-        }
-    }
 
-    public string? FFmpegInfo => FFmpeg is not null ? $"{FFmpeg.Version} ({FFmpeg.Path})" : null;
+    public string? FFmpegInfo => Ffmpeg is not null ? $"{Ffmpeg.Version} ({Ffmpeg.Path})" : null;
     public string? AfterFxInfo => AfterFx is not null ? $"{AfterFx.Version} ({AfterFx.Name})" : null;
 }
