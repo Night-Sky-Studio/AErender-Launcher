@@ -6,6 +6,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <Prefer32Bit>false</Prefer32Bit>
     <!--        <SelfContained>true</SelfContained>-->
     <!--        <PublishSingleFile>true</PublishSingleFile>-->
     <!--        <PublishReadyToRun>true</PublishReadyToRun>-->
