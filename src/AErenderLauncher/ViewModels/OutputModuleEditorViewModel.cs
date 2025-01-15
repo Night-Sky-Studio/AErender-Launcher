@@ -36,7 +36,7 @@ public partial class OutputModuleEditorViewModel : ObservableObject {
         "[dateYear]", "[dateMonth]", "[dateDay]", "[timeHour]", "[timeMins]", "[timeSecs]", "[timeZone]"
     ];
     
-    [ObservableProperty]
+    [ObservableProperty, NotifyPropertyChangedFor(nameof(SelectedModule))]
     private int _selectedIndex = 0;
     
     public OutputModule? SelectedModule => OutputModules.Get(SelectedIndex);
